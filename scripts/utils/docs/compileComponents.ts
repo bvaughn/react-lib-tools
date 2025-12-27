@@ -1,19 +1,22 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { cwd } from "node:process";
-import { withCustomConfig } from "react-docgen-typescript";
+import { withCompilerOptions } from "react-docgen-typescript";
+import type { CompilerOptions } from "typescript";
 import { initialize } from "../initialize.ts";
 import { compileComponent } from "./compileComponent.ts";
 import { insertPropsMarkdown } from "./insertPropsMarkdown.ts";
 
 export async function compileComponents({
+  compilerOptions,
   componentNames,
   outputDirName
 }: {
+  compilerOptions: Partial<CompilerOptions>;
   componentNames: string[];
   outputDirName: string;
 }) {
-  const parser = withCustomConfig("./tsconfig.json", {
+  const parser = withCompilerOptions(compilerOptions, {
     savePropValueAsString: true,
     shouldExtractLiteralValuesFromEnum: true,
     shouldExtractValuesFromUnion: true,

@@ -1,4 +1,4 @@
-import type { Intent, Section } from "react-lib-tools";
+import type { Intent, Section } from "../../../types.ts";
 import { syntaxHighlight, type Language } from "../syntax-highlight.ts";
 import { formatDescriptionText } from "./formatDescriptionText.ts";
 

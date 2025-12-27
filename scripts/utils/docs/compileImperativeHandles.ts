@@ -1,19 +1,21 @@
 import { parseFromProject, type InterfaceNode } from "@ts-ast-parser/core";
-import tsConfig from "../../../tsconfig.json" with { type: "json" };
-import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 import { join } from "node:path";
 import { cwd } from "node:process";
+import type { CompilerOptions } from "typescript";
+import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 
 export async function compileImperativeHandles({
+  compilerOptions,
   names,
   outputDirName
 }: {
+  compilerOptions: Partial<CompilerOptions>;
   names: string[];
   outputDirName: string;
 }) {
   const outputDir = join(cwd(), "public", "generated", outputDirName);
 
-  const result = await parseFromProject(tsConfig);
+  const result = await parseFromProject({ compilerOptions });
   const reflectedModules = result.project?.getModules() ?? [];
 
   const nodes: {
@@ -25,10 +27,13 @@ export async function compileImperativeHandles({
     reflectedModules.forEach((reflectedModule) => {
       const node = reflectedModule.getDeclarationByName(name);
       if (node) {
-        nodes.push({
-          filePath: reflectedModule.getSourcePath(),
-          node: node as unknown as InterfaceNode
-        });
+        const filePath = reflectedModule.getSourcePath();
+        if (filePath.startsWith("lib/")) {
+          nodes.push({
+            filePath,
+            node: node as unknown as InterfaceNode
+          });
+        }
       }
     });
   });
