@@ -1,5 +1,3 @@
-@import "tailwindcss";
-
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -35,9 +33,9 @@
   overflow: auto;
   background: linear-gradient(
     -45deg,
-    var(--color-fuchsia-500),
-    var(--color-violet-500),
-    var(--color-fuchsia-700)
+    var(--template-gradient-color-1),
+    var(--template-gradient-color-2),
+    var(--template-gradient-color-3)
   );
   background-size: 400% 400%;
   animation: background-gradient-animation 20s ease infinite;
@@ -59,9 +57,9 @@ main {
   [data-link],
   a {
     cursor: pointer;
-    color: var(--color-sky-400);
+    color: var(--template-focus-color-400);
     &:hover {
-      color: var(--color-sky-300);
+      color: var(--template-focus-color-300);
     }
   }
 }
@@ -69,24 +67,61 @@ main {
 *[data-focus] {
   border: 2px solid transparent;
   &:focus {
-    border: 2px solid var(--color-sky-300);
+    border: 2px solid var(--template-focus-color-300);
   }
 }
 
 *[data-focus-within] {
   border: 2px solid transparent;
   &:focus-within {
-    border: 2px solid var(--color-sky-300);
+    border: 2px solid var(--template-focus-color-300);
   }
 
   &[data-focus-within="bold"] {
-    border-color: var(--color-sky-600);
+    border-color: var(--template-focus-color-600);
     &:focus-within {
-      border: 2px solid var(--color-sky-300);
+      border: 2px solid var(--template-focus-color-300);
     }
   }
 }
 
 code {
   color: rgba(255, 255, 255, 0.8);
+}
+
+.tok-comment {
+  color: var(--color-slate-500);
+}
+.tok-definition {
+}
+.tok-local {
+}
+.tok-keyword {
+  color: var(--color-pink-400);
+}
+.tok-meta {
+}
+.tok-number {
+}
+.tok-operator {
+  color: var(--color-slate-400);
+}
+.tok-propertyName {
+  color: var(--color-sky-300);
+}
+.tok-punctuation {
+  color: var(--color-slate-400);
+}
+.tok-string {
+  color: var(--color-teal-300);
+}
+.tok-string2 {
+  color: var(--color-sky-300);
+}
+.tok-typeName {
+  color: var(--color-pink-400);
+}
+.tok-variableName:not(.tok-definition) {
+}
+.tok-variableName2 {
 }

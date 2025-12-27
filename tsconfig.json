@@ -23,7 +23,7 @@
     "exactOptionalPropertyTypes": true,
 
     "paths": {
-      "react-virtualized-auto-sizer": ["./lib"]
+      "react-lib-tools": ["./lib"]
     },
     "types": [
       "csstype",

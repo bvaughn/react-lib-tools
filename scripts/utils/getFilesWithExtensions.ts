@@ -4,7 +4,7 @@ import { extname, join } from "node:path";
 export async function getFilesWithExtensions(
   directory: string,
   extensions: string[],
-  filter?: (path: string) => boolean
+  filter?: ((path: string) => boolean) | undefined
 ) {
   const files: string[] = [];
 

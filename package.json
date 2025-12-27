@@ -15,7 +15,9 @@
   "module": "dist/react-lib-tools.js",
   "types": "dist/react-lib-tools.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "scripts",
+    "styles.css"
   ],
   "scripts": {
     "dev": "vite",

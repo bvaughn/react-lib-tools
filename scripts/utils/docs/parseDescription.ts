@@ -1,4 +1,4 @@
-import type { Intent, Section } from "../../../src/types.ts";
+import type { Intent, Section } from "../../../lib/types.ts";
 import { formatDescriptionText } from "./formatDescriptionText.ts";
 import { syntaxHighlight, type Language } from "../syntax-highlight.ts";
 

@@ -14,8 +14,8 @@ const libraryConfig: UserConfig = {
   build: {
     lib: {
       entry: resolve(__dirname, "lib/index.ts"),
-      name: "react-virtualized-auto-sizer",
-      fileName: "react-virtualized-auto-sizer",
+      name: "react-lib-tools",
+      fileName: "react-lib-tools",
       formats: ["cjs", "es"]
     },
     rollupOptions: {
@@ -28,7 +28,13 @@ const libraryConfig: UserConfig = {
       }
     }
   },
-  plugins: [react(), dts({ rollupTypes: true }), preserveDirectives()],
+  plugins: [
+    react(),
+    svgr(),
+    tailwindcss({ optimize: { minify: false } }),
+    dts({ rollupTypes: true }),
+    preserveDirectives()
+  ],
   publicDir: false
 };
 
@@ -47,7 +53,7 @@ const websiteConfig: UserConfig = {
   plugins: [
     react(),
     svgr(),
-    tailwindcss(),
+    tailwindcss({ optimize: { minify: false } }),
     visualizer({
       emitFile: true,
       filename: "stats.html"
@@ -55,7 +61,7 @@ const websiteConfig: UserConfig = {
   ],
   resolve: {
     alias: {
-      "react-virtualized-auto-sizer": resolve(__dirname, "lib")
+      "react-lib-tools": resolve(__dirname, "lib")
     }
   }
 };

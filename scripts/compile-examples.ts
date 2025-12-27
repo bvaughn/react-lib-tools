@@ -4,16 +4,22 @@ import { initialize } from "./utils/initialize.ts";
 import { syntaxHighlight } from "./utils/syntax-highlight.ts";
 import { trimExcludedText } from "./utils/code-snippets/trimExcludedText.ts";
 
-async function run() {
+export async function compileExamples({
+  fileExtensions = [".html", ".ts", ".tsx"],
+  inputPath = ["src", "routes"],
+  outputDirName = "code-snippets"
+}: {
+  fileExtensions?: string[] | undefined;
+  inputPath?: string[] | undefined;
+  outputDirName?: string | undefined;
+}) {
   const { files, outputDir } = await initialize({
-    fileExtensions: [".html", ".ts", ".tsx"],
-    inputPath: ["src", "routes"],
-    outputDirName: "code-snippets"
+    fileExtensions,
+    inputPath,
+    outputDirName
   });
 
-  const exampleFiles = files.filter((file) => file.includes(".example."));
-
-  for (const file of exampleFiles) {
+  for (const file of files) {
     const buffer = await readFile(file);
 
     let rawText = buffer.toString();
@@ -63,5 +69,3 @@ async function run() {
     await writeFile(outputFile, JSON.stringify({ html }, null, 2));
   }
 }
-
-run();

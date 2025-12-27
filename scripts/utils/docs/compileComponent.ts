@@ -2,11 +2,11 @@ import { writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { type FileParser, type PropItem } from "react-docgen-typescript";
+import type { ComponentMetadata } from "../../../lib/types.ts";
 import { assert } from "../../../lib/utils/assert.ts";
-import type { ComponentMetadata } from "../../../src/types.ts";
+import { syntaxHighlight } from "../syntax-highlight.ts";
 import { getPropTypeText } from "./getPropTypeText.ts";
 import { parseDescription } from "./parseDescription.ts";
-import { syntaxHighlight } from "../syntax-highlight.ts";
 import { propsToTable } from "./propsToTable.ts";
 
 const TOKEN_TO_REPLACE = "TOKEN_TO_REPLACE";

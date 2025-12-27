@@ -11,7 +11,7 @@ export async function initialize({
   outputDirName
 }: {
   fileExtensions: string[];
-  fileFilter?: (path: string) => boolean;
+  fileFilter?: ((path: string) => boolean) | undefined;
   inputPath: string[];
   outputDirName: string;
 }) {

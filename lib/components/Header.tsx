@@ -1,6 +1,7 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { Box } from "./Box";
 import { useEffect } from "react";
+import { useLibraryContext } from "../hooks/useLibraryContext";
+import { Box } from "./Box";
 
 export function Header({
   section,
@@ -9,10 +10,12 @@ export function Header({
   section?: string;
   title: string;
 }) {
+  const { packageName } = useLibraryContext();
+
   useEffect(() => {
     const originalTitle = document.title;
 
-    document.title = `react-virtualized-auto-sizer: ${section ? `${section}: ${title}` : title}`;
+    document.title = `${packageName}: ${section ? `${section}: ${title}` : title}`;
 
     return () => {
       document.title = originalTitle;

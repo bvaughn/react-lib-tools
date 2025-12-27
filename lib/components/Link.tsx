@@ -1,12 +1,40 @@
-import type { HTMLAttributes } from "react";
-import type { Path } from "../routes";
-import { TransitionLink } from "./TransitionLink";
+import { useTransition, type HTMLAttributes, type ReactNode } from "react";
+import { useMatch, useNavigate } from "react-router-dom";
+
+type RenderFunction = (params: {
+  isActive: boolean;
+  isPending: boolean;
+}) => ReactNode;
 
 export function Link({
+  children,
+  onClick,
   to,
   ...rest
-}: HTMLAttributes<HTMLSpanElement> & {
-  to: Path;
+}: Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+  children?: ReactNode | RenderFunction;
+  to: string;
 }) {
-  return <TransitionLink to={to} {...rest} />;
+  const isActive = !!useMatch(to);
+  const [isPending, startTransition] = useTransition();
+  const navigate = useNavigate();
+
+  return (
+    <span
+      children={
+        typeof children === "function"
+          ? children({ isActive, isPending })
+          : children
+      }
+      data-link
+      onClick={(event) => {
+        onClick?.(event);
+
+        startTransition(() => {
+          navigate(to);
+        });
+      }}
+      {...rest}
+    />
+  );
 }

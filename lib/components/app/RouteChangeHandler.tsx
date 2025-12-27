@@ -1,6 +1,6 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useNavStore } from "../hooks/useNavStore";
+import { useNavStore } from "../../hooks/useNavStore";
 
 export function RouteChangeHandler() {
   const { hide } = useNavStore();
