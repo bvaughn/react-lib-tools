@@ -16,7 +16,7 @@ export { NavLink } from "./components/nav/NavLink";
 export { NavSection } from "./components/nav/NavSection";
 export { ComponentProps } from "./components/props/ComponentProps";
 export { Radio } from "./components/Radio";
-export { Select } from "./components/Select";
+export { Select, type Option } from "./components/Select";
 export { Link } from "./components/Link";
 
 export { assert } from "./utils/assert";
