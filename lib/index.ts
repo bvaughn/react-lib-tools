@@ -16,8 +16,16 @@ export { NavLink } from "./components/nav/NavLink";
 export { NavSection } from "./components/nav/NavSection";
 export { ComponentProps } from "./components/props/ComponentProps";
 export { Radio } from "./components/Radio";
-export { Select, type Option } from "./components/Select";
+export { Select } from "./components/Select";
 export { Link } from "./components/Link";
+
+export type { Option } from "./components/Select";
+export type {
+  ComponentMetadata,
+  ImperativeHandleMetadata,
+  Intent,
+  Section
+} from "./types";
 
 export { assert } from "./utils/assert";
 export { cn } from "./utils/cn";

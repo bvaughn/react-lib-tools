@@ -1,6 +1,6 @@
-import type { Intent, Section } from "../../../lib/types.ts";
-import { formatDescriptionText } from "./formatDescriptionText.ts";
+import type { Intent, Section } from "react-lib-tools";
 import { syntaxHighlight, type Language } from "../syntax-highlight.ts";
+import { formatDescriptionText } from "./formatDescriptionText.ts";
 
 export async function parseDescription(rawText: string) {
   const sections: Section[] = [];
