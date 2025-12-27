@@ -8,7 +8,7 @@ export async function compileDocs({
   imperativeHandleNames,
   outputDirName = "docs"
 }: {
-  compilerOptions: Partial<CompilerOptions>;
+  compilerOptions?: Partial<CompilerOptions>;
   componentNames: string[];
   imperativeHandleNames: string[];
   outputDirName?: string | undefined;
