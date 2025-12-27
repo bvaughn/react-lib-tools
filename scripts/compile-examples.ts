@@ -2,17 +2,17 @@ import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
 import { initialize } from "./utils/initialize.ts";
 import { syntaxHighlight } from "./utils/syntax-highlight.ts";
-import { trimExcludedText } from "./utils/code-snippets/trimExcludedText.ts";
+import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 
 export async function compileExamples({
   fileExtensions = [".html", ".ts", ".tsx"],
   inputPath = ["src", "routes"],
-  outputDirName = "code-snippets"
+  outputDirName = "examples"
 }: {
   fileExtensions?: string[] | undefined;
   inputPath?: string[] | undefined;
   outputDirName?: string | undefined;
-}) {
+} = {}) {
   const { files, outputDir } = await initialize({
     fileExtensions,
     inputPath,

@@ -1,4 +1,4 @@
-import { rm } from "fs/promises";
+import { rm } from "node:fs/promises";
 import { getFilesWithExtensions } from "./getFilesWithExtensions.ts";
 
 export async function rmFilesWithExtensions(
