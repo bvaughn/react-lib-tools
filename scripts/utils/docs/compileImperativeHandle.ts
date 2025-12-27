@@ -2,7 +2,7 @@ import type { InterfaceNode } from "@ts-ast-parser/core";
 import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import { join } from "path";
-import type { ImperativeHandleMetadata } from "../../../types.ts";
+import type { ImperativeHandleMetadata } from "../../../lib/types.ts";
 import { syntaxHighlight } from "../syntax-highlight.ts";
 import { parseDescription } from "./parseDescription.ts";
 

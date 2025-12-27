@@ -2,7 +2,7 @@ import { writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import { cwd } from "node:process";
 import { type FileParser, type PropItem } from "react-docgen-typescript";
-import type { ComponentMetadata } from "../../../types.ts";
+import type { ComponentMetadata } from "../../../lib/types.ts";
 import { assert } from "../assert.ts";
 import { syntaxHighlight } from "../syntax-highlight.ts";
 import { getPropTypeText } from "./getPropTypeText.ts";

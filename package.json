@@ -1,6 +1,6 @@
 {
   "name": "react-lib-tools",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "type": "module",
   "author": "Brian Vaughn <brian.david.vaughn@gmail.com> (https://github.com/bvaughn/)",
   "contributors": [
@@ -16,6 +16,7 @@
   "types": "dist/react-lib-tools.d.ts",
   "files": [
     "dist",
+    "lib/types.ts",
     "scripts",
     "styles.css"
   ],
