@@ -6,7 +6,7 @@ import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 
 export async function compileExamples({
   fileExtensions = [".html", ".ts", ".tsx"],
-  inputPath = ["src", "routes"],
+  inputPath = ["src", "routes", "examples"],
   outputDirName = "examples"
 }: {
   fileExtensions?: string[] | undefined;
@@ -61,7 +61,7 @@ export async function compileExamples({
 
     const outputFile = join(
       outputDir,
-      fileName.replace(/\.example\..+$/, ".json")
+      fileName.replace(/(\.example)?\.[\w]+$/, ".json")
     );
 
     console.debug("Writing to", outputFile);
