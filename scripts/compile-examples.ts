@@ -6,7 +6,7 @@ import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 
 export async function compileExamples({
   fileExtensions = [".html", ".ts", ".tsx"],
-  inputPath = ["src", "routes", "examples"],
+  inputPath = ["src", "routes"],
   outputDirName = "examples"
 }: {
   fileExtensions?: string[] | undefined;
@@ -20,6 +20,10 @@ export async function compileExamples({
   });
 
   for (const file of files) {
+    if (!file.includes("/examples/")) {
+      continue;
+    }
+
     const buffer = await readFile(file);
 
     let rawText = buffer.toString();
