@@ -58,10 +58,16 @@ export async function compileComponent({
       let textToFormat = getPropTypeText(prop);
 
       if (prop.defaultValue?.value) {
-        const formattedValue =
-          typeof prop.defaultValue.value === "string"
-            ? `"${prop.defaultValue.value}"`
-            : prop.defaultValue.value;
+        let formattedValue = prop.defaultValue.value;
+
+        // Wrap strings in quotes
+        if (typeof prop.defaultValue.value === "string") {
+          // But don't double quote, e.g.
+          // tagName?: keyof IntrinsicElements = ""div" as TagName"
+          if (!prop.defaultValue.value.includes('" as ')) {
+            formattedValue = `"${prop.defaultValue.value}"`;
+          }
+        }
 
         textToFormat = `${textToFormat} = ${formattedValue}`;
       }
