@@ -11,13 +11,13 @@ export { ExternalLink } from "./components/ExternalLink";
 export { ImperativeHandle } from "./components/handles/ImperativeHandle";
 export { Header } from "./components/Header";
 export { Input } from "./components/Input";
+export { Link } from "./components/Link";
 export { LoadingSpinner } from "./components/LoadingSpinner";
 export { NavLink } from "./components/nav/NavLink";
 export { NavSection } from "./components/nav/NavSection";
 export { ComponentProps } from "./components/props/ComponentProps";
 export { Radio } from "./components/Radio";
 export { Select } from "./components/Select";
-export { Link } from "./components/Link";
 
 export type { Option } from "./components/Select";
 export type {
@@ -29,3 +29,4 @@ export type {
 
 export { assert } from "./utils/assert";
 export { cn } from "./utils/cn";
+export { getIntentClassNames } from "./utils/getIntentClassNames";
