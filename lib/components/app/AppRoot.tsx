@@ -26,15 +26,19 @@ import { routes as defaultRoutes } from "./routes";
 export function AppRoot({
   hideVersions = false,
   navLinks,
+  overview,
   packageDescription,
   packageName,
-  routes
+  routes,
+  showOpenCollectLink = false
 }: {
   hideVersions?: boolean | undefined;
   navLinks: ReactNode;
+  overview?: ReactNode | undefined;
   packageDescription: ReactNode;
   packageName: string;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
+  showOpenCollectLink?: boolean | undefined;
 }) {
   const { toggle, visible } = useNavStore();
 
@@ -44,8 +48,8 @@ export function AppRoot({
   });
 
   const context = useMemo<LibraryContextType>(
-    () => ({ packageName }),
-    [packageName]
+    () => ({ overview, packageName, showOpenCollectLink }),
+    [overview, packageName, showOpenCollectLink]
   );
 
   return (
