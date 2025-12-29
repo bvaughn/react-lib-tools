@@ -63,7 +63,7 @@ export function AppRoot({
             >
               <Link
                 children={packageName}
-                className="text-xl text-white! text-shadow-black/50 text-shadow-sm font-bold cursor-pointer truncate"
+                className="text-xl text-white! text-shadow-black/80 text-shadow-xs font-bold cursor-pointer truncate"
                 to="/"
               />
               <div className="hidden md:block text-black text-shadow-white/50 text-shadow-xs">
