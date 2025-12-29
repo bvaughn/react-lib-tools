@@ -20,7 +20,8 @@ import { ErrorBoundary } from "../ErrorBoundary";
 import { ExternalLink } from "../ExternalLink";
 import { Link } from "../Link";
 import { Nav } from "../nav/Nav";
-import { RouteChangeHandler } from "./RouteChangeHandler";
+import { RouteChangeHandler } from "./components/RouteChangeHandler";
+import { routes as defaultRoutes } from "./routes";
 
 export function AppRoot({
   hideVersions = false,
@@ -36,6 +37,11 @@ export function AppRoot({
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
 }) {
   const { toggle, visible } = useNavStore();
+
+  console.log("routes:", {
+    ...defaultRoutes,
+    ...routes
+  });
 
   const context = useMemo<LibraryContextType>(
     () => ({ packageName }),
@@ -134,7 +140,10 @@ export function AppRoot({
                 data-main-scrollable
               >
                 <Routes>
-                  {Object.entries(routes).map(([path, Component]) => (
+                  {Object.entries({
+                    ...defaultRoutes,
+                    ...routes
+                  }).map(([path, Component]) => (
                     <Route
                       element={
                         <ErrorBoundary key={path}>
