@@ -42,11 +42,6 @@ export function AppRoot({
 }) {
   const { toggle, visible } = useNavStore();
 
-  console.log("routes:", {
-    ...defaultRoutes,
-    ...routes
-  });
-
   const context = useMemo<LibraryContextType>(
     () => ({ overview, packageName, showOpenCollectLink }),
     [overview, packageName, showOpenCollectLink]
