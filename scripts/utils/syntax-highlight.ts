@@ -1,3 +1,4 @@
+import { cssLanguage } from "@codemirror/lang-css";
 import { htmlLanguage } from "@codemirror/lang-html";
 import {
   jsxLanguage,
@@ -16,7 +17,7 @@ type Token = {
   value: string;
 };
 
-export type Language = "HTML" | "JS" | "JSX" | "TS" | "TSX";
+export type Language = "CSS" | "HTML" | "JS" | "JSX" | "TS" | "TSX";
 
 type State = {
   parsedTokens: Token[];
@@ -30,6 +31,11 @@ export async function syntaxHighlight(code: string, language: Language) {
   let extension: LRLanguage;
   let prettierParser: BuiltInParserName;
   switch (language) {
+    case "CSS": {
+      extension = cssLanguage.configure({ dialect: "selfClosing" });
+      prettierParser = "css";
+      break;
+    }
     case "HTML": {
       extension = htmlLanguage.configure({ dialect: "selfClosing" });
       prettierParser = "html";

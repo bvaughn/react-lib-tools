@@ -5,7 +5,7 @@ import { syntaxHighlight } from "./utils/syntax-highlight.ts";
 import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 
 export async function compileExamples({
-  fileExtensions = [".html", ".ts", ".tsx"],
+  fileExtensions = [".css", ".html", ".ts", ".tsx"],
   inputPath = ["src", "routes"],
   outputDirName = "examples"
 }: {
@@ -45,7 +45,9 @@ export async function compileExamples({
     }
 
     let html;
-    if (file.endsWith(".html")) {
+    if (file.endsWith(".css")) {
+      html = await syntaxHighlight(rawText, "CSS");
+    } else if (file.endsWith(".html")) {
       html = await syntaxHighlight(rawText, "HTML");
     } else if (file.endsWith(".js") || file.endsWith(".jsx")) {
       html = await syntaxHighlight(
