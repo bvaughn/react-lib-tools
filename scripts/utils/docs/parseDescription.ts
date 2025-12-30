@@ -7,6 +7,9 @@ export async function parseDescription(rawText: string) {
 
   // Paper over differences between "@ts-ast-parser/core" and "react-docgen-typescript"
   let text = rawText;
+
+  text = text.replace("@deprecated", "❌ This prop has been deprecated.");
+
   Object.keys(INTENT_FLAGS).forEach((flag) => {
     text = text
       .split(`\n${flag}`)
