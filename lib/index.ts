@@ -16,6 +16,7 @@ export { LoadingSpinner } from "./components/LoadingSpinner";
 export { NavLink } from "./components/nav/NavLink";
 export { NavSection } from "./components/nav/NavSection";
 export { ComponentProps } from "./components/props/ComponentProps";
+export { ComponentPropsSection } from "./components/props/ComponentPropsSection";
 export { Radio } from "./components/Radio";
 export { Select } from "./components/Select";
 

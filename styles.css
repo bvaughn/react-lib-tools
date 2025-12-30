@@ -106,6 +106,7 @@ code {
 .tok-operator {
   color: var(--color-slate-400);
 }
+.tok-labelName,
 .tok-propertyName {
   color: var(--color-sky-300);
 }
