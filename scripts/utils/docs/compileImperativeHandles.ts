@@ -1,21 +1,24 @@
-import { parseFromProject, type InterfaceNode } from "@ts-ast-parser/core";
+import {
+  parseFromProject,
+  type AnalyserOptions,
+  type InterfaceNode
+} from "@ts-ast-parser/core";
 import { join } from "node:path";
 import { cwd } from "node:process";
-import type { CompilerOptions } from "typescript";
 import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 
 export async function compileImperativeHandles({
-  compilerOptions,
+  analyserOptions,
   names,
   outputDirName
 }: {
-  compilerOptions: Partial<CompilerOptions>;
+  analyserOptions: Partial<AnalyserOptions>;
   names: string[];
   outputDirName: string;
 }) {
   const outputDir = join(cwd(), "public", "generated", outputDirName);
 
-  const result = await parseFromProject({ compilerOptions });
+  const result = await parseFromProject(analyserOptions);
   const reflectedModules = result.project?.getModules() ?? [];
 
   const nodes: {

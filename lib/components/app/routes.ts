@@ -7,3 +7,6 @@ export const routes = {
   "/": lazy(() => import("./routes/GettingStartedRoute")),
   "/support": lazy(() => import("./routes/SupportRoute"))
 } satisfies Record<string, Route>;
+
+export type Routes = Record<keyof typeof routes, Route>;
+export type Path = keyof Routes;

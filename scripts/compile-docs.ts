@@ -1,3 +1,4 @@
+import type { AnalyserOptions } from "@ts-ast-parser/core";
 import { compileComponents } from "./utils/docs/compileComponents.ts";
 import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
 import type { CompilerOptions } from "typescript";
@@ -10,19 +11,25 @@ import {
 } from "typescript";
 
 export async function compileDocs({
-  compilerOptions: compilerOptionsParam,
-  componentNames,
-  imperativeHandleNames,
+  analyserOptions: analyserOptionsParam,
+  componentNames = [],
+  imperativeHandleNames = [],
   outputDirName = "docs"
 }: {
-  compilerOptions?: Partial<CompilerOptions>;
-  componentNames: string[];
-  imperativeHandleNames: string[];
+  analyserOptions?: Partial<AnalyserOptions>;
+  componentNames?: string[] | undefined;
+  imperativeHandleNames?: string[] | undefined;
   outputDirName?: string | undefined;
 }) {
-  const compilerOptions = {
+  const compilerOptions: Partial<CompilerOptions> = {
     ...defaultCompilerOptions,
-    ...compilerOptionsParam
+    ...(analyserOptionsParam?.compilerOptions as CompilerOptions)
+  };
+
+  const analyserOptions: Partial<AnalyserOptions> = {
+    ...analyserOptionsParam,
+    compilerOptions,
+    include: ["lib"]
   };
 
   await compileComponents({
@@ -32,7 +39,7 @@ export async function compileDocs({
   });
 
   await compileImperativeHandles({
-    compilerOptions,
+    analyserOptions,
     names: imperativeHandleNames,
     outputDirName
   });

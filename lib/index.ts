@@ -19,6 +19,10 @@ export { ComponentProps } from "./components/props/ComponentProps";
 export { Radio } from "./components/Radio";
 export { Select } from "./components/Select";
 
+export { assert } from "./utils/assert";
+export { cn } from "./utils/cn";
+export { getIntentClassNames } from "./utils/getIntentClassNames";
+
 export type { Option } from "./components/Select";
 export type {
   ComponentMetadata,
@@ -26,7 +30,4 @@ export type {
   Intent,
   Section
 } from "./types";
-
-export { assert } from "./utils/assert";
-export { cn } from "./utils/cn";
-export { getIntentClassNames } from "./utils/getIntentClassNames";
+export type { Path as DefaultPath } from "./components/app/routes";
