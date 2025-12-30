@@ -8,6 +8,7 @@ import { syntaxHighlight } from "../syntax-highlight.ts";
 import { getPropTypeText } from "./getPropTypeText.ts";
 import { parseDescription } from "./parseDescription.ts";
 import { propsToTable } from "./propsToTable.ts";
+import { getDefaultValueType } from "./getDefaultValueType.ts";
 
 const TOKEN_TO_REPLACE = "TOKEN_TO_REPLACE";
 
@@ -61,11 +62,13 @@ export async function compileComponent({
         let formattedValue = prop.defaultValue.value;
 
         // Wrap strings in quotes
-        if (typeof prop.defaultValue.value === "string") {
-          // But don't double quote, e.g.
-          // tagName?: keyof IntrinsicElements = ""div" as TagName"
-          if (!prop.defaultValue.value.includes('" as ')) {
-            formattedValue = `"${prop.defaultValue.value}"`;
+        switch (getDefaultValueType(prop.defaultValue.value)) {
+          case "string": {
+            // But don't double quote, e.g.
+            // tagName?: keyof IntrinsicElements = ""div" as TagName"
+            if (!prop.defaultValue.value.includes('" as ')) {
+              formattedValue = `"${prop.defaultValue.value}"`;
+            }
           }
         }
 

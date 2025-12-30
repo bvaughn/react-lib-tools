@@ -102,6 +102,9 @@ code {
   color: rgba(255, 255, 255, 0.8);
 }
 
+.tok-bool {
+  color: var(--color-teal-300);
+}
 .tok-comment {
   color: var(--color-slate-500);
 }
@@ -115,6 +118,7 @@ code {
 .tok-meta {
 }
 .tok-number {
+  color: var(--color-teal-300);
 }
 .tok-operator {
   color: var(--color-slate-400);
