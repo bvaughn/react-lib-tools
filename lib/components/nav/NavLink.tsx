@@ -19,7 +19,7 @@ export function NavLink({
           className={cn(
             "px-4 cursor-pointer",
             {
-              "font-bold text-fuchsia-400 hover:text-fuchsia-200": isActive,
+              "font-bold text-nav-active hover:text-nav-hover": isActive,
               "opacity-50 pointer-events-none": isPending
             },
             className
