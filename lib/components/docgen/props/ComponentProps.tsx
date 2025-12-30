@@ -1,12 +1,12 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { useMemo } from "react";
-import { repository } from "../../../package.json";
-import type { ComponentMetadata } from "../../types";
-import { processPropsJSON } from "../../utils/processPropsJSON";
-import { Box } from "../Box";
-import { DocsSection } from "../DocsSection";
-import { ExternalLink } from "../ExternalLink";
-import { Header } from "../Header";
+import { repository } from "../../../../package.json";
+import type { ComponentMetadata } from "../../../types";
+import { processPropsJSON } from "../../../utils/processPropsJSON";
+import { Box } from "../../Box";
+import { DocsSection } from "../../DocsSection";
+import { ExternalLink } from "../../ExternalLink";
+import { Header } from "../../Header";
 import { ComponentPropsSection } from "./ComponentPropsSection";
 
 export function ComponentProps({

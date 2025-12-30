@@ -33,3 +33,24 @@ export type ImperativeHandleMetadata = {
   name: string;
   methods: ImperativeHandleMethodMetadata[];
 };
+
+export type Parameter = {
+  description: Section[];
+  html: string;
+  name: string;
+  optional: boolean;
+};
+
+export type ReturnType = {
+  description: Section[];
+  name: string;
+  type: string;
+};
+
+export type FunctionMetadata = {
+  description: Section[];
+  filePath: string;
+  name: string;
+  parameters: Parameter[];
+  returnType?: ReturnType[] | undefined;
+};

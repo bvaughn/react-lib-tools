@@ -1,5 +1,5 @@
-import type { ComponentPropMetadata } from "../../types";
-import { Box } from "../Box";
+import type { ComponentPropMetadata } from "../../../types";
+import { Box } from "../../Box";
 import { ComponentProp } from "./ComponentProp";
 
 export function ComponentPropsSection({

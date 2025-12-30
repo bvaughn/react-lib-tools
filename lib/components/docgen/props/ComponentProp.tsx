@@ -1,6 +1,6 @@
-import type { ComponentPropMetadata } from "../../types";
-import { Code } from "../code/Code";
-import { DocsSection } from "../DocsSection";
+import type { ComponentPropMetadata } from "../../../types";
+import { Code } from "../../code/Code";
+import { DocsSection } from "../../DocsSection";
 
 export function ComponentProp({ prop }: { prop: ComponentPropMetadata }) {
   return (

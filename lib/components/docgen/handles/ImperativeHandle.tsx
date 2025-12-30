@@ -1,10 +1,10 @@
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
-import { repository } from "../../../package.json";
-import type { ImperativeHandleMetadata } from "../../types";
-import { Box } from "../Box";
-import { DocsSection } from "../DocsSection";
-import { ExternalLink } from "../ExternalLink";
-import { Header } from "../Header";
+import { repository } from "../../../../package.json";
+import type { ImperativeHandleMetadata } from "../../../types";
+import { Box } from "../../Box";
+import { DocsSection } from "../../DocsSection";
+import { ExternalLink } from "../../ExternalLink";
+import { Header } from "../../Header";
 import { ImperativeHandleMethod } from "./ImperativeHandleMethod";
 
 export function ImperativeHandle({

@@ -1,4 +1,4 @@
-import { parseFromProject, type InterfaceNode } from "@ts-ast-parser/core";
+import { InterfaceNode, parseFromProject } from "@ts-ast-parser/core";
 import { join } from "node:path";
 import { cwd } from "node:process";
 import type { CompilerOptions } from "typescript";
@@ -26,12 +26,12 @@ export async function compileImperativeHandles({
   names.forEach((name) => {
     reflectedModules.forEach((reflectedModule) => {
       const node = reflectedModule.getDeclarationByName(name);
-      if (node) {
+      if (node instanceof InterfaceNode) {
         const filePath = reflectedModule.getSourcePath();
         if (filePath.startsWith("lib/")) {
           nodes.push({
             filePath,
-            node: node as unknown as InterfaceNode
+            node
           });
         }
       }

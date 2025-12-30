@@ -1,6 +1,6 @@
-import type { ImperativeHandleMethodMetadata } from "../../types";
-import { Code } from "../code/Code";
-import { DocsSection } from "../DocsSection";
+import type { ImperativeHandleMethodMetadata } from "../../../types";
+import { Code } from "../../code/Code";
+import { DocsSection } from "../../DocsSection";
 
 export function ImperativeHandleMethod({
   method

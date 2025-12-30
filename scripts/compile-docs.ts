@@ -1,5 +1,4 @@
-import { compileComponents } from "./utils/docs/compileComponents.ts";
-import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
+import { parseFromProject, type AnalyserOptions } from "@ts-ast-parser/core";
 import type { CompilerOptions } from "typescript";
 import {
   JsxEmit,
@@ -8,22 +7,45 @@ import {
   ModuleResolutionKind,
   ScriptTarget
 } from "typescript";
+import { compileComponents } from "./utils/docs/compileComponents.ts";
+import { compileFunctions } from "./utils/docs/compileFunctions.ts";
+import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
 
 export async function compileDocs({
-  compilerOptions: compilerOptionsParam,
-  componentNames,
-  imperativeHandleNames,
+  analyserOptions: analyserOptionsParam,
+  componentNames = [],
+  hookNames = [],
+  imperativeHandleNames = [],
   outputDirName = "docs"
 }: {
-  compilerOptions?: Partial<CompilerOptions>;
-  componentNames: string[];
-  imperativeHandleNames: string[];
+  analyserOptions?: Partial<AnalyserOptions>;
+  componentNames?: string[] | undefined;
+  hookNames?: string[] | undefined;
+  imperativeHandleNames?: string[] | undefined;
   outputDirName?: string | undefined;
 }) {
-  const compilerOptions = {
+  const compilerOptions: Partial<CompilerOptions> = {
     ...defaultCompilerOptions,
-    ...compilerOptionsParam
+    ...(analyserOptionsParam?.compilerOptions as CompilerOptions)
   };
+
+  const analyserOptions: Partial<AnalyserOptions> = {
+    ...analyserOptionsParam,
+    compilerOptions,
+    include: ["lib"]
+  };
+
+  const result = await parseFromProject(analyserOptions);
+  const moduleNodes = result.project?.getModules() ?? [];
+
+  if (hookNames.length > 0) {
+    compileFunctions({
+      names: hookNames,
+      moduleNodes,
+      outputDirName
+    });
+    return;
+  }
 
   await compileComponents({
     compilerOptions,

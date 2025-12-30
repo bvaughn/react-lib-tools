@@ -26,7 +26,9 @@ export async function compileComponents({
   const { files, outputDir } = await initialize({
     fileExtensions: [".ts", ".tsx"],
     fileFilter: (file) =>
-      componentNames.some((componentName) => file.endsWith(componentName)),
+      componentNames.some((componentName) =>
+        file.includes(`${componentName}.ts`)
+      ),
     inputPath: ["lib", "components"],
     outputDirName
   });
