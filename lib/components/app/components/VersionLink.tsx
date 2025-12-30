@@ -1,5 +1,6 @@
 import GlobeIcon from "../../../../public/svgs/globe.svg?react";
 import TagsIcon from "../../../../public/svgs/tags.svg?react";
+import { useLibraryContext } from "../../../hooks/useLibraryContext";
 import { ExternalLink } from "../../ExternalLink";
 
 export function VersionLink({
@@ -9,6 +10,8 @@ export function VersionLink({
   url: string;
   version: string;
 }) {
+  const { packageName } = useLibraryContext();
+
   return (
     <li className="list-disc">
       {version.split(".").slice(0, 2).join(".")}
@@ -25,7 +28,7 @@ export function VersionLink({
       <ExternalLink
         aria-label={`GitHub tag for version ${version}`}
         className="ml-4"
-        href={`https://github.com/bvaughn/react-window/releases/tag/${version}`}
+        href={`https://github.com/bvaughn/${packageName}/releases/tag/${version}`}
       >
         <TagsIcon className="inline w-4 h-4 text-teal-200" /> source code
       </ExternalLink>
