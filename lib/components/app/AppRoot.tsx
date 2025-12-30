@@ -11,7 +11,8 @@ import NpmHubIcon from "../../../public/svgs/npm.svg?react";
 import TagsIcon from "../../../public/svgs/tags.svg?react";
 import {
   LibraryContext,
-  type LibraryContextType
+  type LibraryContextType,
+  type Versions
 } from "../../contexts/LibraryContext";
 import { useNavStore } from "../../hooks/useNavStore";
 import { cn } from "../../utils/cn";
@@ -24,27 +25,27 @@ import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
 
 export function AppRoot({
-  hideVersions = false,
   navLinks,
   overview,
   packageDescription,
   packageName,
   routes,
-  showOpenCollectLink = false
+  showOpenCollectLink = false,
+  versions
 }: {
-  hideVersions?: boolean | undefined;
   navLinks: ReactNode;
   overview?: ReactNode | undefined;
   packageDescription: ReactNode;
   packageName: string;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
   showOpenCollectLink?: boolean | undefined;
+  versions?: Versions | undefined;
 }) {
   const { toggle, visible } = useNavStore();
 
   const context = useMemo<LibraryContextType>(
-    () => ({ overview, packageName, showOpenCollectLink }),
-    [overview, packageName, showOpenCollectLink]
+    () => ({ overview, packageName, showOpenCollectLink, versions }),
+    [overview, packageName, showOpenCollectLink, versions]
   );
 
   return (
@@ -76,7 +77,7 @@ export function AppRoot({
               </div>
             </Box>
             <Box align="center" direction="row" gap={4}>
-              {hideVersions || (
+              {versions !== undefined && (
                 <Link
                   aria-label="Documentation for other versions"
                   className="text-xs font-bold text-white! drop-shadow-black/20 drop-shadow-sm cursor-pointer"

@@ -5,7 +5,8 @@ export type Route = LazyExoticComponent<ComponentType<unknown>>;
 export const routes = {
   "*": lazy(() => import("./routes/PageNotFound")),
   "/": lazy(() => import("./routes/GettingStartedRoute")),
-  "/support": lazy(() => import("./routes/SupportRoute"))
+  "/support": lazy(() => import("./routes/SupportRoute")),
+  "/versions": lazy(() => import("./routes/VersionsRoute"))
 } satisfies Record<string, Route>;
 
 export type Routes = Record<keyof typeof routes, Route>;
