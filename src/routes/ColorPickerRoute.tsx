@@ -29,11 +29,13 @@ export default function ColorPickerRoute() {
         <ColorPicker color={color2} onChange={setColor2} />
         <ColorPicker color={color3} onChange={setColor3} />
         <input
+          className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
           onChange={(event) => setPackageName(event.currentTarget.value)}
           placeholder="package name"
           value={packageName}
         />
         <input
+          className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
           onChange={(event) => setPackageDescription(event.currentTarget.value)}
           placeholder="package description"
           value={packageDescription}
