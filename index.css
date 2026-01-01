@@ -17,6 +17,23 @@
   }
 }
 
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-size: 12px;
+
+  @media only screen and (max-width: 600px) {
+    font-size: 16px;
+  }
+
+  color-scheme: dark;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 [data-background-gradient] {
   overflow: auto;
   background: linear-gradient(
@@ -27,4 +44,15 @@
   );
   background-size: 200% 200%;
   animation: background-gradient-animation 5s ease infinite;
+}
+
+[data-og-image] {
+  width: 1200px;
+  height: 630px;
+
+  background: linear-gradient(
+    -45deg,
+    var(--color-background-gradient-1),
+    var(--color-background-gradient-2)
+  );
 }

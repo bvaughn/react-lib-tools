@@ -12,7 +12,7 @@ export function ColorSwatch({
 }) {
   return (
     <div
-      className={cn("w-4 h-4 rounded", {
+      className={cn("w-4 h-4 rounded-xs", {
         "cursor-pointer": !!onSelect,
         "outline outline-2 outline-offset-2 outline outline-sky-400": isSelected
       })}
@@ -20,6 +20,7 @@ export function ColorSwatch({
       style={{
         backgroundColor: colors[color]
       }}
+      title={color}
     ></div>
   );
 }
