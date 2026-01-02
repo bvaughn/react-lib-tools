@@ -53,23 +53,23 @@ export function OgImage({
     // Package name
     context.textBaseline = "middle";
     context.textAlign = "center";
-    context.font = "bold 50px sans-serif";
+    context.font = "bold 100px sans-serif";
     context.fillStyle = "black";
     if (showTextShadow) {
       context.shadowColor = "white";
       context.shadowBlur = 4;
     }
-    context.fillText(packageName, canvasCenterX, canvasCenterY - 30);
+    context.fillText(packageName, canvasCenterX, canvasCenterY - 60);
 
     // Package description
     // context.measureText(packageName);
-    context.font = "40px sans-serif";
+    context.font = "80px sans-serif";
     context.fillStyle = "white";
     if (showTextShadow) {
       context.shadowColor = "black";
       context.shadowBlur = 2;
     }
-    context.fillText(packageDescription, canvasCenterX, canvasCenterY + 30);
+    context.fillText(packageDescription, canvasCenterX, canvasCenterY + 60);
   });
 
   return (
@@ -88,7 +88,7 @@ export function OgImage({
       >
         <ArrowDownCircleIcon className="w-8 h-8 stroke fill-black stroke-white/50" />
       </a>
-      <canvas className="w-[600px] h-[315px]" ref={setCanvas} />
+      <canvas className="w-[1200px] h-[630px]" ref={setCanvas} />
     </div>
   );
 }
