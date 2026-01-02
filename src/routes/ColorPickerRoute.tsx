@@ -1,17 +1,22 @@
-import { useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ColorPicker } from "../components/colors/ColorPicker";
 import { colors, type Color } from "../components/colors/colors";
 import { OgImage } from "../components/OgImage";
 
 export default function ColorPickerRoute() {
-  const [color1, setColor1] = useState<Color>("fuchsia-400");
-  const [color2, setColor2] = useState<Color>("purple-700");
-  const [color3, setColor3] = useState<Color>("pink-500");
+  const [params, setParams] = useSearchParams();
 
-  const [packageName, setPackageName] = useState("react-error-boundary");
-  const [packageDescription, setPackageDescription] = useState(
-    "runtime error handling"
-  );
+  const state = {
+    color1: (params.get("color1") ?? "fuchsia-400") as Color,
+    color2: (params.get("color2") ?? "purple-700") as Color,
+    color3: (params.get("color3") ?? "pink-500") as Color,
+    packageDescription:
+      params.get("packageDescription") ?? "short package description",
+    packageName: params.get("packageName") ?? "package-name"
+  };
+
+  const { color1, color2, color3, packageDescription, packageName } = state;
 
   return (
     <div
@@ -25,18 +30,34 @@ export default function ColorPickerRoute() {
       }
     >
       <div className="flex flex-row gap-1 p-1">
-        <ColorPicker color={color1} onChange={setColor1} />
-        <ColorPicker color={color2} onChange={setColor2} />
-        <ColorPicker color={color3} onChange={setColor3} />
+        <ColorPicker
+          color={color1}
+          onChange={(color) => setParams({ ...state, color1: color })}
+        />
+        <ColorPicker
+          color={color2}
+          onChange={(color) => setParams({ ...state, color2: color })}
+        />
+        <ColorPicker
+          color={color3}
+          onChange={(color) => setParams({ ...state, color3: color })}
+        />
         <input
           className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
-          onChange={(event) => setPackageName(event.currentTarget.value)}
+          onChange={(event) =>
+            setParams({ ...state, packageName: event.currentTarget.value })
+          }
           placeholder="package name"
           value={packageName}
         />
         <input
           className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
-          onChange={(event) => setPackageDescription(event.currentTarget.value)}
+          onChange={(event) =>
+            setParams({
+              ...state,
+              packageDescription: event.currentTarget.value
+            })
+          }
           placeholder="package description"
           value={packageDescription}
         />
