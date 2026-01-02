@@ -1,17 +1,22 @@
 import { ArrowDownCircleIcon } from "@heroicons/react/20/solid";
 import { useLayoutEffect, useState } from "react";
+import { getMaxFont } from "../utils/getMaxFont";
 import { scaleCanvas } from "../utils/scaleCanvas";
 import { colors, type Color } from "./colors/colors";
 
 export function OgImage({
   color1,
   color2,
+  maxFontSize = 150,
+  minFontSize = 50,
   packageDescription,
   packageName,
   showTextShadow
 }: {
   color1: Color;
   color2: Color;
+  maxFontSize?: number | undefined;
+  minFontSize?: number | undefined;
   packageDescription: string;
   packageName: string;
   showTextShadow: boolean;
@@ -28,9 +33,7 @@ export function OgImage({
       return;
     }
 
-    console.log("[pre] canvas.width:", canvas.width);
     scaleCanvas(canvas, context);
-    console.log("[post] canvas.width:", canvas.width);
 
     const canvasWidth = canvas.width / window.devicePixelRatio;
     const canvasHeight = canvas.height / window.devicePixelRatio;
@@ -50,26 +53,59 @@ export function OgImage({
     context.roundRect(0, 0, canvasWidth, canvasHeight, 25);
     context.fill();
 
+    let packageNameFontSize = maxFontSize;
+
     // Package name
-    context.textBaseline = "middle";
-    context.textAlign = "center";
-    context.font = "bold 100px sans-serif";
-    context.fillStyle = "black";
-    if (showTextShadow) {
-      context.shadowColor = "white";
-      context.shadowBlur = 4;
+    {
+      context.fillStyle = "black";
+      if (showTextShadow) {
+        context.shadowColor = "white";
+        context.shadowBlur = 10;
+      }
+      const { fontSize } = getMaxFont({
+        context,
+        getFontString: (fontSize: number) => `bold ${fontSize}px sans-serif`,
+        maxFontSize,
+        minFontSize,
+        maxWidth: canvasWidth - 100,
+        text: packageName
+      });
+
+      packageNameFontSize = fontSize;
+
+      context.textBaseline = "middle";
+      context.textAlign = "center";
+      context.fillText(
+        packageName,
+        canvasCenterX,
+        canvasCenterY - fontSize / window.devicePixelRatio
+      );
     }
-    context.fillText(packageName, canvasCenterX, canvasCenterY - 60);
 
     // Package description
-    // context.measureText(packageName);
-    context.font = "80px sans-serif";
-    context.fillStyle = "white";
-    if (showTextShadow) {
-      context.shadowColor = "black";
-      context.shadowBlur = 2;
+    {
+      context.fillStyle = "white";
+      if (showTextShadow) {
+        context.shadowColor = "black";
+        context.shadowBlur = 5;
+      }
+      const { fontSize } = getMaxFont({
+        context,
+        getFontString: (fontSize: number) => `${fontSize}px sans-serif`,
+        maxFontSize: packageNameFontSize - 25,
+        minFontSize,
+        maxWidth: canvasWidth - 100,
+        text: packageDescription
+      });
+
+      context.textBaseline = "middle";
+      context.textAlign = "center";
+      context.fillText(
+        packageDescription,
+        canvasCenterX,
+        canvasCenterY + fontSize / window.devicePixelRatio
+      );
     }
-    context.fillText(packageDescription, canvasCenterX, canvasCenterY + 60);
   });
 
   return (
