@@ -42,7 +42,26 @@ import { AppRoot, NavLink } from "react-lib-tools";
 />
 ```
 
-Refer to that component's documentation for more advanced options.
+The components in this project require Tailwind CSS to display properly. You'll need to configure Tailwind to include the styles provided by this library by adding the following to your application's root CSS file:
+```css
+@source "node_modules/react-lib-tools";
 
-> [!NOTE]
-> The components in this project require Tailwind CSS to display properly.
+@import "tailwindcss";
+@import "react-lib-tools/styles.css";
+```
+
+The following CSS variables can be overridden to customize the theme:
+```css
+@theme {
+  --color-background-gradient-1: var(--color-green-300);
+  --color-background-gradient-2: var(--color-emerald-600);
+  --color-background-gradient-3: var(--color-teal-400);
+  --color-focus-1: var(--color-green-200);
+  --color-focus-2: var(--color-green-300);
+  --color-focus-3: var(--color-green-500);
+  --color-nav-active: var(--color-emerald-300);
+  --color-nav-hover: var(--color-green-200);
+}
+```
+
+Note: [this tool](https://react-lib-tools.vercel.app/color-picker?color1=emerald-400&color2=indigo-500&color3=emerald-400&packageDescription=render+everything&packageName=react-window) can be helpful in picking theme colors and generating an OG image.
