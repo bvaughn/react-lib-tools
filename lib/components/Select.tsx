@@ -48,12 +48,7 @@ export function Select<Value extends string>({
             />
           </span>
         </ListboxButton>
-        <Transition
-          as={Fragment}
-          leave="transition ease-in duration-100"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
+        <Transition as={Fragment} leaveFrom="opacity-100" leaveTo="opacity-0">
           <ListboxOptions
             className="absolute z-10 mt-1 max-h-50 w-full overflow-auto rounded-md py-1 bg-black/90"
             data-focus

@@ -17,6 +17,18 @@
   }
 }
 
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-slate-600) transparent;
+
+  transition:
+    color 200ms ease-in-out,
+    background-color 200ms ease-in-out,
+    border-color 200ms ease-in-out,
+    opacity 200ms ease-in-out,
+    outline-color 200ms ease-in-out;
+}
+
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -44,15 +56,4 @@
   );
   background-size: 200% 200%;
   animation: background-gradient-animation 5s ease infinite;
-}
-
-[data-og-image] {
-  width: 1200px;
-  height: 630px;
-
-  background: linear-gradient(
-    -45deg,
-    var(--color-background-gradient-1),
-    var(--color-background-gradient-2)
-  );
 }
