@@ -10,13 +10,13 @@ import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 export async function compileImperativeHandles({
   analyserOptions,
   names,
-  outputDirName
+  outputPath
 }: {
   analyserOptions: Partial<AnalyserOptions>;
   names: string[];
-  outputDirName: string;
+  outputPath: string[];
 }) {
-  const outputDir = join(cwd(), "public", "generated", outputDirName);
+  const outputDir = join(cwd(), ...outputPath);
 
   const result = await parseFromProject(analyserOptions);
   const reflectedModules = result.project?.getModules() ?? [];

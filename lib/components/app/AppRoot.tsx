@@ -24,6 +24,9 @@ import { Nav } from "../nav/Nav";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
 
+/**
+ * Displays an application shell with desktop and mobile layouts.
+ */
 export function AppRoot({
   navLinks,
   overview,

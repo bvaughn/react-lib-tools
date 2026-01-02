@@ -10,16 +10,35 @@ import {
   ScriptTarget
 } from "typescript";
 
+/**
+ * Compile TSDoc comments into a formatted structure that can be rendered by the `ComponentProps` component.
+ */
 export async function compileDocs({
   analyserOptions: analyserOptionsParam,
   componentNames = [],
   imperativeHandleNames = [],
-  outputDirName = "docs"
+  outputPath = ["public", "generated", "docs"]
 }: {
+  /**
+   * AST Parser config; see `@ts-ast-parser/core` documentation for more information.
+   */
   analyserOptions?: Partial<AnalyserOptions>;
+
+  /**
+   * Which components should be compiled?
+   */
   componentNames?: string[] | undefined;
+
+  /**
+   * Which imperative handles should be compiled?
+   */
   imperativeHandleNames?: string[] | undefined;
-  outputDirName?: string | undefined;
+
+  /**
+   * Where should the output be stored?
+   * By default examples are stored within the `public/generated/docs` directory.
+   */
+  outputPath?: string[] | undefined;
 }) {
   const compilerOptions: Partial<CompilerOptions> = {
     ...defaultCompilerOptions,
@@ -35,13 +54,13 @@ export async function compileDocs({
   await compileComponents({
     compilerOptions,
     componentNames,
-    outputDirName
+    outputPath
   });
 
   await compileImperativeHandles({
     analyserOptions,
     names: imperativeHandleNames,
-    outputDirName
+    outputPath
   });
 }
 

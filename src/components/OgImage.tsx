@@ -7,11 +7,11 @@ export function OgImage({
 }) {
   return (
     <main
-      className="flex flex-col items-center justify-center gap-10"
+      className="flex flex-col items-center justify-center gap-10 px-20 text-center"
       data-og-image
     >
       <div className="text-8xl text-black font-bold">{packageName}</div>
-      <div className="text-7xl text-white">{packageDescription}</div>
+      <div className="text-8xl text-white">{packageDescription}</div>
     </main>
   );
 }

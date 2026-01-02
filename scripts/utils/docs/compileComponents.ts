@@ -10,11 +10,11 @@ import { insertPropsMarkdown } from "./insertPropsMarkdown.ts";
 export async function compileComponents({
   compilerOptions,
   componentNames,
-  outputDirName
+  outputPath
 }: {
   compilerOptions: Partial<CompilerOptions>;
   componentNames: string[];
-  outputDirName: string;
+  outputPath: string[];
 }) {
   const parser = withCompilerOptions(compilerOptions, {
     savePropValueAsString: true,
@@ -30,7 +30,7 @@ export async function compileComponents({
         file.includes(`${componentName}.ts`)
       ),
     inputPath: ["lib", "components"],
-    outputDirName
+    outputPath
   });
 
   const markdownPath = join(cwd(), "README.md");

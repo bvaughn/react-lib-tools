@@ -29,6 +29,25 @@ export default function ColorPickerRoute() {
         } as CSSProperties
       }
     >
+      <input
+        className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
+        onChange={(event) =>
+          setParams({ ...state, packageName: event.currentTarget.value })
+        }
+        placeholder="package name"
+        value={packageName}
+      />
+      <input
+        className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
+        onChange={(event) =>
+          setParams({
+            ...state,
+            packageDescription: event.currentTarget.value
+          })
+        }
+        placeholder="package description"
+        value={packageDescription}
+      />
       <div className="flex flex-row gap-1 p-1">
         <ColorPicker
           color={color1}
@@ -41,25 +60,6 @@ export default function ColorPickerRoute() {
         <ColorPicker
           color={color3}
           onChange={(color) => setParams({ ...state, color3: color })}
-        />
-        <input
-          className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
-          onChange={(event) =>
-            setParams({ ...state, packageName: event.currentTarget.value })
-          }
-          placeholder="package name"
-          value={packageName}
-        />
-        <input
-          className="bg-slate-800 h-8 px-2 rounded-xs border border-slate-700"
-          onChange={(event) =>
-            setParams({
-              ...state,
-              packageDescription: event.currentTarget.value
-            })
-          }
-          placeholder="package description"
-          value={packageDescription}
         />
       </div>
       <div className="w-full grow-1" data-background-gradient>

@@ -8,15 +8,15 @@ export async function initialize({
   fileExtensions,
   fileFilter,
   inputPath,
-  outputDirName
+  outputPath
 }: {
   fileExtensions: string[];
   fileFilter?: ((path: string) => boolean) | undefined;
   inputPath: string[];
-  outputDirName: string;
+  outputPath: string[];
 }) {
   const inputDir = join(cwd(), ...inputPath);
-  const outputDir = join(cwd(), "public", "generated", outputDirName);
+  const outputDir = join(cwd(), ...outputPath);
   await mkdir(outputDir, { recursive: true });
   await rmFilesWithExtensions(outputDir, [".json"]);
 

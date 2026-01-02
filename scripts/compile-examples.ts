@@ -1,22 +1,39 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 import { initialize } from "./utils/initialize.ts";
 import { syntaxHighlight } from "./utils/syntax-highlight.ts";
-import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 
+/**
+ * Compile example snippets into syntax-highlighted HTML that can be rendered by the `Code` component.
+ */
 export async function compileExamples({
-  fileExtensions = [".css", ".html", ".ts", ".tsx"],
+  fileExtensions = [".css", ".html", ".js", ".jsx", ".ts", ".tsx"],
   inputPath = ["src", "routes"],
-  outputDirName = "examples"
+  outputPath = ["public", "generated", "examples"]
 }: {
+  /**
+   * Which file extension are supported?
+   * By default CSS, HTML, TS/TSX, and JS/JSX file extensions are supported.
+   */
   fileExtensions?: string[] | undefined;
+
+  /**
+   * Where are example files located?
+   * By default this script looks for examples within the `src/routes` root directory.
+   */
   inputPath?: string[] | undefined;
-  outputDirName?: string | undefined;
+
+  /**
+   * Where should the output be stored?
+   * By default examples are stored within the `public/generated/examples` directory.
+   */
+  outputPath?: string[] | undefined;
 } = {}) {
   const { files, outputDir } = await initialize({
     fileExtensions,
     inputPath,
-    outputDirName
+    outputPath
   });
 
   for (const file of files) {
