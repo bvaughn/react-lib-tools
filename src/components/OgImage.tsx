@@ -4,19 +4,19 @@ import { getMaxFont } from "../utils/getMaxFont";
 import { scaleCanvas } from "../utils/scaleCanvas";
 import { colors, type Color } from "./colors/colors";
 
+const maxPackageNameFontSize = 150;
+const maxPackageDescriptionFontSize = 100;
+const minFontSize = 50;
+
 export function OgImage({
   color1,
   color2,
-  maxFontSize = 150,
-  minFontSize = 50,
   packageDescription,
   packageName,
   showTextShadow
 }: {
   color1: Color;
   color2: Color;
-  maxFontSize?: number | undefined;
-  minFontSize?: number | undefined;
   packageDescription: string;
   packageName: string;
   showTextShadow: boolean;
@@ -53,7 +53,7 @@ export function OgImage({
     context.roundRect(0, 0, canvasWidth, canvasHeight, 25);
     context.fill();
 
-    let packageNameFontSize = maxFontSize;
+    let packageNameFontSize = maxPackageNameFontSize;
 
     // Package name
     {
@@ -65,7 +65,7 @@ export function OgImage({
       const { fontSize, height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `bold ${fontSize}px sans-serif`,
-        maxFontSize,
+        maxFontSize: maxPackageNameFontSize,
         minFontSize,
         maxWidth: canvasWidth - 100,
         text: packageName
@@ -92,7 +92,10 @@ export function OgImage({
       const { height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `${fontSize}px sans-serif`,
-        maxFontSize: packageNameFontSize - 25,
+        maxFontSize: Math.min(
+          packageNameFontSize,
+          maxPackageDescriptionFontSize
+        ),
         minFontSize,
         maxWidth: canvasWidth - 100,
         text: packageDescription

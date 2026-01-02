@@ -52,6 +52,7 @@ export function ColorPicker({
       <div className="flex flex-row gap-2 items-center">
         <ColorSwatch color={color} />
         <Input
+          autoComplete="off"
           inputRef={inputRef}
           onChange={(event) => {
             setFilterText(event.currentTarget.value);
