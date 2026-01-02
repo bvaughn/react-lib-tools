@@ -4,7 +4,6 @@ import { ColorPicker } from "../components/colors/ColorPicker";
 import { colors, type Color } from "../components/colors/colors";
 import { Input } from "../components/Input";
 import { OgImage } from "../components/OgImage";
-import { Switch } from "../components/Switch";
 
 export default function ColorPickerRoute() {
   const [params, setParams] = useSearchParams();
@@ -17,8 +16,7 @@ export default function ColorPickerRoute() {
     ogImageColor2: (params.get("ogImageColor2") ?? "purple-700") as Color,
     packageDescription:
       params.get("packageDescription") ?? "short package description",
-    packageName: params.get("packageName") ?? "package-name",
-    showTextShadow: params.get("showTextShadow") ?? "true"
+    packageName: params.get("packageName") ?? "package-name"
   };
 
   const {
@@ -28,8 +26,7 @@ export default function ColorPickerRoute() {
     ogImageColor1,
     ogImageColor2,
     packageDescription,
-    packageName,
-    showTextShadow
+    packageName
   } = state;
 
   return (
@@ -100,23 +97,12 @@ export default function ColorPickerRoute() {
           title="package description"
           value={packageDescription}
         />
-        <Switch
-          checked={!!showTextShadow}
-          onChange={(showTextShadow) =>
-            setParams({
-              ...state,
-              showTextShadow: showTextShadow ? "true" : ""
-            })
-          }
-          title="Text shadow"
-        />
       </div>
       <OgImage
         color1={ogImageColor1}
         color2={ogImageColor2}
         packageDescription={packageDescription}
         packageName={packageName}
-        showTextShadow={!!showTextShadow}
       />
     </div>
   );

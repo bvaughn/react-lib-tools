@@ -1,5 +1,5 @@
 import { ArrowDownCircleIcon } from "@heroicons/react/20/solid";
-import { useLayoutEffect, useState } from "react";
+import { useDeferredValue, useLayoutEffect, useState } from "react";
 import { getMaxFont } from "../utils/getMaxFont";
 import { scaleCanvas } from "../utils/scaleCanvas";
 import { colors, type Color } from "./colors/colors";
@@ -9,19 +9,22 @@ const maxPackageDescriptionFontSize = 100;
 const minFontSize = 50;
 
 export function OgImage({
-  color1,
-  color2,
-  packageDescription,
-  packageName,
-  showTextShadow
+  color1: color1Prop,
+  color2: color2Prop,
+  packageDescription: packageDescriptionProp,
+  packageName: packageNameProp
 }: {
   color1: Color;
   color2: Color;
   packageDescription: string;
   packageName: string;
-  showTextShadow: boolean;
 }) {
   const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
+
+  const color1 = useDeferredValue(color1Prop);
+  const color2 = useDeferredValue(color2Prop);
+  const packageDescription = useDeferredValue(packageDescriptionProp);
+  const packageName = useDeferredValue(packageNameProp);
 
   useLayoutEffect(() => {
     if (!canvas) {
@@ -57,11 +60,6 @@ export function OgImage({
 
     // Package name
     {
-      context.fillStyle = "black";
-      if (showTextShadow) {
-        context.shadowColor = "white";
-        context.shadowBlur = 10;
-      }
       const { fontSize, height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `bold ${fontSize}px sans-serif`,
@@ -73,6 +71,9 @@ export function OgImage({
 
       packageNameFontSize = fontSize;
 
+      context.fillStyle = "black";
+      context.shadowColor = "white";
+      context.shadowBlur = 10;
       context.textBaseline = "middle";
       context.textAlign = "center";
       context.fillText(
@@ -84,11 +85,6 @@ export function OgImage({
 
     // Package description
     {
-      context.fillStyle = "white";
-      if (showTextShadow) {
-        context.shadowColor = "black";
-        context.shadowBlur = 5;
-      }
       const { height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `${fontSize}px sans-serif`,
@@ -101,6 +97,9 @@ export function OgImage({
         text: packageDescription
       });
 
+      context.fillStyle = "white";
+      context.shadowColor = "black";
+      context.shadowBlur = 5;
       context.textBaseline = "middle";
       context.textAlign = "center";
       context.fillText(
