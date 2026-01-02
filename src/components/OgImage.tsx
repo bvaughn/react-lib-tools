@@ -62,7 +62,7 @@ export function OgImage({
         context.shadowColor = "white";
         context.shadowBlur = 10;
       }
-      const { fontSize } = getMaxFont({
+      const { fontSize, height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `bold ${fontSize}px sans-serif`,
         maxFontSize,
@@ -78,7 +78,7 @@ export function OgImage({
       context.fillText(
         packageName,
         canvasCenterX,
-        canvasCenterY - fontSize / window.devicePixelRatio
+        canvasCenterY - height / 2 - 10
       );
     }
 
@@ -89,7 +89,7 @@ export function OgImage({
         context.shadowColor = "black";
         context.shadowBlur = 5;
       }
-      const { fontSize } = getMaxFont({
+      const { height } = getMaxFont({
         context,
         getFontString: (fontSize: number) => `${fontSize}px sans-serif`,
         maxFontSize: packageNameFontSize - 25,
@@ -103,7 +103,7 @@ export function OgImage({
       context.fillText(
         packageDescription,
         canvasCenterX,
-        canvasCenterY + fontSize / window.devicePixelRatio
+        canvasCenterY + height / 2 + 10
       );
     }
   });

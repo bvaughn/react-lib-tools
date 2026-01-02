@@ -15,6 +15,7 @@ export function getMaxFont({
 }): {
   fontSize: number;
   fontString: string;
+  height: number;
   width: number;
 } {
   let fontSize = maxFontSize;
@@ -27,6 +28,7 @@ export function getMaxFont({
       return {
         fontSize,
         fontString: context.font,
+        height: fontSize,
         width
       };
     }
