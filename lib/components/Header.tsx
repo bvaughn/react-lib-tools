@@ -9,7 +9,7 @@ export function Header({
   section?: string;
   title: string;
 }) {
-  const { packageDescription, packageName, url } = useLibraryContext();
+  const { packageName } = useLibraryContext();
 
   const title = `${packageName}: ${section ? `${section}: ${titleProp}` : titleProp}`;
 
@@ -26,15 +26,6 @@ export function Header({
       </Box>
 
       <title>{title}</title>
-
-      <meta property="og:type" content="website" />
-      <meta property="og:url" content={url} />
-      <meta property="og:site_name" content={packageName} />
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={packageDescription} />
-      <meta property="og:image" content={`${url}og.png`} />
-      <meta property="og:image:width" content="1200" />
-      <meta property="og:image:height" content="630" />
     </>
   );
 }

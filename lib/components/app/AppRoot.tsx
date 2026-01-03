@@ -34,7 +34,6 @@ export function AppRoot({
   packageName,
   routes,
   showOpenCollectLink = false,
-  url,
   versions
 }: {
   navLinks: ReactNode;
@@ -43,7 +42,6 @@ export function AppRoot({
   packageName: string;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
   showOpenCollectLink?: boolean | undefined;
-  url: string;
   versions?: Versions | undefined;
 }) {
   const { toggle, visible } = useNavStore();
@@ -54,17 +52,9 @@ export function AppRoot({
       packageDescription,
       packageName,
       showOpenCollectLink,
-      url,
       versions
     }),
-    [
-      overview,
-      packageDescription,
-      packageName,
-      showOpenCollectLink,
-      url,
-      versions
-    ]
+    [overview, packageDescription, packageName, showOpenCollectLink, versions]
   );
 
   return (

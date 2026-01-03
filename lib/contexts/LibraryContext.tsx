@@ -11,7 +11,6 @@ export type LibraryContextType = {
   packageDescription: string;
   packageName: string;
   showOpenCollectLink: boolean;
-  url: string;
   versions: Versions | undefined;
 };
 
