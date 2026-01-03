@@ -24,7 +24,7 @@ export function getMaxFont({
     context.font = getFontString(fontSize);
 
     const { width } = context.measureText(text);
-    if (width <= maxWidth) {
+    if (width <= maxWidth || fontSize === minFontSize) {
       return {
         fontSize,
         fontString: context.font,

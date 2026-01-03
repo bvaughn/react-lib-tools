@@ -8,8 +8,10 @@ export type Versions = {
 
 export type LibraryContextType = {
   overview?: ReactNode | undefined;
+  packageDescription: string;
   packageName: string;
   showOpenCollectLink: boolean;
+  url: string;
   versions: Versions | undefined;
 };
 

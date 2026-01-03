@@ -4,9 +4,9 @@ import { getMaxFont } from "../utils/getMaxFont";
 import { scaleCanvas } from "../utils/scaleCanvas";
 import { colors, type Color } from "./colors/colors";
 
-const maxPackageNameFontSize = 150;
-const maxPackageDescriptionFontSize = 100;
-const minFontSize = 50;
+const maxPackageNameFontSize = 75;
+const maxPackageDescriptionFontSize = 50;
+const minFontSize = 25;
 
 export function OgImage({
   color1: color1Prop,
@@ -126,7 +126,7 @@ export function OgImage({
       >
         <ArrowDownCircleIcon className="w-8 h-8 stroke fill-black stroke-white/50" />
       </a>
-      <canvas className="w-[1200px] h-[630px]" ref={setCanvas} />
+      <canvas className="w-[600px] h-[315px]" ref={setCanvas} />
     </div>
   );
 }
