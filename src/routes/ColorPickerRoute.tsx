@@ -1,10 +1,13 @@
-import { useDeferredValue, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ColorPicker } from "../components/colors/ColorPicker";
 import { colors, type Color } from "../components/colors/colors";
 import { Input } from "../components/Input";
-import { OgImageFlatWithLogo } from "../components/og-image/OgImageFlatWithLogo";
-import { OgImageGradient } from "../components/og-image/OgImageGradient";
+import { DownloadableSvg } from "../components/og-image/DownloadableSvg";
+import { ReactErrorBoundaryOgImage } from "../components/og-image/ReactErrorBoundaryOgImage";
+import { ReactResizablePanelsOgImage } from "../components/og-image/ReactResizablePanelsOgImage";
+import { ReactVirtualizedAutoSizerOgImage } from "../components/og-image/ReactVirtualizedAutoSizer";
+import { ReactWindowOgImage } from "../components/og-image/ReactWindowOgImage";
 
 export default function ColorPickerRoute() {
   const [params, setParams] = useSearchParams();
@@ -13,8 +16,6 @@ export default function ColorPickerRoute() {
     gradientColor1: (params.get("gradientColor1") ?? "fuchsia-400") as Color,
     gradientColor2: (params.get("gradientColor2") ?? "purple-700") as Color,
     gradientColor3: (params.get("gradientColor3") ?? "pink-500") as Color,
-    ogImageColor1: (params.get("ogImageColor1") ?? "fuchsia-400") as Color,
-    ogImageColor2: (params.get("ogImageColor2") ?? "purple-700") as Color,
     packageDescription:
       params.get("packageDescription") ?? "short package description",
     packageName: params.get("packageName") ?? "package-name"
@@ -27,9 +28,6 @@ export default function ColorPickerRoute() {
     packageDescription,
     packageName
   } = state;
-
-  const packageDescriptionDeferred = useDeferredValue(packageDescription);
-  const packageNameDeferred = useDeferredValue(packageName);
 
   return (
     <div
@@ -91,15 +89,19 @@ export default function ColorPickerRoute() {
           </div>
         </div>
       </div>
-      <div className="flex flex-row gap-4 p-2 items-center">
-        <OgImageGradient
-          packageDescription={packageDescriptionDeferred}
-          packageName={packageNameDeferred}
-        />
-        <OgImageFlatWithLogo
-          packageDescription={packageDescriptionDeferred}
-          packageName={packageNameDeferred}
-        />
+      <div className="flex flex-row flex-wrap gap-4 p-2 items-center justify-center">
+        <DownloadableSvg>
+          <ReactResizablePanelsOgImage />
+        </DownloadableSvg>
+        <DownloadableSvg>
+          <ReactWindowOgImage />
+        </DownloadableSvg>
+        <DownloadableSvg>
+          <ReactErrorBoundaryOgImage />
+        </DownloadableSvg>
+        <DownloadableSvg>
+          <ReactVirtualizedAutoSizerOgImage />
+        </DownloadableSvg>
       </div>
     </div>
   );
