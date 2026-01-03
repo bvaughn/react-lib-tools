@@ -1,66 +1,69 @@
-import { useMemo, useRef, useState } from "react";
-import { Input } from "../Input";
-import { Tooltip } from "../Tooltip";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
+import { cn } from "react-lib-tools";
 import { ColorSwatch } from "./ColorSwatch";
-import { colors, type Color } from "./colors";
-
-const colorsUnfiltered = Object.keys(colors).filter((current) =>
-  current.includes("-")
-);
+import { colorKeys, colorStops, type Color } from "./colors";
 
 export function ColorPicker({
   color,
-  onChange
+  onChange,
+  title = "Color"
 }: {
   onChange: (color: Color) => void;
   color: Color;
+  title?: string;
 }) {
-  const [filterText, setFilterText] = useState("");
-
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  const colorsFiltered = useMemo(
-    () =>
-      filterText
-        ? colorsUnfiltered.filter((current) => current.includes(filterText))
-        : colorsUnfiltered,
-    [filterText]
-  );
-
   return (
-    <Tooltip
-      className="p-1 bg-black/80"
-      content={
-        <div className="w-54 flex flex-wrap gap-1">
-          {colorsFiltered.map((current) => (
-            <ColorSwatch
-              color={current as Color}
-              key={current}
-              isSelected={color === current}
-              onSelect={(nextColor) => {
-                onChange(nextColor);
-
-                inputRef.current?.focus();
-              }}
-            />
-          ))}
-        </div>
-      }
-      showOnFocus
-      showOnHover={false}
-    >
-      <div className="flex flex-row gap-2 items-center">
+    <Menu>
+      <MenuButton
+        className={cn(
+          "w-35 rounded-md bg-white/5 px-2 py-1 text-sm text-white",
+          "cursor-pointer hover:bg-white/10",
+          "flex flex-row gap-2 items-center"
+        )}
+        tabIndex={0}
+        title={title}
+      >
         <ColorSwatch color={color} />
-        <Input
-          autoComplete="off"
-          inputRef={inputRef}
-          onChange={(event) => {
-            setFilterText(event.currentTarget.value);
-          }}
-          placeholder="Filter"
-          value={filterText}
-        />
-      </div>
-    </Tooltip>
+        <div>{color}</div>
+      </MenuButton>
+      <MenuItems
+        anchor="bottom"
+        className="p-1 bg-black/90 flex flex-row gap-1"
+      >
+        <div className="flex flex-col gap-1">
+          <MenuItem
+            as={ColorSwatch}
+            color="white"
+            isDark={false}
+            isSelected={color === "white"}
+            onSelect={onChange}
+          />
+          <MenuItem
+            as={ColorSwatch}
+            color="black"
+            isDark={true}
+            isSelected={color === "black"}
+            onSelect={onChange}
+          />
+        </div>
+        {colorKeys.map((colorKey) => (
+          <div className="flex flex-col gap-1" key={colorKey}>
+            {colorStops.map((colorStop) => {
+              const current = `${colorKey}-${colorStop}`;
+              return (
+                <MenuItem
+                  as={ColorSwatch}
+                  color={current as Color}
+                  key={current}
+                  isDark={colorStop > 500}
+                  isSelected={color === current}
+                  onSelect={onChange}
+                />
+              );
+            })}
+          </div>
+        ))}
+      </MenuItems>
+    </Menu>
   );
 }

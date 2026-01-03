@@ -1,9 +1,10 @@
-import { type CSSProperties } from "react";
+import { useDeferredValue, type CSSProperties } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ColorPicker } from "../components/colors/ColorPicker";
 import { colors, type Color } from "../components/colors/colors";
 import { Input } from "../components/Input";
-import { OgImage } from "../components/OgImage";
+import { OgImageFlatWithLogo } from "../components/og-image/OgImageFlatWithLogo";
+import { OgImageGradient } from "../components/og-image/OgImageGradient";
 
 export default function ColorPickerRoute() {
   const [params, setParams] = useSearchParams();
@@ -23,11 +24,12 @@ export default function ColorPickerRoute() {
     gradientColor1,
     gradientColor2,
     gradientColor3,
-    ogImageColor1,
-    ogImageColor2,
     packageDescription,
     packageName
   } = state;
+
+  const packageDescriptionDeferred = useDeferredValue(packageDescription);
+  const packageNameDeferred = useDeferredValue(packageName);
 
   return (
     <div
@@ -40,7 +42,7 @@ export default function ColorPickerRoute() {
         } as CSSProperties
       }
     >
-      <div className="flex flex-row gap-1 p-1">
+      <div className="flex flex-row items-center gap-4 p-2">
         <ColorPicker
           color={gradientColor1}
           onChange={(color) => setParams({ ...state, gradientColor1: color })}
@@ -53,31 +55,7 @@ export default function ColorPickerRoute() {
           color={gradientColor3}
           onChange={(color) => setParams({ ...state, gradientColor3: color })}
         />
-      </div>
-      <div className="w-full grow-1 min-h-30" data-background-gradient>
-        <div className="w-full h-full max-w-350 mx-auto flex flex-col gap-2 pt-2 justify-end px-2">
-          <div className="flex flex-row gap-2 items-center">
-            <div className="text-xl text-white text-shadow-black/80 text-shadow-xs font-bold">
-              {packageName}
-            </div>
-            <div className="text-black text-shadow-white/50 text-shadow-xs">
-              {packageDescription}
-            </div>
-          </div>
-          <div className="w-full bg-black/80 rounded-t-lg grow-1 p-4">
-            <pre className="text-center text-xs whitespace-pre-wrap">{`--color-background-gradient-1: var(--color-${gradientColor1}); --color-background-gradient-2: var(--color-${gradientColor2}); --color-background-gradient-3: var(--color-${gradientColor3});`}</pre>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-row gap-1 p-1 items-center">
-        <ColorPicker
-          color={ogImageColor1}
-          onChange={(color) => setParams({ ...state, ogImageColor1: color })}
-        />
-        <ColorPicker
-          color={ogImageColor2}
-          onChange={(color) => setParams({ ...state, ogImageColor2: color })}
-        />
+        <div className="w-1 h-8 bg-white/20 rounded" />
         <Input
           onChange={(event) =>
             setParams({ ...state, packageName: event.currentTarget.value })
@@ -98,12 +76,31 @@ export default function ColorPickerRoute() {
           value={packageDescription}
         />
       </div>
-      <OgImage
-        color1={ogImageColor1}
-        color2={ogImageColor2}
-        packageDescription={packageDescription}
-        packageName={packageName}
-      />
+      <div className="w-full grow-1 min-h-30" data-background-gradient>
+        <div className="w-full h-full max-w-350 mx-auto flex flex-col gap-2 pt-2 justify-end px-2">
+          <div className="flex flex-row gap-2 items-center">
+            <div className="text-xl text-white text-shadow-black/80 text-shadow-xs font-bold">
+              {packageName}
+            </div>
+            <div className="text-black text-shadow-white/50 text-shadow-xs">
+              {packageDescription}
+            </div>
+          </div>
+          <div className="w-full bg-black/80 rounded-t-lg grow-1 p-4">
+            <pre className="text-center text-xs whitespace-pre-wrap">{`--color-background-gradient-1: var(--color-${gradientColor1}); --color-background-gradient-2: var(--color-${gradientColor2}); --color-background-gradient-3: var(--color-${gradientColor3});`}</pre>
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-row gap-4 p-2 items-center">
+        <OgImageGradient
+          packageDescription={packageDescriptionDeferred}
+          packageName={packageNameDeferred}
+        />
+        <OgImageFlatWithLogo
+          packageDescription={packageDescriptionDeferred}
+          packageName={packageNameDeferred}
+        />
+      </div>
     </div>
   );
 }

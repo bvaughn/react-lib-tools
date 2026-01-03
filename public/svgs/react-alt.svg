@@ -1,0 +1,13 @@
+<svg
+  width="50"
+  height="50"
+  viewBox="0 0 20 20"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg">
+  <rect x="0" y="0" height="20" width="20" fill="transparent"></rect>
+  <circle cx="10" cy="10" r="3" fill="currentColor"></circle>
+  <g stroke="currentColor" stroke-width="2" fill="none">
+    <ellipse cx="10" cy="10" rx="11" ry="5" transform="rotate(45, 10, 10)"></ellipse>
+    <ellipse cx="10" cy="10" rx="11" ry="5" transform="rotate(-45, 10, 10)"></ellipse>
+  </g>
+</svg>
