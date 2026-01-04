@@ -9,8 +9,8 @@ export function ReactErrorBoundaryOgImage() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <linearGradient id="react-error-boundary-bg">
-        <stop offset="0%" stop-color={colors["rose-500"]} />
-        <stop offset="100%" stop-color={colors["rose-600"]} />
+        <stop offset="0%" stopColor={colors["rose-500"]} />
+        <stop offset="100%" stopColor={colors["rose-600"]} />
       </linearGradient>
 
       <rect fill="url('#react-error-boundary-bg')" width={1200} height={630} />
@@ -20,8 +20,8 @@ export function ReactErrorBoundaryOgImage() {
       */}
 
       <linearGradient id="react-error-boundary-logo">
-        <stop offset="0%" stop-color="oklch(100% 0 255)" />
-        <stop offset="100%" stop-color="oklch(75% 0 255)" />
+        <stop offset="0%" stopColor="oklch(100% 0 255)" />
+        <stop offset="100%" stopColor="oklch(75% 0 255)" />
       </linearGradient>
 
       <mask maskContentUnits="objectBoundingBox" id="react-error-boundary-mask">

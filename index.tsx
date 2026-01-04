@@ -10,7 +10,8 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route element={<ColorPickerRoute />} path="/color-picker" />
+        <Route path="/" element={<ColorPickerRoute />} />
+        <Route path="/color-picker" element={<ColorPickerRoute />} />
       </Routes>
     </BrowserRouter>
   </StrictMode>

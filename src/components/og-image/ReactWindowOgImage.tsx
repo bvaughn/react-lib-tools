@@ -16,8 +16,8 @@ export function ReactWindowOgImage() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <linearGradient id="react-window">
-        <stop offset="0%" stop-color={config.bgColor1} />
-        <stop offset="100%" stop-color={config.bgColor2} />
+        <stop offset="0%" stopColor={config.bgColor1} />
+        <stop offset="100%" stopColor={config.bgColor2} />
       </linearGradient>
 
       <rect fill="url('#react-window')" width={1200} height={630} />
@@ -27,8 +27,8 @@ export function ReactWindowOgImage() {
       */}
 
       <linearGradient id="react-window-logo">
-        <stop offset="0%" stop-color="oklch(100% 0 255)" />
-        <stop offset="100%" stop-color="oklch(75% 0 255)" />
+        <stop offset="0%" stopColor="oklch(100% 0 255)" />
+        <stop offset="100%" stopColor="oklch(75% 0 255)" />
       </linearGradient>
 
       <mask maskContentUnits="objectBoundingBox" id="react-window-mask">

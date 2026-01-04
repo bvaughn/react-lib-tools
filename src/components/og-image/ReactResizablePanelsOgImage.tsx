@@ -9,8 +9,8 @@ export function ReactResizablePanelsOgImage() {
       xmlns="http://www.w3.org/2000/svg"
     >
       <linearGradient id="react-resizable-panels-bg">
-        <stop offset="0%" stop-color={colors["purple-400"]} />
-        <stop offset="100%" stop-color={colors["purple-700"]} />
+        <stop offset="0%" stopColor={colors["purple-400"]} />
+        <stop offset="100%" stopColor={colors["purple-700"]} />
       </linearGradient>
 
       <rect
@@ -24,8 +24,8 @@ export function ReactResizablePanelsOgImage() {
       */}
 
       <linearGradient id="react-resizable-panels-logo">
-        <stop offset="0%" stop-color="oklch(100% 0 255)" />
-        <stop offset="100%" stop-color="oklch(75% 0 255)" />
+        <stop offset="0%" stopColor="oklch(100% 0 255)" />
+        <stop offset="100%" stopColor="oklch(75% 0 255)" />
       </linearGradient>
 
       <mask

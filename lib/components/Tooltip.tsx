@@ -1,4 +1,5 @@
 import {
+  autoPlacement,
   offset,
   shift,
   useDismiss,
@@ -32,7 +33,7 @@ export function Tooltip({
   const { refs, floatingStyles, context } = useFloating({
     onOpenChange: setIsOpen,
     open: isOpen,
-    middleware: [offset(4), shift()]
+    middleware: [offset(4), shift(), autoPlacement()]
   });
 
   const hover = useHover(context, { enabled: showOnHover });
