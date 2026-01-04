@@ -23,6 +23,7 @@ import { Link } from "../Link";
 import { Nav } from "../nav/Nav";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
+import { Tooltip } from "../Tooltip";
 
 /**
  * Displays an application shell with desktop and mobile layouts.
@@ -78,54 +79,62 @@ export function AppRoot({
             >
               <Link
                 children={packageName}
-                className="text-xl text-white! text-shadow-black/80 text-shadow-xs font-bold cursor-pointer truncate"
+                className="text-xl text-header-package-name! font-bold cursor-pointer truncate"
                 to="/"
               />
-              <div className="hidden md:block text-black text-shadow-white/50 text-shadow-xs">
+              <div className="hidden md:block text-header-package-description">
                 {packageDescription}
               </div>
             </Box>
             <Box align="center" direction="row" gap={4}>
               {versions !== undefined && (
-                <Link
-                  aria-label="Documentation for other versions"
-                  className="text-xs font-bold text-white! drop-shadow-black/20 drop-shadow-sm cursor-pointer"
-                  title="Past releases"
-                  to="/versions"
-                >
-                  <TagsIcon className="w-6 h-6" />
-                </Link>
+                <Tooltip content="Previous versions">
+                  <Link
+                    aria-label="Documentation for other versions"
+                    className="text-xs font-bold text-header-icons! cursor-pointer"
+                    to="/versions"
+                  >
+                    <TagsIcon className="w-6 h-6" />
+                  </Link>
+                </Tooltip>
               )}
-              <ExternalLink
-                aria-label="NPM project page"
-                className="text-white! drop-shadow-black/20 drop-shadow-sm"
-                href={`https://www.npmjs.com/package/${packageName}`}
-                title="NPM package"
-              >
-                <NpmHubIcon className="w-8 h-8" />
-              </ExternalLink>
-              <ExternalLink
-                aria-label="GitHub project page"
-                className="text-white! drop-shadow-black/20 drop-shadow-sm"
-                href={`https://github.com/bvaughn/${packageName}`}
-                title="Source code"
-              >
-                <GitHubIcon className="w-6 h-6" />
-              </ExternalLink>
-              <button
-                aria-label="Site navigation menu"
-                className={cn("block md:hidden cursor-pointer rounded-lg p-1", {
-                  "bg-black/40": !visible,
-                  "bg-black/50 text-white": visible
-                })}
-                onClick={toggle}
-              >
-                {visible ? (
-                  <XMarkIcon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
-                ) : (
-                  <Bars4Icon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
-                )}
-              </button>
+              <Tooltip content="NPM package">
+                <ExternalLink
+                  aria-label="NPM project page"
+                  className="text-header-icons!"
+                  href={`https://www.npmjs.com/package/${packageName}`}
+                >
+                  <NpmHubIcon className="w-8 h-8" />
+                </ExternalLink>
+              </Tooltip>
+              <Tooltip content="Source code">
+                <ExternalLink
+                  aria-label="GitHub project page"
+                  className="text-header-icons!"
+                  href={`https://github.com/bvaughn/${packageName}`}
+                >
+                  <GitHubIcon className="w-6 h-6" />
+                </ExternalLink>
+              </Tooltip>
+              <Tooltip content={visible ? "Hide menu" : "Show menu"}>
+                <button
+                  aria-label="Site navigation menu"
+                  className={cn(
+                    "block md:hidden cursor-pointer rounded-lg p-1",
+                    {
+                      "bg-black/40": !visible,
+                      "bg-black/50 text-white": visible
+                    }
+                  )}
+                  onClick={toggle}
+                >
+                  {visible ? (
+                    <XMarkIcon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
+                  ) : (
+                    <Bars4Icon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
+                  )}
+                </button>
+              </Tooltip>
             </Box>
           </Box>
           <div className="grow shrink flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-hidden">

@@ -32,6 +32,10 @@
   --color-background-gradient-2: var(--color-violet-500);
   --color-background-gradient-3: var(--color-fuchsia-700);
 
+  --color-header-package-name: var(--color-white);
+  --color-header-package-description: var(--color-white);
+  --color-header-icons: var(--color-white);
+
   --color-focus-1: var(--color-sky-300);
   --color-focus-2: var(--color-sky-400);
   --color-focus-3: var(--color-sky-600);

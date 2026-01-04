@@ -1,5 +1,6 @@
 import {
   offset,
+  shift,
   useFloating,
   useFocus,
   useHover,
@@ -11,7 +12,7 @@ import {
   type PropsWithChildren,
   type ReactNode
 } from "react";
-import { cn } from "react-lib-tools";
+import { cn } from "../utils/cn";
 
 export function Tooltip({
   children,
@@ -30,7 +31,7 @@ export function Tooltip({
   const { refs, floatingStyles, context } = useFloating({
     onOpenChange: setIsOpen,
     open: isOpen,
-    middleware: [offset(4)]
+    middleware: [offset(4), shift()]
   });
 
   const hover = useHover(context, { enabled: showOnHover });

@@ -1,6 +1,5 @@
 import { Switch as HeadlessSwitch, type SwitchProps } from "@headlessui/react";
-import { cn } from "react-lib-tools";
-import { Tooltip } from "./Tooltip";
+import { cn, Tooltip } from "react-lib-tools";
 
 export function Switch({ className, title, ...rest }: SwitchProps) {
   let children = (

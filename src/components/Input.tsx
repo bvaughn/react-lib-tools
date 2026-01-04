@@ -1,7 +1,6 @@
 import { Input as HeadlessInput, type InputProps } from "@headlessui/react";
 import type { RefObject } from "react";
-import { cn } from "react-lib-tools";
-import { Tooltip } from "./Tooltip";
+import { cn, Tooltip } from "react-lib-tools";
 
 export function Input({
   className,

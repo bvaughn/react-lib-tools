@@ -19,6 +19,7 @@ export { ComponentProps } from "./components/props/ComponentProps";
 export { ComponentPropsSection } from "./components/props/ComponentPropsSection";
 export { Radio } from "./components/Radio";
 export { Select } from "./components/Select";
+export { Tooltip } from "./components/Tooltip";
 
 export { assert } from "./utils/assert";
 export { cn } from "./utils/cn";

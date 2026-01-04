@@ -56,9 +56,15 @@ The following CSS variables can be overridden to customize the theme:
   --color-background-gradient-1: var(--color-green-300);
   --color-background-gradient-2: var(--color-emerald-600);
   --color-background-gradient-3: var(--color-teal-400);
+
+  --color-header-package-name: var(--color-white);
+  --color-header-package-description: var(--color-black);
+  --color-header-icons: var(--color-white);
+
   --color-focus-1: var(--color-green-200);
   --color-focus-2: var(--color-green-300);
   --color-focus-3: var(--color-green-500);
+  
   --color-nav-active: var(--color-emerald-300);
   --color-nav-hover: var(--color-green-200);
 }
