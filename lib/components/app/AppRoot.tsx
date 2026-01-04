@@ -71,7 +71,7 @@ export function AppRoot({
             direction="row"
             gap={4}
           >
-            <ReactLogoIcon className="w-8 h-8" />
+            <ReactLogoIcon className="shrink-0 w-8 h-8" />
             <Box
               className="overflow-hidden"
               align="center"

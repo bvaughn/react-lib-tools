@@ -62,12 +62,7 @@
   scrollbar-width: thin;
   scrollbar-color: var(--color-slate-600) transparent;
   outline: none;
-  transition:
-    color 0.25s ease,
-    background-color 0.25s ease,
-    border-color 0.25s ease,
-    opacity 0.25s ease,
-    outline-color 0.25s ease;
+  transition: none !important;
 }
 
 main {

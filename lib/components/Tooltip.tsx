@@ -1,6 +1,7 @@
 import {
   offset,
   shift,
+  useDismiss,
   useFloating,
   useFocus,
   useHover,
@@ -37,7 +38,10 @@ export function Tooltip({
   const hover = useHover(context, { enabled: showOnHover });
   const focus = useFocus(context, { enabled: showOnFocus });
 
+  const dismiss = useDismiss(context);
+
   const { getReferenceProps, getFloatingProps } = useInteractions([
+    dismiss,
     focus,
     hover
   ]);

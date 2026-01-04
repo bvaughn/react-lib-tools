@@ -20,13 +20,8 @@
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-slate-600) transparent;
-
-  transition:
-    color 200ms ease-in-out,
-    background-color 200ms ease-in-out,
-    border-color 200ms ease-in-out,
-    opacity 200ms ease-in-out,
-    outline-color 200ms ease-in-out;
+  outline: none;
+  transition: none !important;
 }
 
 :root {
