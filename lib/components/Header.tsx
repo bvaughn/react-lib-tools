@@ -1,31 +1,28 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useLibraryContext } from "../hooks/useLibraryContext";
-import { Box } from "./Box";
 
 export function Header({
   section,
-  title: titleProp
+  title
 }: {
   section?: string;
   title: string;
 }) {
   const { packageName } = useLibraryContext();
 
-  const title = `${packageName}: ${section ? `${section}: ${titleProp}` : titleProp}`;
-
   return (
     <>
-      <Box align="center" direction="row" gap={2} wrap>
+      <div className="text-xl">
         {section && (
           <>
-            <div className="text-xl whitespace-nowrap">{section}</div>
-            <ChevronRightIcon className="size-4 text-slate-400" />
+            <span className="text-xl whitespace-nowrap">{section}</span>{" "}
+            <ChevronRightIcon className="size-4 text-slate-400 inline" />{" "}
           </>
         )}
-        <div className="text-xl whitespace-nowrap">{title}</div>
-      </Box>
+        <span className="text-xl">{title}</span>
+      </div>
 
-      <title>{title}</title>
+      <title>{`${packageName}: ${section ? `${section}: ${title}` : title}`}</title>
     </>
   );
 }
