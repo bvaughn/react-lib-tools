@@ -8,6 +8,7 @@ import {
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import GitHubIcon from "../../../public/svgs/github.svg?react";
 import NpmHubIcon from "../../../public/svgs/npm.svg?react";
+import ReactLogoIcon from "../../../public/svgs/react-simplified.svg?react";
 import TagsIcon from "../../../public/svgs/tags.svg?react";
 import {
   LibraryContext,
@@ -21,9 +22,9 @@ import { ErrorBoundary } from "../ErrorBoundary";
 import { ExternalLink } from "../ExternalLink";
 import { Link } from "../Link";
 import { Nav } from "../nav/Nav";
+import { Tooltip } from "../Tooltip";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
-import { Tooltip } from "../Tooltip";
 
 /**
  * Displays an application shell with desktop and mobile layouts.
@@ -68,9 +69,9 @@ export function AppRoot({
             align="center"
             className="h-12 w-full p-4"
             direction="row"
-            justify="between"
             gap={4}
           >
+            <ReactLogoIcon className="w-8 h-8" />
             <Box
               className="overflow-hidden"
               align="center"
@@ -86,6 +87,7 @@ export function AppRoot({
                 {packageDescription}
               </div>
             </Box>
+            <div className="grow" />
             <Box align="center" direction="row" gap={4}>
               {versions !== undefined && (
                 <Tooltip content="Previous versions">
@@ -116,16 +118,16 @@ export function AppRoot({
                   <GitHubIcon className="w-6 h-6" />
                 </ExternalLink>
               </Tooltip>
-              <Tooltip content={visible ? "Hide menu" : "Show menu"}>
+              <Tooltip
+                className="block md:hidden"
+                content={visible ? "Hide menu" : "Show menu"}
+              >
                 <button
                   aria-label="Site navigation menu"
-                  className={cn(
-                    "block md:hidden cursor-pointer rounded-lg p-1",
-                    {
-                      "bg-black/40": !visible,
-                      "bg-black/50 text-white": visible
-                    }
-                  )}
+                  className={cn("cursor-pointer rounded-lg p-1", {
+                    "bg-black/40": !visible,
+                    "bg-black/50 text-white": visible
+                  })}
                   onClick={toggle}
                 >
                   {visible ? (

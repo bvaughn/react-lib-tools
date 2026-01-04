@@ -58,7 +58,10 @@ export function Tooltip({
   };
 
   return (
-    <div className="group relative flex justify-center" onKeyDown={onKeyDown}>
+    <div
+      className={cn("group relative flex justify-center", className)}
+      onKeyDown={onKeyDown}
+    >
       <div ref={refs.setReference} {...getReferenceProps()}>
         {children}
       </div>
