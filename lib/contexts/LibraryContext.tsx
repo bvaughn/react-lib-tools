@@ -1,4 +1,5 @@
 import { createContext, type ReactNode } from "react";
+import type { CommonQuestion } from "../types";
 
 export type Versions = {
   [major: string]: {
@@ -7,7 +8,8 @@ export type Versions = {
 };
 
 export type LibraryContextType = {
-  overview?: ReactNode | undefined;
+  commonQuestions: CommonQuestion[] | undefined;
+  overview: ReactNode | undefined;
   packageDescription: string;
   packageName: string;
   showOpenCollectLink: boolean;

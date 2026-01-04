@@ -27,6 +27,7 @@ export { getIntentClassNames } from "./utils/getIntentClassNames";
 
 export type { Option } from "./components/Select";
 export type {
+  CommonQuestion,
   ComponentMetadata,
   ImperativeHandleMetadata,
   Intent,

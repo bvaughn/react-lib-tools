@@ -36,12 +36,14 @@
   --color-header-package-description: var(--color-white);
   --color-header-icons: var(--color-white);
 
-  --color-focus-1: var(--color-sky-300);
-  --color-focus-2: var(--color-sky-400);
-  --color-focus-3: var(--color-sky-600);
+  --color-data-focus: var(--color-sky-300);
+  --color-link: var(--color-sky-400);
+  --color-data-focus-bold: var(--color-sky-600);
 
   --color-nav-active: var(--color-fuchsia-400);
   --color-nav-hover: var(--color-fuchsia-200);
+
+  --color-common-question-header: var(--color-sky-400);
 }
 
 #root {
@@ -69,9 +71,9 @@ main {
   [data-link],
   a {
     cursor: pointer;
-    color: var(--color-focus-2);
+    color: var(--color-link);
     &:hover {
-      color: var(--color-focus-1);
+      color: var(--color-data-focus);
     }
   }
 }
@@ -79,20 +81,20 @@ main {
 *[data-focus] {
   border: 2px solid transparent;
   &:focus {
-    border: 2px solid var(--color-focus-1);
+    border: 2px solid var(--color-data-focus);
   }
 }
 
 *[data-focus-within] {
   border: 2px solid transparent;
   &:focus-within {
-    border: 2px solid var(--color-focus-1);
+    border: 2px solid var(--color-data-focus);
   }
 
   &[data-focus-within="bold"] {
-    border-color: var(--color-focus-3);
+    border-color: var(--color-data-focus-bold);
     &:focus-within {
-      border: 2px solid var(--color-focus-1);
+      border: 2px solid var(--color-data-focus);
     }
   }
 }

@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export type Intent = "danger" | "none" | "primary" | "success" | "warning";
 
 export type Section = {
@@ -32,4 +34,10 @@ export type ImperativeHandleMetadata = {
   filePath: string;
   name: string;
   methods: ImperativeHandleMethodMetadata[];
+};
+
+export type CommonQuestion = {
+  answer: ReactNode;
+  id: string;
+  question: ReactNode;
 };

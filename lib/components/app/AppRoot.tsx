@@ -16,6 +16,7 @@ import {
   type Versions
 } from "../../contexts/LibraryContext";
 import { useNavStore } from "../../hooks/useNavStore";
+import type { CommonQuestion } from "../../types";
 import { cn } from "../../utils/cn";
 import { Box } from "../Box";
 import { ErrorBoundary } from "../ErrorBoundary";
@@ -30,6 +31,7 @@ import { routes as defaultRoutes } from "./routes";
  * Displays an application shell with desktop and mobile layouts.
  */
 export function AppRoot({
+  commonQuestions,
   navLinks,
   overview,
   packageDescription,
@@ -38,6 +40,7 @@ export function AppRoot({
   showOpenCollectLink = false,
   versions
 }: {
+  commonQuestions?: CommonQuestion[];
   navLinks: ReactNode;
   overview?: ReactNode | undefined;
   packageDescription: string;
@@ -50,13 +53,21 @@ export function AppRoot({
 
   const context = useMemo<LibraryContextType>(
     () => ({
+      commonQuestions,
       overview,
       packageDescription,
       packageName,
       showOpenCollectLink,
       versions
     }),
-    [overview, packageDescription, packageName, showOpenCollectLink, versions]
+    [
+      commonQuestions,
+      overview,
+      packageDescription,
+      packageName,
+      showOpenCollectLink,
+      versions
+    ]
   );
 
   return (
