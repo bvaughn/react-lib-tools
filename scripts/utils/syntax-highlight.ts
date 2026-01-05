@@ -1,4 +1,5 @@
 import { cssLanguage } from "@codemirror/lang-css";
+import { jsonLanguage } from "@codemirror/lang-json";
 import { htmlLanguage } from "@codemirror/lang-html";
 import {
   jsxLanguage,
@@ -17,7 +18,7 @@ type Token = {
   value: string;
 };
 
-export type Language = "CSS" | "HTML" | "JS" | "JSX" | "TS" | "TSX";
+export type Language = "CSS" | "HTML" | "JS" | "JSON" | "JSX" | "TS" | "TSX";
 
 type State = {
   parsedTokens: Token[];
@@ -45,6 +46,11 @@ export async function syntaxHighlight(code: string, language: Language) {
     case "JSX": {
       extension = jsxLanguage;
       prettierParser = "babel";
+      break;
+    }
+    case "JSON": {
+      extension = jsonLanguage;
+      prettierParser = "json";
       break;
     }
     case "TS": {

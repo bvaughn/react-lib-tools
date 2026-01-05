@@ -9,7 +9,7 @@ export default function GettingStartedRoute() {
 
   return (
     <Box direction="column" gap={4}>
-      <Header title="Getting started" />
+      <Header title={`Getting started with ${packageName}`} />
       {overview}
       {overview && <div className="text-xl mt-4">Installation</div>}
       <div>Begin by installing the library from NPM:</div>

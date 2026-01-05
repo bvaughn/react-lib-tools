@@ -1,5 +1,4 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useLibraryContext } from "../hooks/useLibraryContext";
 
 export function Header({
   section,
@@ -8,8 +7,6 @@ export function Header({
   section?: string;
   title: string;
 }) {
-  const { packageName } = useLibraryContext();
-
   return (
     <>
       <div className="text-xl">
@@ -22,7 +19,7 @@ export function Header({
         <span className="text-xl">{title}</span>
       </div>
 
-      <title>{`${packageName}: ${section ? `${section}: ${title}` : title}`}</title>
+      <title>{section ? `${section}: ${title}` : title}</title>
     </>
   );
 }

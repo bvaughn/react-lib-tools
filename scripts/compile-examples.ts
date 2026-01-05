@@ -8,7 +8,7 @@ import { syntaxHighlight } from "./utils/syntax-highlight.ts";
  * Compile example snippets into syntax-highlighted HTML that can be rendered by the `Code` component.
  */
 export async function compileExamples({
-  fileExtensions = [".css", ".html", ".js", ".jsx", ".ts", ".tsx"],
+  fileExtensions = [".css", ".html", ".json", ".js", ".jsx", ".ts", ".tsx"],
   inputPath = ["src", "routes"],
   outputPath = ["public", "generated", "examples"]
 }: {
@@ -71,6 +71,8 @@ export async function compileExamples({
         rawText,
         file.endsWith("jsx") ? "JSX" : "JS"
       );
+    } else if (file.endsWith(".json")) {
+      html = await syntaxHighlight(rawText, "JSON");
     } else if (file.endsWith(".ts") || file.endsWith(".tsx")) {
       html = await syntaxHighlight(
         rawText,
