@@ -14,7 +14,7 @@ export function VersionLink({
 
   return (
     <li className="list-disc">
-      {version.split(".").slice(0, 2).join(".")}
+      {version.split(".").slice(0, 1).join(".")}
       <span className="text-slate-400">.x</span>
       {url && (
         <ExternalLink

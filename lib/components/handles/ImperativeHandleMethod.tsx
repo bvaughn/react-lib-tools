@@ -10,7 +10,7 @@ export function ImperativeHandleMethod({
   return (
     <>
       <dd className="[&_code]:text-sky-300 text-lg font-bold">{method.name}</dd>
-      <dt className="mt-2">
+      <dt className="mb-2">
         <DocsSection sections={method.description} />
         <Code className="mt-2 p-2 flex flex-col" html={method.html} />
       </dt>

@@ -1,12 +1,21 @@
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import {
+  ArrowTopRightOnSquareIcon,
+  ChevronRightIcon
+} from "@heroicons/react/20/solid";
+import { useLibraryContext } from "../hooks/useLibraryContext";
+import { ExternalLink } from "./ExternalLink";
 
 export function Header({
   section,
+  sourceCodePath,
   title
 }: {
   section?: string;
+  sourceCodePath?: string;
   title: string;
 }) {
+  const { repositoryUrl } = useLibraryContext();
+
   return (
     <>
       <div className="text-xl">
@@ -17,6 +26,14 @@ export function Header({
           </>
         )}
         <span className="text-xl">{title}</span>
+        {sourceCodePath && (
+          <ExternalLink
+            className="text-sm text-emerald-300 hover:text-white"
+            href={`${repositoryUrl}/blob/main/${sourceCodePath}`}
+          >
+            <ArrowTopRightOnSquareIcon className="inline-block size-4 fill-current ml-2 mb-1" />
+          </ExternalLink>
+        )}
       </div>
 
       <title>{section ? `${section}: ${title}` : title}</title>

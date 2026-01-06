@@ -36,6 +36,7 @@ export function AppRoot({
   overview,
   packageDescription,
   packageName,
+  repositoryUrl,
   routes,
   showOpenCollectLink = false,
   versions
@@ -45,6 +46,7 @@ export function AppRoot({
   overview?: ReactNode | undefined;
   packageDescription: string;
   packageName: string;
+  repositoryUrl: string;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
   showOpenCollectLink?: boolean | undefined;
   versions?: Versions | undefined;
@@ -57,6 +59,7 @@ export function AppRoot({
       overview,
       packageDescription,
       packageName,
+      repositoryUrl: repositoryUrl.replace(".git", ""),
       showOpenCollectLink,
       versions
     }),
@@ -65,6 +68,7 @@ export function AppRoot({
       overview,
       packageDescription,
       packageName,
+      repositoryUrl,
       showOpenCollectLink,
       versions
     ]
