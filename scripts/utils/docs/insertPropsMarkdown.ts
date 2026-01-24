@@ -16,7 +16,9 @@ export function insertPropsMarkdown({
   const startIndex = markdown.indexOf(startToken) + startToken.length;
   const stopIndex = markdown.indexOf(stopToken);
   if (startIndex < 0 || stopIndex < 0) {
-    throw Error("Parsing README failed");
+    console.warn(`README tokens not found for component ${componentName}`);
+
+    return markdown;
   }
 
   return (

@@ -27,7 +27,7 @@ export async function compileComponents({
     fileExtensions: [".ts", ".tsx"],
     fileFilter: (file) =>
       componentNames.some((componentName) =>
-        file.includes(`${componentName}.ts`)
+        file.includes(`/${componentName}.ts`)
       ),
     inputPath: ["lib", "components"],
     outputPath
