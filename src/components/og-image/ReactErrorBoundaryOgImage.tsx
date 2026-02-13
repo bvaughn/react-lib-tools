@@ -15,20 +15,7 @@ export function ReactErrorBoundaryOgImage() {
 
       <rect fill="url('#react-error-boundary-bg')" width={1200} height={630} />
 
-      {/*
-      <line x1="0" y1="315" x2="1200" y2="315" stroke="black" />
-      */}
-
-      <linearGradient id="react-error-boundary-logo">
-        <stop offset="0%" stopColor="oklch(100% 0 255)" />
-        <stop offset="100%" stopColor="oklch(75% 0 255)" />
-      </linearGradient>
-
-      <mask maskContentUnits="objectBoundingBox" id="react-error-boundary-mask">
-        <rect width="1" height="1" fill="url('#react-error-boundary-logo')" />
-      </mask>
-
-      <g mask="url(#react-error-boundary-mask)">
+      <g>
         <circle cx="275" cy="315" r="60" fill={colors.black} />
         <ellipse
           cx="275"

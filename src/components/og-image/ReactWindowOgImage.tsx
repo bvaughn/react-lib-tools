@@ -22,20 +22,7 @@ export function ReactWindowOgImage() {
 
       <rect fill="url('#react-window')" width={1200} height={630} />
 
-      {/*
-      <line x1="0" y1="315" x2="1200" y2="315" stroke="black" />
-      */}
-
-      <linearGradient id="react-window-logo">
-        <stop offset="0%" stopColor="oklch(100% 0 255)" />
-        <stop offset="100%" stopColor="oklch(75% 0 255)" />
-      </linearGradient>
-
-      <mask maskContentUnits="objectBoundingBox" id="react-window-mask">
-        <rect width="1" height="1" fill="url('#react-window-logo')" />
-      </mask>
-
-      <g mask="url(#react-window-mask)">
+      <g>
         <circle cx="275" cy="315" r="60" fill={colors.black} />
         <ellipse
           cx="275"

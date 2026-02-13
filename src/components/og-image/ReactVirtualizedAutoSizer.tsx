@@ -19,27 +19,7 @@ export function ReactVirtualizedAutoSizerOgImage() {
         height={630}
       />
 
-      {/*
-      <line x1="0" y1="315" x2="1200" y2="315" stroke="black" />
-       */}
-
-      <linearGradient id="react-virtualized-auto-sizer-logo">
-        <stop offset="0%" stopColor="oklch(100% 0 255)" />
-        <stop offset="100%" stopColor="oklch(75% 0 255)" />
-      </linearGradient>
-
-      <mask
-        maskContentUnits="objectBoundingBox"
-        id="react-virtualized-auto-sizer-mask"
-      >
-        <rect
-          width="1"
-          height="1"
-          fill="url('#react-virtualized-auto-sizer-logo')"
-        />
-      </mask>
-
-      <g mask="url(#react-virtualized-auto-sizer-mask)">
+      <g>
         <circle cx="275" cy="315" r="60" fill={colors.black} />
         <ellipse
           cx="275"

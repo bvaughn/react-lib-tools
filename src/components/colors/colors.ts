@@ -1,6 +1,6 @@
 // Forked from github.com/tailwindlabs/tailwindcss/blob/main/packages/tailwindcss/src/compat/colors.ts
 export const colors = {
-  black: "#000",
+  black: "#111",
   white: "#fff",
   "slate-50": "oklch(98.4% 0.003 247.858)",
   "slate-100": "oklch(96.8% 0.007 247.896)",
