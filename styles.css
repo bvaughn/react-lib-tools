@@ -60,6 +60,12 @@
   animation: background-gradient-animation 20s ease infinite;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  #root {
+    background: var(--color-background-gradient-2);
+  }
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: var(--color-slate-600) transparent;

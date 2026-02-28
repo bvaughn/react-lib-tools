@@ -52,3 +52,9 @@
   background-size: 200% 200%;
   animation: background-gradient-animation 5s ease infinite;
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-background-gradient] {
+    background: var(--color-background-gradient-2);
+  }
+}
