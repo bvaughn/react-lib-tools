@@ -62,7 +62,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   #root {
-    background: var(--color-background-gradient-2);
+    background-size: 200% 200%;
+    animation: none;
   }
 }
 
