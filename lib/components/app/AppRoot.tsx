@@ -29,7 +29,7 @@ import { routes as defaultRoutes } from "./routes";
 import { SiteSearchModal } from "./search/SiteSearchModal";
 
 const siteSearchShortcutKey =
-  navigator.appVersion.indexOf("Win") >= 0 ? "^K" : "⌘K";
+  navigator.userAgent.indexOf("Win") >= 0 ? "^K" : "⌘K";
 
 /**
  * Displays an application shell with desktop and mobile layouts.
