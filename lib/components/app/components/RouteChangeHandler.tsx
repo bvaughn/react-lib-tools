@@ -1,14 +1,15 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { useNavStore } from "../../../hooks/useNavStore";
+import { useLibraryContext } from "../../../hooks/useLibraryContext";
 
 export function RouteChangeHandler() {
-  const { hide } = useNavStore();
+  const { setIsNavVisible, setIsSiteSearchVisible } = useLibraryContext();
 
   const { pathname } = useLocation();
 
   useLayoutEffect(() => {
-    hide();
+    setIsNavVisible(false);
+    setIsSiteSearchVisible(false);
 
     const main = document.body.querySelector("[data-main-scrollable]");
     if (main) {
@@ -20,7 +21,7 @@ export function RouteChangeHandler() {
         clearTimeout(timeout);
       };
     }
-  }, [hide, pathname]);
+  }, [pathname, setIsNavVisible, setIsSiteSearchVisible]);
 
   return null;
 }

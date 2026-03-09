@@ -7,10 +7,14 @@ export type Versions = {
 
 export type LibraryContextType = {
   commonQuestions: CommonQuestion[] | undefined;
+  isNavVisible: boolean;
+  isSiteSearchVisible: boolean;
   overview: ReactNode | undefined;
   packageDescription: string;
   packageName: string;
   repositoryUrl: string;
+  setIsNavVisible: (value: boolean) => void;
+  setIsSiteSearchVisible: (value: boolean) => void;
   showOpenCollectLink: boolean;
   versions: Versions | undefined;
 };

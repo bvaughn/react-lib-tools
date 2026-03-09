@@ -1,16 +1,17 @@
 import { type PropsWithChildren } from "react";
 import { cn } from "../../utils/cn";
+import type { Path as DefaultPath } from "../app/routes";
 import { Box } from "../Box";
 import { Link } from "../Link";
 import { NavButton } from "./NavButton";
 
-export function NavLink({
+export function NavLink<Path extends string = DefaultPath>({
   children,
   className,
   path
 }: PropsWithChildren<{
   className?: string | undefined;
-  path: string;
+  path: Path;
 }>) {
   return (
     <Link to={path}>

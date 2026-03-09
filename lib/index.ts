@@ -31,6 +31,7 @@ export type {
   ComponentMetadata,
   ImperativeHandleMetadata,
   Intent,
-  Section
+  Section,
+  SiteSearchRecord
 } from "./types";
 export type { Path as DefaultPath } from "./components/app/routes";

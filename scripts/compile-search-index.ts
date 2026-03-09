@@ -1,0 +1,39 @@
+import Fuse from "fuse.js";
+import { writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import type { SiteSearchRecord } from "react-lib-tools";
+import { crawlPage } from "./utils/search/crawlPage";
+import type { SiteSearchPage } from "./utils/search/types";
+
+export async function compileSearchIndex({
+  host = "http://localhost:3000",
+  outputPath = ["public", "generated"]
+}: {
+  host?: string;
+  outputPath?: string[];
+} = {}) {
+  const recordsMap: Record<string, SiteSearchPage> = {};
+
+  await crawlPage({
+    host,
+    path: "/",
+    records: recordsMap
+  });
+
+  const records = Object.values(recordsMap);
+
+  const searchIndex = Fuse.createIndex<SiteSearchRecord>(
+    ["title", "section", "text"],
+    records
+  );
+
+  await writeFile(
+    join(...outputPath, `search-records.json`),
+    JSON.stringify(records, null, 2)
+  );
+
+  await writeFile(
+    join(...outputPath, `search-index.json`),
+    JSON.stringify(searchIndex, null, 2)
+  );
+}

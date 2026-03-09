@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 
+export type SiteSearchRecord = {
+  path: string;
+  section?: string | undefined;
+  title: string;
+};
+
 export type Intent = "danger" | "none" | "primary" | "success" | "warning";
 
 export type Section = {

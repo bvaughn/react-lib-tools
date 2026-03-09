@@ -20,13 +20,13 @@ export function Link({
   const navigate = useNavigate();
 
   return (
-    <span
+    <a
       children={
         typeof children === "function"
           ? children({ isActive, isPending })
           : children
       }
-      data-link
+      data-link={to}
       onClick={(event) => {
         onClick?.(event);
 

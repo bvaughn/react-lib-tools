@@ -1,6 +1,9 @@
-import { Bars4Icon, XMarkIcon } from "@heroicons/react/20/solid";
 import {
-  useMemo,
+  Bars4Icon,
+  MagnifyingGlassIcon,
+  XMarkIcon
+} from "@heroicons/react/20/solid";
+import {
   type ComponentType,
   type LazyExoticComponent,
   type ReactNode
@@ -10,36 +13,31 @@ import GitHubIcon from "../../../public/svgs/github.svg?react";
 import NpmHubIcon from "../../../public/svgs/npm.svg?react";
 import ReactLogoIcon from "../../../public/svgs/react-simplified.svg?react";
 import TagsIcon from "../../../public/svgs/tags.svg?react";
-import {
-  LibraryContext,
-  type LibraryContextType,
-  type Versions
-} from "../../contexts/LibraryContext";
-import { useNavStore } from "../../hooks/useNavStore";
+import { type Versions } from "../../contexts/LibraryContext";
+import { useLibraryContext } from "../../hooks/useLibraryContext";
 import type { CommonQuestion } from "../../types";
 import { cn } from "../../utils/cn";
 import { Box } from "../Box";
 import { ErrorBoundary } from "../ErrorBoundary";
-import { ExternalLink } from "../ExternalLink";
 import { Link } from "../Link";
+import { HeaderButton } from "../nav/HeaderButton";
+import { HeaderLink } from "../nav/HeaderLink";
 import { Nav } from "../nav/Nav";
-import { Tooltip } from "../Tooltip";
+import { LibraryContextProvider } from "./components/LibraryContextProvider";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
+import { SiteSearchModal } from "./search/SiteSearchModal";
+
+const siteSearchShortcutKey =
+  navigator.appVersion.indexOf("Win") >= 0 ? "^K" : "⌘K";
 
 /**
  * Displays an application shell with desktop and mobile layouts.
  */
 export function AppRoot({
-  commonQuestions,
   navLinks,
-  overview,
-  packageDescription,
-  packageName,
-  repositoryUrl,
   routes,
-  showOpenCollectLink = false,
-  versions
+  ...context
 }: {
   commonQuestions?: CommonQuestion[];
   navLinks: ReactNode;
@@ -51,150 +49,143 @@ export function AppRoot({
   showOpenCollectLink?: boolean | undefined;
   versions?: Versions | undefined;
 }) {
-  const { toggle, visible } = useNavStore();
-
-  const context = useMemo<LibraryContextType>(
-    () => ({
-      commonQuestions,
-      overview,
-      packageDescription,
-      packageName,
-      repositoryUrl: repositoryUrl.replace(".git", ""),
-      showOpenCollectLink,
-      versions
-    }),
-    [
-      commonQuestions,
-      overview,
-      packageDescription,
-      packageName,
-      repositoryUrl,
-      showOpenCollectLink,
-      versions
-    ]
+  return (
+    <LibraryContextProvider {...context}>
+      <App navLinks={navLinks} routes={routes} />
+    </LibraryContextProvider>
   );
+}
+
+function App({
+  navLinks,
+  routes
+}: {
+  navLinks: ReactNode;
+  routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
+}) {
+  const {
+    isNavVisible,
+    isSiteSearchVisible,
+    packageDescription,
+    packageName,
+    setIsNavVisible,
+    setIsSiteSearchVisible,
+    versions
+  } = useLibraryContext();
 
   return (
-    <LibraryContext.Provider value={context}>
-      <BrowserRouter>
-        <RouteChangeHandler />
+    <BrowserRouter>
+      <RouteChangeHandler />
 
-        <div className="h-full w-full max-w-350 mx-auto flex flex-col">
+      <div className="h-full w-full max-w-350 mx-auto flex flex-col">
+        <Box align="center" className="h-12 w-full p-4" direction="row" gap={4}>
+          <ReactLogoIcon className="shrink-0 w-8 h-8" />
           <Box
+            className="overflow-hidden"
             align="center"
-            className="h-12 w-full p-4"
             direction="row"
             gap={4}
           >
-            <ReactLogoIcon className="shrink-0 w-8 h-8" />
-            <Box
-              className="overflow-hidden"
-              align="center"
-              direction="row"
-              gap={4}
-            >
-              <Link
-                children={packageName}
-                className="text-xl text-header-package-name! font-bold cursor-pointer truncate"
-                to="/"
-              />
-              <div className="hidden md:block text-header-package-description">
-                {packageDescription}
-              </div>
-            </Box>
-            <div className="grow" />
-            <Box align="center" direction="row" gap={4}>
-              {versions !== undefined && (
-                <Tooltip content="Previous versions">
-                  <Link
-                    aria-label="Documentation for other versions"
-                    className="text-xs font-bold text-header-icons! cursor-pointer"
-                    to="/versions"
-                  >
-                    <TagsIcon className="w-6 h-6" />
-                  </Link>
-                </Tooltip>
-              )}
-              <Tooltip content="NPM package">
-                <ExternalLink
-                  aria-label="NPM project page"
-                  className="text-header-icons!"
-                  href={`https://www.npmjs.com/package/${packageName}`}
-                >
-                  <NpmHubIcon className="w-8 h-8" />
-                </ExternalLink>
-              </Tooltip>
-              <Tooltip content="Source code">
-                <ExternalLink
-                  aria-label="GitHub project page"
-                  className="text-header-icons!"
-                  href={`https://github.com/bvaughn/${packageName}`}
-                >
-                  <GitHubIcon className="w-6 h-6" />
-                </ExternalLink>
-              </Tooltip>
-              <Tooltip
-                className="block md:hidden"
-                content={visible ? "Hide menu" : "Show menu"}
-              >
-                <button
-                  aria-label="Site navigation menu"
-                  className={cn("cursor-pointer rounded-lg p-1", {
-                    "bg-black/40": !visible,
-                    "bg-black/50 text-white": visible
-                  })}
-                  onClick={toggle}
-                >
-                  {visible ? (
-                    <XMarkIcon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
-                  ) : (
-                    <Bars4Icon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
-                  )}
-                </button>
-              </Tooltip>
-            </Box>
+            <Link
+              children={packageName}
+              className="text-xl text-header-package-name! font-bold cursor-pointer truncate"
+              to="/"
+            />
+            <div className="hidden md:block text-header-package-description">
+              {packageDescription}
+            </div>
           </Box>
-          <div className="grow shrink flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-hidden">
-            <section
-              className={cn(
-                "w-full bg-black/90 md:block md:w-80 md:bg-black/80 overflow-auto",
-                {
-                  hidden: !visible
-                }
-              )}
+          <div className="grow" />
+          <Box align="center" direction="row" gap={4}>
+            <HeaderButton
+              isActive={isSiteSearchVisible}
+              onClick={() => setIsSiteSearchVisible(!isSiteSearchVisible)}
+              title="Site search"
             >
-              <Nav children={navLinks} />
-            </section>
-            <main
-              className={cn("w-full bg-black/90 relative overflow-auto", {
-                hidden: visible
-              })}
-            >
-              <div
-                className="h-full p-4 py-4 overflow-auto [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
-                data-main-scrollable
-              >
-                <Routes>
-                  {Object.entries({
-                    ...defaultRoutes,
-                    ...routes
-                  }).map(([path, Component]) => (
-                    <Route
-                      element={
-                        <ErrorBoundary key={path}>
-                          <Component />
-                        </ErrorBoundary>
-                      }
-                      key={path}
-                      path={path}
-                    />
-                  ))}
-                </Routes>
+              <div className="h-8 flex items-center justify-center gap-1 px-2 bg-black/40 rounded-full text-sm">
+                <MagnifyingGlassIcon className="w-4 h-4" />
+                {siteSearchShortcutKey}
               </div>
-            </main>
-          </div>
+            </HeaderButton>
+            {versions !== undefined && (
+              <HeaderLink
+                ariaLabel="Documentation for other versions"
+                children={<TagsIcon className="w-6 h-6" />}
+                title="Previous versions"
+                to="/versions"
+              />
+            )}
+            <HeaderLink
+              ariaLabel="NPM project page"
+              children={<NpmHubIcon className="w-8 h-8" />}
+              className="hidden sm:block"
+              href={`https://www.npmjs.com/package/${packageName}`}
+              title="NPM package"
+            />
+            <HeaderLink
+              ariaLabel="GitHub project page"
+              children={<GitHubIcon className="w-6 h-6" />}
+              className="hidden sm:block"
+              href={`https://github.com/bvaughn/${packageName}`}
+              title="Source code"
+            />
+            <HeaderButton
+              ariaLabel="Site navigation menu"
+              className="block md:hidden"
+              isActive={isNavVisible}
+              onClick={() => setIsNavVisible(!isNavVisible)}
+              title={isNavVisible ? "Hide menu" : "Show menu"}
+            >
+              {isNavVisible ? (
+                <XMarkIcon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
+              ) : (
+                <Bars4Icon className="w-6 h-6 fill-current drop-shadow-black/20 drop-shadow-xs" />
+              )}
+            </HeaderButton>
+          </Box>
+        </Box>
+        <div className="grow shrink flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-hidden">
+          <section
+            className={cn(
+              "w-full bg-black/90 md:block md:w-80 md:bg-black/80 overflow-auto",
+              {
+                hidden: !isNavVisible
+              }
+            )}
+          >
+            <Nav children={navLinks} />
+          </section>
+          <main
+            className={cn("w-full bg-black/90 relative overflow-auto", {
+              hidden: isNavVisible
+            })}
+          >
+            <div
+              className="h-full p-4 py-4 overflow-auto [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
+              data-main-scrollable
+            >
+              <Routes>
+                {Object.entries({
+                  ...defaultRoutes,
+                  ...routes
+                }).map(([path, Component]) => (
+                  <Route
+                    element={
+                      <ErrorBoundary key={path}>
+                        <Component />
+                      </ErrorBoundary>
+                    }
+                    key={path}
+                    path={path}
+                  />
+                ))}
+              </Routes>
+            </div>
+          </main>
         </div>
-      </BrowserRouter>
-    </LibraryContext.Provider>
+      </div>
+
+      <SiteSearchModal />
+    </BrowserRouter>
   );
 }
