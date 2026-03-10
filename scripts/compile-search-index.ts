@@ -6,15 +6,21 @@ import { crawlPage } from "./utils/search/crawlPage";
 import type { SiteSearchPage } from "./utils/search/types";
 
 export async function compileSearchIndex({
+  chromeExecutablePath,
+  filterSelector,
   host = "http://localhost:3000",
   outputPath = ["public", "generated"]
 }: {
+  chromeExecutablePath?: string | undefined;
+  filterSelector?: string | undefined;
   host?: string;
   outputPath?: string[];
 } = {}) {
   const recordsMap: Record<string, SiteSearchPage> = {};
 
   await crawlPage({
+    chromeExecutablePath,
+    filterSelector,
     host,
     path: "/",
     records: recordsMap

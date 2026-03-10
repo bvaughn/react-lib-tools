@@ -57,7 +57,7 @@ export function SiteSearchResults({
   }, [index, inputRef, results, searchTextDeferred]);
 
   return (
-    <ul className="border-t border-white/10 pt-3 mt-3">
+    <ul className="border-t border-white/10 pt-3 mt-3 flex flex-col gap-1 overflow-auto">
       {searchTextDeferred && results.length === 0 && (
         <div>No results for "{searchTextDeferred}"</div>
       )}

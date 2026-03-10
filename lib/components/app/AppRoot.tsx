@@ -29,17 +29,21 @@ import { routes as defaultRoutes } from "./routes";
 import { SiteSearchModal } from "./search/SiteSearchModal";
 
 const siteSearchShortcutKey =
-  navigator.userAgent.indexOf("Win") >= 0 ? "^K" : "⌘K";
+  typeof navigator !== "undefined" && navigator.userAgent.indexOf("Win") >= 0
+    ? "^K"
+    : "⌘K";
 
 /**
  * Displays an application shell with desktop and mobile layouts.
  */
 export function AppRoot({
+  enableSiteSearch,
   navLinks,
   routes,
   ...context
 }: {
   commonQuestions?: CommonQuestion[];
+  enableSiteSearch?: boolean | undefined;
   navLinks: ReactNode;
   overview?: ReactNode | undefined;
   packageDescription: string;
@@ -51,15 +55,21 @@ export function AppRoot({
 }) {
   return (
     <LibraryContextProvider {...context}>
-      <App navLinks={navLinks} routes={routes} />
+      <App
+        enableSiteSearch={enableSiteSearch}
+        navLinks={navLinks}
+        routes={routes}
+      />
     </LibraryContextProvider>
   );
 }
 
 function App({
+  enableSiteSearch,
   navLinks,
   routes
 }: {
+  enableSiteSearch?: boolean | undefined;
   navLinks: ReactNode;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
 }) {
@@ -97,16 +107,18 @@ function App({
           </Box>
           <div className="grow" />
           <Box align="center" direction="row" gap={4}>
-            <HeaderButton
-              isActive={isSiteSearchVisible}
-              onClick={() => setIsSiteSearchVisible(!isSiteSearchVisible)}
-              title="Site search"
-            >
-              <div className="h-8 flex items-center justify-center gap-1 px-2 bg-black/40 rounded-full text-sm">
-                <MagnifyingGlassIcon className="w-4 h-4" />
-                {siteSearchShortcutKey}
-              </div>
-            </HeaderButton>
+            {enableSiteSearch && (
+              <HeaderButton
+                isActive={isSiteSearchVisible}
+                onClick={() => setIsSiteSearchVisible(!isSiteSearchVisible)}
+                title="Site search"
+              >
+                <div className="h-8 flex items-center justify-center gap-1 px-2 rounded-full text-sm bg-black/40 hover:bg-black/60 transition-colors!">
+                  <MagnifyingGlassIcon className="w-4 h-4" />
+                  {siteSearchShortcutKey}
+                </div>
+              </HeaderButton>
+            )}
             {versions !== undefined && (
               <HeaderLink
                 ariaLabel="Documentation for other versions"
@@ -185,7 +197,7 @@ function App({
         </div>
       </div>
 
-      <SiteSearchModal />
+      {enableSiteSearch && <SiteSearchModal />}
     </BrowserRouter>
   );
 }

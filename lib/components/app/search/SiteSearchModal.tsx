@@ -44,9 +44,9 @@ export function SiteSearchModal() {
         setIsSiteSearchVisible(false);
       }}
     >
-      <div className="shadow-lg bg-black/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200">
+      <div className="shadow-background-gradient-2/20 shadow-md bg-black/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200 max-h-full overflow-auto flex flex-col">
         <div
-          className="flex items-center gap-3"
+          className="flex items-center gap-3 shrink-0"
           onClick={(event) => event.stopPropagation()}
         >
           <MagnifyingGlassIcon className="w-4 h-4" />

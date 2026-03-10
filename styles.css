@@ -37,8 +37,8 @@
   --color-header-icons: var(--color-white);
 
   --color-data-focus: var(--color-sky-300);
-  --color-link: var(--color-sky-400);
   --color-data-focus-bold: var(--color-sky-600);
+  --color-link: var(--color-sky-400);
 
   --color-nav-active: var(--color-fuchsia-400);
   --color-nav-hover: var(--color-fuchsia-200);
