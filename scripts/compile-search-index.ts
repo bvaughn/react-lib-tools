@@ -4,6 +4,7 @@ import { join } from "node:path";
 import type { SiteSearchRecord } from "react-lib-tools";
 import { crawlPage } from "./utils/search/crawlPage";
 import type { SiteSearchPage } from "./utils/search/types";
+import { waitForConnection } from "./utils/search/waitForConnection";
 
 export async function compileSearchIndex({
   chromeExecutablePath,
@@ -17,6 +18,13 @@ export async function compileSearchIndex({
   outputPath?: string[];
 } = {}) {
   const recordsMap: Record<string, SiteSearchPage> = {};
+
+  const url = new URL(host);
+
+  await waitForConnection({
+    host: url.hostname,
+    port: parseInt(url.port)
+  });
 
   await crawlPage({
     chromeExecutablePath,
