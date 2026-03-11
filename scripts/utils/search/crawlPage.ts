@@ -64,10 +64,6 @@ export async function crawlPage({
             }
           }
 
-          if (child.hasAttribute("data-demo")) {
-            continue;
-          }
-
           if (filterSelector && child.querySelector(filterSelector)) {
             continue;
           }
