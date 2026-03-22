@@ -159,7 +159,7 @@ function App({
         <div className="grow shrink flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-hidden">
           <section
             className={cn(
-              "w-full bg-black/90 md:block md:w-80 md:bg-black/80 overflow-auto",
+              "w-full bg-black/90 md:block md:w-80 md:bg-black/80 overflow-hidden",
               {
                 hidden: !isNavVisible
               }
