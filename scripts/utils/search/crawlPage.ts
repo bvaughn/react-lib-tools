@@ -1,4 +1,5 @@
 import puppeteer from "puppeteer";
+import { scheduleWork } from "./scheduleWork";
 import { stopWords } from "./stopWords";
 import type { SiteSearchPage } from "./types";
 
@@ -98,25 +99,30 @@ export async function crawlPage({
     title: result.title
   };
 
-  await Promise.all(
-    result.paths
-      .filter((current) => !records[current])
-      .map((current) => {
-        records[current] = {
-          path: current,
-          text: "",
-          title: ""
-        };
+  const filteredPaths = result.paths.filter((current) => {
+    if (!records[current]) {
+      records[current] = {
+        path: current,
+        text: "",
+        title: ""
+      };
 
-        return crawlPage({
+      return path;
+    }
+  });
+
+  await browser.close();
+
+  scheduleWork(
+    ...filteredPaths.map(
+      (current) => () =>
+        crawlPage({
           chromeExecutablePath,
           filterSelector,
           host,
           path: current,
           records
-        });
-      })
+        })
+    )
   );
-
-  await browser.close();
 }

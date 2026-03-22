@@ -3,6 +3,7 @@ import { writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { SiteSearchRecord } from "react-lib-tools";
 import { crawlPage } from "./utils/search/crawlPage";
+import { scheduleWork } from "./utils/search/scheduleWork";
 import type { SiteSearchPage } from "./utils/search/types";
 import { waitForConnection } from "./utils/search/waitForConnection";
 
@@ -26,13 +27,15 @@ export async function compileSearchIndex({
     port: parseInt(url.port)
   });
 
-  await crawlPage({
-    chromeExecutablePath,
-    filterSelector,
-    host,
-    path: "/",
-    records: recordsMap
-  });
+  await scheduleWork(async () =>
+    crawlPage({
+      chromeExecutablePath,
+      filterSelector,
+      host,
+      path: "/",
+      records: recordsMap
+    })
+  );
 
   const records = Object.values(recordsMap);
 
