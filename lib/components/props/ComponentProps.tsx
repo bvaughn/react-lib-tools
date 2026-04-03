@@ -23,7 +23,7 @@ export function ComponentProps({
       <Header
         section={section}
         sourceCodePath={json.filePath}
-        title={`${json.name} component`}
+        title={`${json.name} component props`}
       />
       <DocsSection sections={json.description} />
       <ComponentPropsSection header="Required props" props={requiredProps} />

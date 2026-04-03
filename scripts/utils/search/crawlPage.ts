@@ -36,6 +36,8 @@ export async function crawlPage({
   await page.goto(`${host}${path}`);
   await page.waitForSelector("main");
 
+  page.on("console", (event) => console.log(event.text()));
+
   const result = await page.evaluate(
     async ([filterSelector, stopWords]) => {
       const paths: string[] = [];
@@ -53,38 +55,52 @@ export async function crawlPage({
         document.body.querySelector("header [data-title]")?.textContent ?? "";
 
       const words = new Set<string>();
-      const texts: string[] = [];
+      let text = "";
 
-      const main = document.body.querySelector("header")?.parentElement;
+      const main = document.body.querySelector("[data-main-scrollable]");
       if (main) {
-        for (const child of main.children) {
-          switch (child.tagName) {
-            //   case "CODE":
-            case "HEADER": {
-              continue;
-            }
-          }
+        text = main.innerHTML;
 
-          if (filterSelector && child.querySelector(filterSelector)) {
-            continue;
-          }
-
-          if (child.textContent) {
-            texts.push(child.textContent);
-            child.textContent.split(/[\s.:]/).forEach((word) => {
-              word = word.trim().toLowerCase();
-              if (word && !stopWords.includes(word)) {
-                words.add(word);
-              }
-            });
+        // Filter out special content (e.g. lorem ipsum type text)
+        if (filterSelector) {
+          const matches = document.querySelectorAll(filterSelector);
+          for (const match of matches) {
+            text = text.replace(match.outerHTML, "");
           }
         }
+
+        // Ensure whitespace between HTML tags
+        text = text.replaceAll("><", "> <");
+
+        // Strip HTML tags
+        text = text.replaceAll(/<[^>]+>/g, "");
+
+        // Replace HTML entities
+        const HTML_ENTITIES: { [chars: string]: string } = {
+          "&amp;": "&",
+          "&lt;": "<",
+          "&gt;": ">",
+          "&quot;": '"',
+          "&#039;": "'",
+          "&ndash;": "-",
+          "&nbsp;": " "
+        };
+        for (const chars in HTML_ENTITIES) {
+          text = text.replaceAll(chars, HTML_ENTITIES[chars]);
+        }
+
+        text.split(/[\s.:?]/).forEach((word) => {
+          word = word.trim().toLowerCase();
+          if (word && !stopWords.includes(word)) {
+            words.add(word);
+          }
+        });
       }
 
       return {
         paths,
         section,
-        text: texts.join(" "),
+        text,
         title,
         words: Array.from(words)
       };

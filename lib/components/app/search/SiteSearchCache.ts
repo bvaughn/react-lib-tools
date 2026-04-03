@@ -18,6 +18,7 @@ export function read() {
         const fuse = new Fuse<SiteSearchRecord>(
           records,
           {
+            distance: 1000,
             ignoreLocation: true,
             includeMatches: false,
             isCaseSensitive: false,
@@ -27,7 +28,8 @@ export function read() {
               { name: "text", weight: 1 }
             ],
             minMatchCharLength: 2,
-            threshold: 0
+            threshold: 0.1,
+            useExtendedSearch: true
           },
           Fuse.parseIndex<SiteSearchRecord>(searchIndex)
         );
