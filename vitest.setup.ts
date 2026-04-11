@@ -1,3 +1,4 @@
+import type { PropsWithChildren, ReactElement } from "react";
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
@@ -12,6 +13,20 @@ const PROTOTYPE_PROPS = [
 
 failOnConsole({
   shouldFailOnError: true
+});
+
+expect.addSnapshotSerializer({
+  serialize(value: ReactElement<PropsWithChildren>) {
+    return `<mark>${value.props.children ?? ""}</mark>`;
+  },
+  test(value) {
+    return (
+      value !== null &&
+      typeof value === "object" &&
+      "type" in value &&
+      value.type === "mark"
+    );
+  }
 });
 
 expect.addSnapshotSerializer({

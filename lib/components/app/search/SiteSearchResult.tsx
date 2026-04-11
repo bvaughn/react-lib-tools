@@ -1,9 +1,10 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import type { FuseResult } from "fuse.js";
-import { useEffect, useMemo, useRef, type ReactNode } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { cn } from "../../../utils/cn";
-import type { SiteSearchRecord } from "./SiteSearchTypes";
 import { Link } from "../../Link";
+import { renderHighlightedText } from "./renderHighlightedText";
+import type { SiteSearchRecord } from "./SiteSearchTypes";
 
 export function SiteSearchResult({
   isActive,
@@ -68,63 +69,4 @@ export function SiteSearchResult({
       </Link>
     </li>
   );
-}
-
-function renderHighlightedText(
-  text: string,
-  query: string,
-  config?: {
-    maxLength: number;
-    leading: number;
-  }
-) {
-  const { maxLength = 250, leading = 0 } = config ?? {};
-
-  query = query.toLowerCase();
-
-  if (maxLength && text.length > maxLength) {
-    const firstIndex = text.toLowerCase().indexOf(query);
-    const startIndex = Math.max(0, firstIndex - leading);
-    const stopIndex = Math.min(text.length, startIndex + maxLength);
-
-    text = text.substring(startIndex, stopIndex);
-
-    if (startIndex > 0) {
-      text = "…" + text;
-    }
-  }
-
-  const rendered: ReactNode[] = [];
-  const chunks = text.toLowerCase().split(query);
-
-  let firstIndex = -1;
-  let index = 0;
-  for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
-    const chunk = chunks[chunkIndex];
-
-    rendered.push(text.substring(index, index + chunk.length));
-
-    index += chunk.length;
-
-    if (firstIndex < 0) {
-      firstIndex = index;
-    }
-
-    const match = text.substring(index, index + query.length);
-    if (match) {
-      rendered.push(
-        <mark className="bg-transparent text-sky-300" key={index}>
-          {match}
-        </mark>
-      );
-    }
-
-    index += query.length;
-  }
-
-  if (index < text.length - 1) {
-    rendered.push(text.substring(index));
-  }
-
-  return rendered;
 }

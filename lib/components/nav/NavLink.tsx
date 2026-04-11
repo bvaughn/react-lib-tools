@@ -19,9 +19,10 @@ export function NavLink<Path extends string = DefaultPath>({
         <NavButton
           className={cn(
             "px-4 cursor-pointer",
+            "active:animate-pulse",
             {
               "font-bold text-nav-active hover:text-nav-hover": isActive,
-              "opacity-50 pointer-events-none": isPending
+              "animate-pulse pointer-events-none": isPending
             },
             className
           )}
