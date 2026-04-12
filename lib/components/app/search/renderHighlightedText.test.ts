@@ -5,7 +5,7 @@ describe("renderHighlightedText", () => {
   test("empty", () => {
     expect(renderHighlightedText("", "")).toMatchInlineSnapshot(`""`);
     expect(renderHighlightedText("foo", "")).toMatchInlineSnapshot(`"foo"`);
-    expect(renderHighlightedText("", "foo")).toMatchInlineSnapshot(`[]`);
+    expect(renderHighlightedText("", "foo")).toMatchInlineSnapshot(`""`);
   });
 
   test("no matches", () => {
@@ -129,5 +129,95 @@ describe("renderHighlightedText", () => {
         <mark>baz</mark>,
       ]
     `);
+  });
+
+  describe("config", () => {
+    test("should not truncate if text shorter than max-length", () => {
+      expect(
+        renderHighlightedText("1234567890", "5", {
+          maxLength: 10,
+          leading: 5
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "1234",
+          <mark>5</mark>,
+          "67890",
+        ]
+      `);
+    });
+
+    test("should truncate (but not offset) if longer than max-length", () => {
+      expect(
+        renderHighlightedText("1234567890", "5", {
+          maxLength: 6,
+          leading: 3
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "1234",
+          <mark>5</mark>,
+          "6…",
+        ]
+      `);
+
+      // Should orient around the first matching search term
+      expect(
+        renderHighlightedText("1234567890", "8 5", {
+          maxLength: 6,
+          leading: 3
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "1234",
+          <mark>5</mark>,
+          "6…",
+        ]
+      `);
+    });
+
+    test("should show both leading and trailing ellipsis if appropriate", () => {
+      expect(
+        renderHighlightedText("1234567890", "7", {
+          maxLength: 5,
+          leading: 2
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "…56",
+          <mark>7</mark>,
+          "89…",
+        ]
+      `);
+
+      // Should orient around the first matching search term
+      expect(
+        renderHighlightedText("1234567890", "0 7", {
+          maxLength: 5,
+          leading: 2
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "…56",
+          <mark>7</mark>,
+          "89…",
+        ]
+      `);
+    });
+
+    test("should truncate and offset if longer than max-length and too far from the beginning", () => {
+      expect(
+        renderHighlightedText("1234567890", "8", {
+          maxLength: 6,
+          leading: 3
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "…567",
+          <mark>8</mark>,
+          "90",
+        ]
+      `);
+    });
   });
 });

@@ -16,20 +16,13 @@ export function SiteSearchResult({
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
-  const title = useMemo(
-    () => renderHighlightedText(result.title, searchTextDeferred),
-    [searchTextDeferred, result.title]
-  );
-
-  const text = useMemo(
-    () =>
-      result.text
-        ? renderHighlightedText(result.text, searchTextDeferred, {
-            maxLength: 150,
-            leading: 25
-          })
-        : "",
-    [searchTextDeferred, result.text]
+  const { section, text, title } = useMemo(
+    () => ({
+      section: renderHighlightedText(result.section ?? "", searchTextDeferred),
+      text: result.text,
+      title: renderHighlightedText(result.title, searchTextDeferred)
+    }),
+    [result, searchTextDeferred]
   );
 
   useEffect(() => {
@@ -56,8 +49,12 @@ export function SiteSearchResult({
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
           <div className="grow text-lg truncate text-white">
-            {result.section}
-            {result.section && " "}
+            {section && (
+              <>
+                {section}
+                <ChevronRightIcon className="size-4 text-slate-400 inline" />{" "}
+              </>
+            )}
             {title}
           </div>
           {text && <div className="text-sm truncate pb-1">{text}</div>}

@@ -8,7 +8,11 @@ export function renderHighlightedText(
     leading: number;
   }
 ) {
-  const { maxLength = 250, leading = 0 } = config ?? {};
+  if (!text) {
+    return "";
+  }
+
+  const { maxLength = 0, leading = 0 } = config ?? {};
 
   query = query.trim().toLowerCase();
 
@@ -17,15 +21,27 @@ export function renderHighlightedText(
     return text;
   }
 
-  if (maxLength && text.length > maxLength) {
-    const firstIndex = text.toLowerCase().indexOf(terms[0]);
-    const startIndex = Math.max(0, firstIndex - leading);
-    const stopIndex = Math.min(text.length, startIndex + maxLength);
+  const length = text.length;
 
-    text = text.substring(startIndex, stopIndex);
+  if (maxLength && length > maxLength) {
+    const [matchIndexStart, matchIndexStop] = findFirstMatch(
+      text.toLowerCase(),
+      terms
+    );
 
-    if (startIndex > 0) {
-      text = "…" + text;
+    if (matchIndexStop <= maxLength) {
+      text = text.substring(0, maxLength) + "…";
+    } else {
+      const startIndex = Math.max(0, matchIndexStart - leading);
+      const stopIndex = Math.min(length, startIndex + maxLength);
+
+      if (stopIndex > maxLength) {
+        text = "…" + text.substring(startIndex, stopIndex);
+      }
+
+      if (stopIndex < length) {
+        text += "…";
+      }
     }
   }
 
@@ -84,4 +100,19 @@ function createMark(text: string) {
     className: "bg-transparent text-sky-300",
     key: ++key
   });
+}
+
+function findFirstMatch(text: string, terms: string[]) {
+  let matchIndexStart = text.length;
+  let matchIndexStop = text.length;
+
+  terms.forEach((term) => {
+    const index = text.indexOf(term);
+    if (index < matchIndexStart) {
+      matchIndexStart = index;
+      matchIndexStop = index + term.length;
+    }
+  });
+
+  return [matchIndexStart, matchIndexStop];
 }

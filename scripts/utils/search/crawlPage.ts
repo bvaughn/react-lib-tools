@@ -47,11 +47,19 @@ export async function crawlPage({
         }
       }
 
-      const section =
-        document.body.querySelector("header [data-section]")?.textContent ||
-        undefined;
-      const title =
-        document.body.querySelector("header [data-title]")?.textContent ?? "";
+      const sectionElement = document.body.querySelector(
+        "header [data-section]"
+      );
+      if (sectionElement) {
+        sectionElement.parentElement?.removeChild(sectionElement);
+      }
+      const section = sectionElement?.textContent || undefined;
+
+      const titleElement = document.body.querySelector("header [data-title]");
+      if (titleElement) {
+        titleElement.parentElement?.removeChild(titleElement);
+      }
+      const title = titleElement?.textContent ?? "";
 
       let text = "";
 
