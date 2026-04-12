@@ -3,12 +3,8 @@ import { renderHighlightedText } from "./renderHighlightedText";
 
 describe("renderHighlightedText", () => {
   test("empty", () => {
-    expect(renderHighlightedText("", "")).toMatchInlineSnapshot(`[]`);
-    expect(renderHighlightedText("foo", "")).toMatchInlineSnapshot(`
-      [
-        "foo",
-      ]
-    `);
+    expect(renderHighlightedText("", "")).toMatchInlineSnapshot(`""`);
+    expect(renderHighlightedText("foo", "")).toMatchInlineSnapshot(`"foo"`);
     expect(renderHighlightedText("", "foo")).toMatchInlineSnapshot(`[]`);
   });
 

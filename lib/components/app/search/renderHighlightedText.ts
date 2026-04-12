@@ -12,8 +12,13 @@ export function renderHighlightedText(
 
   query = query.trim().toLowerCase();
 
+  const terms = query.split(" ").filter(Boolean);
+  if (terms.length === 0) {
+    return text;
+  }
+
   if (maxLength && text.length > maxLength) {
-    const firstIndex = text.toLowerCase().indexOf(query);
+    const firstIndex = text.toLowerCase().indexOf(terms[0]);
     const startIndex = Math.max(0, firstIndex - leading);
     const stopIndex = Math.min(text.length, startIndex + maxLength);
 
@@ -27,11 +32,8 @@ export function renderHighlightedText(
   let markedText = text;
 
   if (query) {
-    query.split(/\s+/).forEach((current) => {
-      markedText = markedText.replaceAll(
-        new RegExp(`(${current})`, "gi"),
-        "├$1┤"
-      );
+    terms.forEach((term) => {
+      markedText = markedText.replaceAll(new RegExp(`(${term})`, "gi"), "├$1┤");
     });
   }
 
