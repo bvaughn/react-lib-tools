@@ -1,38 +1,35 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import type { FuseResult } from "fuse.js";
 import { useEffect, useMemo, useRef } from "react";
+import type { SiteMapPage } from "../../../../types";
 import { cn } from "../../../utils/cn";
 import { Link } from "../../Link";
 import { renderHighlightedText } from "./renderHighlightedText";
-import type { SiteSearchRecord } from "./SiteSearchTypes";
 
 export function SiteSearchResult({
   isActive,
-  result: {
-    item: { path, section, text: textProp, title: titleProp }
-  },
+  result,
   searchTextDeferred
 }: {
   isActive: boolean;
-  result: FuseResult<SiteSearchRecord>;
+  result: SiteMapPage;
   searchTextDeferred: string;
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
   const title = useMemo(
-    () => renderHighlightedText(titleProp, searchTextDeferred),
-    [searchTextDeferred, titleProp]
+    () => renderHighlightedText(result.title, searchTextDeferred),
+    [searchTextDeferred, result.title]
   );
 
   const text = useMemo(
     () =>
-      textProp
-        ? renderHighlightedText(textProp, searchTextDeferred, {
+      result.text
+        ? renderHighlightedText(result.text, searchTextDeferred, {
             maxLength: 150,
             leading: 25
           })
         : "",
-    [searchTextDeferred, textProp]
+    [searchTextDeferred, result.text]
   );
 
   useEffect(() => {
@@ -55,12 +52,12 @@ export function SiteSearchResult({
           }
         )}
         data-active-search-result={isActive || undefined}
-        to={path}
+        to={result.path}
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
           <div className="grow text-lg truncate text-white">
-            {section}
-            {section && " "}
+            {result.section}
+            {result.section && " "}
             {title}
           </div>
           {text && <div className="text-sm truncate pb-1">{text}</div>}

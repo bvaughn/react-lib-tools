@@ -1,7 +1,7 @@
 import { use, useEffect, useMemo, useState } from "react";
 import { read } from "./SiteSearchCache";
 import { SiteSearchResult } from "./SiteSearchResult";
-import type { SiteSearchRecord } from "./SiteSearchTypes";
+import { search } from "./search";
 
 export function SiteSearchResults({
   inputRef,
@@ -10,19 +10,17 @@ export function SiteSearchResults({
   inputRef: HTMLInputElement | null;
   searchTextDeferred: string;
 }) {
-  const fuse = use(read());
+  const siteMap = use(read());
 
   const [index, setIndex] = useState(0);
 
   const results = useMemo(() => {
     if (searchTextDeferred) {
-      return fuse.search<SiteSearchRecord>(searchTextDeferred, {
-        limit: 10
-      });
+      return search(siteMap, searchTextDeferred).slice(0, 10);
     } else {
       return [];
     }
-  }, [fuse, searchTextDeferred]);
+  }, [searchTextDeferred, siteMap]);
 
   useEffect(() => {
     if (inputRef) {

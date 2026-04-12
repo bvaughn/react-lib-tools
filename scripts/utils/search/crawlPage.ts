@@ -1,20 +1,19 @@
 import puppeteer from "puppeteer";
+import type { SiteMapPage } from "../../../types";
 import { scheduleWork } from "./scheduleWork";
-import { stopWords } from "./stopWords";
-import type { SiteSearchPage } from "./types";
 
 export async function crawlPage({
   chromeExecutablePath,
   filterSelector,
   host,
   path,
-  records
+  siteMap
 }: {
   chromeExecutablePath?: string | undefined;
   filterSelector?: string | undefined;
   host: string;
   path: string;
-  records: Record<string, SiteSearchPage>;
+  siteMap: Record<string, SiteMapPage>;
 }) {
   console.log(`Crawling ${host}${path} ...`);
 
@@ -39,7 +38,7 @@ export async function crawlPage({
   page.on("console", (event) => console.log(event.text()));
 
   const result = await page.evaluate(
-    async ([filterSelector, stopWords]) => {
+    async ([HTML_ENTITIES, filterSelector]) => {
       const paths: string[] = [];
       for (const element of document.body.querySelectorAll("[data-link]")) {
         const to = element.getAttribute("data-link");
@@ -54,11 +53,16 @@ export async function crawlPage({
       const title =
         document.body.querySelector("header [data-title]")?.textContent ?? "";
 
-      const words = new Set<string>();
       let text = "";
 
       const main = document.body.querySelector("[data-main-scrollable]");
       if (main) {
+        // Pre-convert content inside of <code> blocks (example code) into plain text
+        for (const code of main.querySelectorAll("code")) {
+          // eslint-disable-next-line no-self-assign
+          code.textContent = code.textContent;
+        }
+
         text = main.innerHTML;
 
         // Filter out special content (e.g. lorem ipsum type text)
@@ -76,39 +80,25 @@ export async function crawlPage({
         text = text.replaceAll(/<[^>]+>/g, "");
 
         // Replace HTML entities
-        const HTML_ENTITIES: { [chars: string]: string } = {
-          "&amp;": "&",
-          "&lt;": "<",
-          "&gt;": ">",
-          "&quot;": '"',
-          "&#039;": "'",
-          "&ndash;": "-",
-          "&nbsp;": " "
-        };
         for (const chars in HTML_ENTITIES) {
           text = text.replaceAll(chars, HTML_ENTITIES[chars]);
         }
 
-        text.split(/[\s.:?]/).forEach((word) => {
-          word = word.trim().toLowerCase();
-          if (word && !stopWords.includes(word)) {
-            words.add(word);
-          }
-        });
+        // Remove excess white space
+        text = text.replaceAll(/ {2,}/g, " ");
       }
 
       return {
         paths,
         section,
         text,
-        title,
-        words: Array.from(words)
+        title
       };
     },
-    [filterSelector, stopWords] as const
+    [HTML_ENTITIES, filterSelector] as const
   );
 
-  records[path] = {
+  siteMap[path] = {
     path,
     section: result.section,
     text: result.text,
@@ -116,8 +106,8 @@ export async function crawlPage({
   };
 
   const filteredPaths = result.paths.filter((current) => {
-    if (!records[current]) {
-      records[current] = {
+    if (!siteMap[current]) {
+      siteMap[current] = {
         path: current,
         text: "",
         title: ""
@@ -137,8 +127,18 @@ export async function crawlPage({
           filterSelector,
           host,
           path: current,
-          records
+          siteMap
         })
     )
   );
 }
+
+const HTML_ENTITIES: { [chars: string]: string } = {
+  "&amp;": "&",
+  "&lt;": "<",
+  "&gt;": ">",
+  "&quot;": '"',
+  "&#039;": "'",
+  "&ndash;": "-",
+  "&nbsp;": " "
+};
