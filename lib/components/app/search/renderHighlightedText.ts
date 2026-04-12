@@ -10,7 +10,7 @@ export function renderHighlightedText(
 ) {
   const { maxLength = 250, leading = 0 } = config ?? {};
 
-  query = query.toLowerCase();
+  query = query.trim().toLowerCase();
 
   if (maxLength && text.length > maxLength) {
     const firstIndex = text.toLowerCase().indexOf(query);
@@ -27,7 +27,7 @@ export function renderHighlightedText(
   let markedText = text;
 
   if (query) {
-    query.split(" ").forEach((current) => {
+    query.split(/\s+/).forEach((current) => {
       markedText = markedText.replaceAll(
         new RegExp(`(${current})`, "gi"),
         "├$1┤"

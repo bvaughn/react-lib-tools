@@ -65,4 +65,13 @@ describe("search", () => {
   test("sorting prefers multiple matches", async () => {
     expect(search(siteMap, "ba")).toEqual([siteMap[1], siteMap[0], siteMap[2]]);
   });
+
+  test("extra spaces", async () => {
+    expect(await search(siteMap, "  baz")).toEqual([siteMap[1], siteMap[2]]);
+    expect(await search(siteMap, "baz  ")).toEqual([siteMap[1], siteMap[2]]);
+    expect(await search(siteMap, "foo    quxes")).toEqual([
+      siteMap[0],
+      siteMap[2]
+    ]);
+  });
 });

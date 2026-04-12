@@ -102,4 +102,36 @@ describe("renderHighlightedText", () => {
       ]
     `);
   });
+
+  test("leading or trailing space", () => {
+    expect(renderHighlightedText("foo bar baz", "  bar"))
+      .toMatchInlineSnapshot(`
+      [
+        "foo ",
+        <mark>bar</mark>,
+        " baz",
+      ]
+    `);
+
+    expect(renderHighlightedText("foo bar baz", "bar  "))
+      .toMatchInlineSnapshot(`
+      [
+        "foo ",
+        <mark>bar</mark>,
+        " baz",
+      ]
+    `);
+  });
+
+  test("inner space", () => {
+    expect(renderHighlightedText("foo bar baz", "bar   baz"))
+      .toMatchInlineSnapshot(`
+      [
+        "foo ",
+        <mark>bar</mark>,
+        " ",
+        <mark>baz</mark>,
+      ]
+    `);
+  });
 });
