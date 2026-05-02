@@ -1,6 +1,6 @@
 {
   "name": "react-lib-tools",
-  "version": "0.0.52",
+  "version": "0.0.53",
   "type": "module",
   "author": "Brian Vaughn <brian.david.vaughn@gmail.com> (https://github.com/bvaughn/)",
   "contributors": [
@@ -18,7 +18,8 @@
     "dist",
     "lib/types.ts",
     "scripts",
-    "styles.css"
+    "styles.css",
+    "types.ts"
   ],
   "scripts": {
     "dev": "vite",
