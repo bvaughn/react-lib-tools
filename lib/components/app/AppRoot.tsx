@@ -175,9 +175,12 @@ function App({
             <Nav children={navLinks} />
           </section>
           <main
-            className={cn("w-full bg-black/90 relative overflow-auto", {
-              hidden: isNavVisible
-            })}
+            className={cn(
+              "w-full bg-black/90 relative overflow-auto md:block",
+              {
+                hidden: isNavVisible
+              }
+            )}
           >
             <div
               className="h-full overflow-auto px-4 pt-7 pb-14 md:px-8 md:pt-9 md:pb-16 xl:px-10 [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"

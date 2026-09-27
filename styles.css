@@ -34,11 +34,7 @@
 
   --color-header-package-name: var(--color-white);
   --color-header-package-description: var(--color-white);
-  --color-header-section: color-mix(
-    in oklab,
-    var(--color-white) 58%,
-    var(--color-fuchsia-300)
-  );
+  --color-header-section: var(--color-fuchsia-300);
   --color-header-icons: var(--color-white);
 
   --color-data-focus: var(--color-sky-300);
