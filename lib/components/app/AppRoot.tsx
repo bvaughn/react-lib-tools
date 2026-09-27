@@ -90,7 +90,12 @@ function App({
       <RouteChangeHandler />
 
       <div className="h-full w-full max-w-350 mx-auto flex flex-col">
-        <Box align="center" className="h-12 w-full p-4" direction="row" gap={4}>
+        <Box
+          align="center"
+          className="min-h-15 w-full px-3 py-2.5 sm:px-5"
+          direction="row"
+          gap={4}
+        >
           {packageLogo ?? <ReactLogoIcon className="shrink-0 w-8 h-8" />}
           <Box
             className="overflow-hidden"
@@ -175,7 +180,7 @@ function App({
             })}
           >
             <div
-              className="h-full p-4 py-4 overflow-auto [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
+              className="h-full overflow-auto px-4 pt-7 pb-14 md:px-8 md:pt-9 md:pb-16 xl:px-10 [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
               data-main-scrollable
             >
               <Routes>

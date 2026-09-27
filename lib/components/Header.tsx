@@ -1,7 +1,4 @@
-import {
-  ArrowTopRightOnSquareIcon,
-  ChevronRightIcon
-} from "@heroicons/react/20/solid";
+import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { useLibraryContext } from "../hooks/useLibraryContext";
 import { ExternalLink } from "./ExternalLink";
 
@@ -18,26 +15,26 @@ export function Header({
 
   return (
     <>
-      <header className="text-xl">
+      <header className="flex flex-col items-start gap-1.5 mb-1">
         {section && (
-          <>
-            <span className="text-xl whitespace-nowrap" data-section>
-              {section}
-            </span>{" "}
-            <ChevronRightIcon className="size-4 text-slate-400 inline" />{" "}
-          </>
-        )}
-        <span className="text-xl" data-title>
-          {title}
-        </span>
-        {sourceCodePath && (
-          <ExternalLink
-            className="text-sm text-emerald-300 hover:text-white"
-            href={`${repositoryUrl}/blob/main/${sourceCodePath}`}
+          <span
+            className="text-xs font-semibold tracking-wide text-header-section"
+            data-section
           >
-            <ArrowTopRightOnSquareIcon className="inline-block size-4 fill-current ml-2 mb-1" />
-          </ExternalLink>
+            {section}
+          </span>
         )}
+        <h1 className="text-2xl font-semibold tracking-tight leading-tight text-balance">
+          <span data-title>{title}</span>
+          {sourceCodePath && (
+            <ExternalLink
+              className="text-sm text-emerald-300 hover:text-white"
+              href={`${repositoryUrl}/blob/main/${sourceCodePath}`}
+            >
+              <ArrowTopRightOnSquareIcon className="inline-block size-4 fill-current ml-2 mb-1" />
+            </ExternalLink>
+          )}
+        </h1>
       </header>
 
       <title>{section ? `${section}: ${title}` : title}</title>
