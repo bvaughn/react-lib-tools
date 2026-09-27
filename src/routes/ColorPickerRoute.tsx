@@ -1,21 +1,26 @@
-import { type CSSProperties } from "react";
+import { type CSSProperties, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { ColorPicker } from "../components/colors/ColorPicker";
 import { colors, type Color } from "../components/colors/colors";
 import { Input } from "../components/Input";
 import { DownloadableSvg } from "../components/og-image/DownloadableSvg";
-import { ReactErrorBoundaryOgImage } from "../components/og-image/ReactErrorBoundaryOgImage";
-import { ReactResizablePanelsOgImage } from "../components/og-image/ReactResizablePanelsOgImage";
-import { ReactVirtualizedAutoSizerOgImage } from "../components/og-image/ReactVirtualizedAutoSizer";
-import { ReactWindowOgImage } from "../components/og-image/ReactWindowOgImage";
+import { GeneratedOgImage } from "../components/og-image/GeneratedOgImage";
+import { Textarea } from "../components/Textarea";
 
 export default function ColorPickerRoute() {
   const [params, setParams] = useSearchParams();
+
+  // Kept in local state (not the URL) since SVG markup can be large
+  const [ogLogoSvg, setOgLogoSvg] = useState("");
 
   const state = {
     gradientColor1: (params.get("gradientColor1") ?? "fuchsia-400") as Color,
     gradientColor2: (params.get("gradientColor2") ?? "purple-700") as Color,
     gradientColor3: (params.get("gradientColor3") ?? "pink-500") as Color,
+    ogGradientColor1: (params.get("ogGradientColor1") ??
+      "emerald-400") as Color,
+    ogGradientColor2: (params.get("ogGradientColor2") ?? "indigo-500") as Color,
+    ogPackageName: params.get("ogPackageName") ?? "package\nname",
     packageDescription:
       params.get("packageDescription") ?? "short package description",
     packageName: params.get("packageName") ?? "package-name"
@@ -25,6 +30,9 @@ export default function ColorPickerRoute() {
     gradientColor1,
     gradientColor2,
     gradientColor3,
+    ogGradientColor1,
+    ogGradientColor2,
+    ogPackageName,
     packageDescription,
     packageName
   } = state;
@@ -89,18 +97,45 @@ export default function ColorPickerRoute() {
           </div>
         </div>
       </div>
-      <div className="flex flex-row flex-wrap gap-4 p-2 items-center justify-center">
+      <div className="flex flex-row items-start gap-4 p-2">
+        <ColorPicker
+          color={ogGradientColor1}
+          onChange={(color) => setParams({ ...state, ogGradientColor1: color })}
+          title="OG image gradient color 1"
+        />
+        <ColorPicker
+          color={ogGradientColor2}
+          onChange={(color) => setParams({ ...state, ogGradientColor2: color })}
+          title="OG image gradient color 2"
+        />
+        <div className="w-1 h-8 bg-white/20 rounded" />
+        <Textarea
+          className="w-40"
+          onChange={(event) =>
+            setParams({ ...state, ogPackageName: event.currentTarget.value })
+          }
+          placeholder="package name"
+          rows={Math.max(2, ogPackageName.split("\n").length)}
+          title="OG image package name (newlines allowed)"
+          value={ogPackageName}
+        />
+        <Textarea
+          className="w-80 font-mono text-xs"
+          onChange={(event) => setOgLogoSvg(event.currentTarget.value)}
+          placeholder="paste logo SVG"
+          rows={4}
+          title="OG image logo SVG"
+          value={ogLogoSvg}
+        />
+      </div>
+      <div className="p-2">
         <DownloadableSvg>
-          <ReactResizablePanelsOgImage />
-        </DownloadableSvg>
-        <DownloadableSvg>
-          <ReactWindowOgImage />
-        </DownloadableSvg>
-        <DownloadableSvg>
-          <ReactErrorBoundaryOgImage />
-        </DownloadableSvg>
-        <DownloadableSvg>
-          <ReactVirtualizedAutoSizerOgImage />
+          <GeneratedOgImage
+            gradientColor1={colors[ogGradientColor1]}
+            gradientColor2={colors[ogGradientColor2]}
+            logoSvg={ogLogoSvg}
+            packageName={ogPackageName}
+          />
         </DownloadableSvg>
       </div>
     </div>
