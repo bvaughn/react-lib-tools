@@ -17,6 +17,7 @@ export function LibraryContextProvider({
   commonQuestions,
   overview,
   packageDescription,
+  packageLogo,
   packageName,
   repositoryUrl,
   showOpenCollectLink,
@@ -25,6 +26,7 @@ export function LibraryContextProvider({
   commonQuestions?: CommonQuestion[];
   overview?: ReactNode | undefined;
   packageDescription: string;
+  packageLogo?: ReactNode;
   packageName: string;
   repositoryUrl: string;
   showOpenCollectLink?: boolean | undefined;
@@ -71,6 +73,7 @@ export function LibraryContextProvider({
       isSiteSearchVisible: state.isSiteSearchVisible,
       overview,
       packageDescription,
+      packageLogo,
       packageName,
       repositoryUrl: repositoryUrl.replace(".git", ""),
       setIsNavVisible,
@@ -82,6 +85,7 @@ export function LibraryContextProvider({
       commonQuestions,
       overview,
       packageDescription,
+      packageLogo,
       packageName,
       repositoryUrl,
       setIsNavVisible,

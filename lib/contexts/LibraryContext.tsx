@@ -11,6 +11,7 @@ export type LibraryContextType = {
   isSiteSearchVisible: boolean;
   overview: ReactNode | undefined;
   packageDescription: string;
+  packageLogo?: ReactNode;
   packageName: string;
   repositoryUrl: string;
   setIsNavVisible: (value: boolean) => void;

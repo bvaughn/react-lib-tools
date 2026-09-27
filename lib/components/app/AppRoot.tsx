@@ -47,6 +47,7 @@ export function AppRoot({
   navLinks: ReactNode;
   overview?: ReactNode | undefined;
   packageDescription: string;
+  packageLogo?: ReactNode;
   packageName: string;
   repositoryUrl: string;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
@@ -77,6 +78,7 @@ function App({
     isNavVisible,
     isSiteSearchVisible,
     packageDescription,
+    packageLogo,
     packageName,
     setIsNavVisible,
     setIsSiteSearchVisible,
@@ -89,7 +91,7 @@ function App({
 
       <div className="h-full w-full max-w-350 mx-auto flex flex-col">
         <Box align="center" className="h-12 w-full p-4" direction="row" gap={4}>
-          <ReactLogoIcon className="shrink-0 w-8 h-8" />
+          {packageLogo ?? <ReactLogoIcon className="shrink-0 w-8 h-8" />}
           <Box
             className="overflow-hidden"
             align="center"
