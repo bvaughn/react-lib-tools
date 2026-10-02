@@ -20,7 +20,7 @@ export function ImperativeHandle({
       />
       <DocsSection sections={json.description} />
       <Box direction="column">
-        <dl className="flex flex-col gap-2">
+        <dl className="flex flex-col">
           {json.methods.map((method, index) => (
             <ImperativeHandleMethod key={index} method={method} />
           ))}

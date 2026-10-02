@@ -1,5 +1,6 @@
 import type { ComponentPropMetadata } from "../../types";
 import { Box } from "../Box";
+import { SectionHeader } from "../SectionHeader";
 import { ComponentProp } from "./ComponentProp";
 
 export function ComponentPropsSection({
@@ -15,7 +16,7 @@ export function ComponentPropsSection({
 
   return (
     <Box direction="column">
-      <div className="text-lg font-bold">{header}</div>
+      <SectionHeader className="mt-0">{header}</SectionHeader>
       <dl>
         {props.map((prop) => (
           <ComponentProp key={prop.name} prop={prop} />

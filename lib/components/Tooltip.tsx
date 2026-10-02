@@ -51,7 +51,8 @@ export function Tooltip({
     ]
   });
 
-  const hover = useHover(context, { enabled: showOnHover });
+  // mouseOnly: touch taps emulate hover, which would leave tooltips stuck open
+  const hover = useHover(context, { enabled: showOnHover, mouseOnly: true });
   const focus = useFocus(context, { enabled: showOnFocus });
 
   const dismiss = useDismiss(context);

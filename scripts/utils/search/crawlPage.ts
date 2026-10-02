@@ -65,6 +65,11 @@ export async function crawlPage({
 
       const main = document.body.querySelector("[data-main-scrollable]");
       if (main) {
+        // Remove site chrome that shouldn't be indexed (e.g. previous/next page links)
+        for (const element of main.querySelectorAll("[data-search-ignore]")) {
+          element.parentElement?.removeChild(element);
+        }
+
         // Pre-convert content inside of <code> blocks (example code) into plain text
         for (const code of main.querySelectorAll("code")) {
           // eslint-disable-next-line no-self-assign

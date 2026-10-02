@@ -1,24 +1,35 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useLibraryContext } from "../../../hooks/useLibraryContext";
+import { scrollToAnchor } from "../../../utils/scrollToAnchor";
 
 export function RouteChangeHandler() {
   const { setIsNavVisible, setIsSiteSearchVisible } = useLibraryContext();
 
-  const { pathname } = useLocation();
+  const { hash, pathname } = useLocation();
 
   useLayoutEffect(() => {
     setIsNavVisible(false);
     setIsSiteSearchVisible(false);
 
     // Wait a frame so the (possibly previously hidden) main content has been laid out
-    // before resetting scroll; scrolling an element while it's display:none is a no-op
-    const frame = requestAnimationFrame(resetScrollPositions);
+    // before scrolling; scrolling an element while it's display:none is a no-op
+    let cancelScrollToAnchor: (() => void) | undefined;
+    const frame = requestAnimationFrame(() => {
+      if (hash.length > 1) {
+        cancelScrollToAnchor = scrollToAnchor(
+          decodeURIComponent(hash.slice(1))
+        );
+      } else {
+        resetScrollPositions();
+      }
+    });
 
     return () => {
       cancelAnimationFrame(frame);
+      cancelScrollToAnchor?.();
     };
-  }, [pathname, setIsNavVisible, setIsSiteSearchVisible]);
+  }, [hash, pathname, setIsNavVisible, setIsSiteSearchVisible]);
 
   return null;
 }

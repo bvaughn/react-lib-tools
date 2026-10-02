@@ -24,7 +24,7 @@ export function Header({
             {section}
           </span>
         )}
-        <h1 className="text-2xl font-semibold tracking-tight leading-tight text-balance">
+        <h1 className="text-3xl font-semibold tracking-tight leading-tight text-balance">
           <span data-title>{title}</span>
           {sourceCodePath && (
             <ExternalLink

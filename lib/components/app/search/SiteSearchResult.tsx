@@ -41,7 +41,8 @@ export function SiteSearchResult({
           "rounded px-2 py-1 text-white/80 hover:text-white hover:bg-white/10 cursor-pointer transition-colors!",
           "flex flex-row items-center gap-2 overflow-auto",
           {
-            "bg-sky-950 hover:bg-sky-950 text-white": isActive
+            "bg-search-result-active hover:bg-search-result-active text-white":
+              isActive
           }
         )}
         data-active-search-result={isActive || undefined}

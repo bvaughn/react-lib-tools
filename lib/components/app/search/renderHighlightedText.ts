@@ -97,7 +97,7 @@ let key = 0;
 function createMark(text: string) {
   return createElement("mark", {
     children: text,
-    className: "bg-transparent text-sky-300",
+    className: "bg-transparent text-search-match",
     key: ++key
   });
 }

@@ -29,14 +29,14 @@ export function HeaderLink({
       <Link
         aria-label={ariaLabel || title}
         children={children}
-        className="text-header-icons! cursor-pointer"
+        className="block text-header-icons! cursor-pointer"
         to={props.to}
       />
     ) : (
       <ExternalLink
         aria-label={ariaLabel || title}
         children={children}
-        className="text-header-icons! cursor-pointer"
+        className="block text-header-icons! cursor-pointer"
         href={props.href}
       />
     );

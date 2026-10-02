@@ -4,6 +4,8 @@ import {
   XMarkIcon
 } from "@heroicons/react/20/solid";
 import {
+  useMemo,
+  useRef,
   type ComponentType,
   type LazyExoticComponent,
   type ReactNode
@@ -14,15 +16,18 @@ import NpmHubIcon from "../../../public/svgs/npm.svg?react";
 import ReactLogoIcon from "../../../public/svgs/react-simplified.svg?react";
 import TagsIcon from "../../../public/svgs/tags.svg?react";
 import { type Versions } from "../../contexts/LibraryContext";
+import { useCardEdges } from "../../hooks/useCardEdges";
 import { useLibraryContext } from "../../hooks/useLibraryContext";
-import type { CommonQuestion } from "../../types";
+import { useNavScrollPosition } from "../../hooks/useNavScrollPosition";
+import type { CommonQuestion, NavConfig } from "../../types";
 import { cn } from "../../utils/cn";
+import { flattenNav } from "../../utils/flattenNav";
 import { Box } from "../Box";
 import { ErrorBoundary } from "../ErrorBoundary";
-import { Link } from "../Link";
 import { HeaderButton } from "../nav/HeaderButton";
 import { HeaderLink } from "../nav/HeaderLink";
 import { Nav } from "../nav/Nav";
+import { PageNavigation } from "../nav/PageNavigation";
 import { LibraryContextProvider } from "./components/LibraryContextProvider";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { routes as defaultRoutes } from "./routes";
@@ -38,13 +43,14 @@ const siteSearchShortcutKey =
  */
 export function AppRoot({
   enableSiteSearch,
-  navLinks,
+  nav,
   routes,
   ...context
 }: {
   commonQuestions?: CommonQuestion[];
   enableSiteSearch?: boolean | undefined;
-  navLinks: ReactNode;
+  /** Site navigation, in reading order; drives the sidebar and previous/next page links */
+  nav: NavConfig;
   overview?: ReactNode | undefined;
   packageDescription: string;
   packageLogo?: ReactNode;
@@ -56,22 +62,18 @@ export function AppRoot({
 }) {
   return (
     <LibraryContextProvider {...context}>
-      <App
-        enableSiteSearch={enableSiteSearch}
-        navLinks={navLinks}
-        routes={routes}
-      />
+      <App enableSiteSearch={enableSiteSearch} nav={nav} routes={routes} />
     </LibraryContextProvider>
   );
 }
 
 function App({
   enableSiteSearch,
-  navLinks,
+  nav,
   routes
 }: {
   enableSiteSearch?: boolean | undefined;
-  navLinks: ReactNode;
+  nav: NavConfig;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
 }) {
   const {
@@ -85,14 +87,22 @@ function App({
     versions
   } = useLibraryContext();
 
+  const flatNav = useMemo(() => flattenNav(nav), [nav]);
+
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  useCardEdges(scrollerRef, cardRef);
+  useNavScrollPosition(scrollerRef, isNavVisible);
+
   return (
     <BrowserRouter>
       <RouteChangeHandler />
 
-      <div className="h-full w-full max-w-350 mx-auto flex flex-col">
+      <div className="h-full w-full flex flex-col">
         <Box
           align="center"
-          className="min-h-15 w-full px-3 py-2.5 sm:px-5"
+          className="shrink-0 h-15 w-full max-w-350 mx-auto px-3 py-2.5 sm:px-5"
+          data-app-header
           direction="row"
           gap={4}
         >
@@ -103,12 +113,10 @@ function App({
             direction="row"
             gap={4}
           >
-            <Link
-              children={packageName}
-              className="text-xl text-header-package-name! font-bold cursor-pointer truncate"
-              to="/"
-            />
-            <div className="hidden md:block text-header-package-description">
+            <div className="text-xl text-header-package-name font-bold truncate">
+              {packageName}
+            </div>
+            <div className="hidden md:block font-medium text-header-package-description text-shadow-xs text-shadow-black/40">
               {packageDescription}
             </div>
           </Box>
@@ -122,7 +130,10 @@ function App({
               >
                 <div className="h-8 flex items-center justify-center gap-1 px-2 rounded-full text-sm bg-black/40 hover:bg-black/60 transition-colors!">
                   <MagnifyingGlassIcon className="w-4 h-4" />
-                  {siteSearchShortcutKey}
+                  {/* Keyboard shortcuts don't apply on touch-sized screens */}
+                  <span className="hidden sm:inline">
+                    {siteSearchShortcutKey}
+                  </span>
                 </div>
               </HeaderButton>
             )}
@@ -163,47 +174,60 @@ function App({
             </HeaderButton>
           </Box>
         </Box>
-        <div className="grow shrink flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-hidden">
-          <section
-            className={cn(
-              "w-full bg-black/90 md:block md:w-80 md:bg-black/80 overflow-hidden",
-              {
-                hidden: !isNavVisible
-              }
-            )}
-          >
-            <Nav children={navLinks} />
-          </section>
-          <main
-            className={cn(
-              "w-full bg-black/90 relative overflow-auto md:block",
-              {
-                hidden: isNavVisible
-              }
-            )}
-          >
+        {/* Everything below the header scrolls as one page, so the scrollbar sits at the window edge */}
+        <div
+          className="grow min-h-0 overflow-y-auto [scrollbar-color:rgb(255_255_255/0.35)_transparent]"
+          data-app-scroller
+          ref={scrollerRef}
+        >
+          <div className="min-h-full w-full max-w-350 mx-auto flex flex-col">
             <div
-              className="h-full overflow-auto px-4 pt-7 pb-14 md:px-8 md:pt-9 md:pb-16 xl:px-10 [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
-              data-main-scrollable
+              className="grow flex flex-row shadow-lg mx-2 rounded-t-3xl overflow-clip"
+              ref={cardRef}
             >
-              <Routes>
-                {Object.entries({
-                  ...defaultRoutes,
-                  ...routes
-                }).map(([path, Component]) => (
-                  <Route
-                    element={
-                      <ErrorBoundary key={path}>
-                        <Component />
-                      </ErrorBoundary>
-                    }
-                    key={path}
-                    path={path}
-                  />
-                ))}
-              </Routes>
+              <section
+                className={cn(
+                  "w-full bg-black/90 md:block md:w-64 md:shrink-0 md:bg-black/80",
+                  {
+                    hidden: !isNavVisible
+                  }
+                )}
+              >
+                {/* Sticks below the header (h-15) while the page scrolls */}
+                <div className="sticky top-0 h-[calc(100dvh-3.75rem)]">
+                  <Nav nav={nav} />
+                </div>
+              </section>
+              <main
+                className={cn("w-full min-w-0 bg-black/90 relative md:block", {
+                  hidden: isNavVisible
+                })}
+              >
+                <div
+                  className="text-base md:text-[15px] leading-relaxed px-4 pt-7 pb-14 md:px-8 md:pt-9 md:pb-16 xl:px-10"
+                  data-main-scrollable
+                >
+                  <Routes>
+                    {Object.entries({
+                      ...defaultRoutes,
+                      ...routes
+                    }).map(([path, Component]) => (
+                      <Route
+                        element={
+                          <ErrorBoundary key={path}>
+                            <Component />
+                          </ErrorBoundary>
+                        }
+                        key={path}
+                        path={path}
+                      />
+                    ))}
+                  </Routes>
+                  <PageNavigation items={flatNav} />
+                </div>
+              </main>
             </div>
-          </main>
+          </div>
         </div>
       </div>
 
