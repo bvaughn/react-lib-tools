@@ -72,3 +72,7 @@ The following CSS variables can be overridden to customize the theme:
 ```
 
 Note: [this tool](https://react-lib-tools.vercel.app/color-picker?color1=emerald-400&color2=indigo-500&color3=emerald-400&packageDescription=render+everything&packageName=react-window) can be helpful in picking theme colors and generating an OG image.
+
+## Contributing
+
+See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines, and [ARCHITECTURE.md](./ARCHITECTURE.md) for an overview of how the project is organized.
