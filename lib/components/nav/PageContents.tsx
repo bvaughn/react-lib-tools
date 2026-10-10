@@ -73,11 +73,10 @@ export function PageContents() {
 
     // On small screens the sidebar is hidden (display:none) while content is showing;
     // nothing can be measured or scrolled, so wait until it's opened
-    if (container.clientHeight === 0) {
+    const containerRect = container.getBoundingClientRect();
+    if (containerRect.height === 0) {
       return;
     }
-
-    const containerRect = container.getBoundingClientRect();
 
     // When a page first opens, show its link near the top of the sidebar (followed by its contents),
     // unless the link and its contents are already fully visible
