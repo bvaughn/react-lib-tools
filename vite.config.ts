@@ -28,13 +28,7 @@ const libraryConfig: UserConfig = {
       }
     }
   },
-  plugins: [
-    react(),
-    svgr(),
-    tailwindcss({ optimize: { minify: false } }),
-    dts({ rollupTypes: true }),
-    preserveDirectives()
-  ],
+  plugins: [react(), svgr(), dts({ rollupTypes: true }), preserveDirectives()],
   publicDir: false
 };
 

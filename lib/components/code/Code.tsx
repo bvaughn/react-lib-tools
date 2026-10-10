@@ -1,7 +1,6 @@
 import { CheckIcon, ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
-import "./code-mirror.css";
 
 export function Code({
   className = "",
