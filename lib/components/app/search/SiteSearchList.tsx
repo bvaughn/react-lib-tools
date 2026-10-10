@@ -8,17 +8,25 @@ import { SiteSearchResult, type SiteSearchItem } from "./SiteSearchResult";
 export function SiteSearchList({
   emptyMessage,
   inputRef,
+  isStale,
   items,
   listboxId,
   onSelect,
+  onSelectWhenReady,
+  selectFirst,
   status,
   terms
 }: {
   emptyMessage?: ReactNode;
   inputRef: HTMLInputElement | null;
+  /** Items don't yet reflect the latest search text (e.g. the search is debounced) */
+  isStale: boolean;
   items: SiteSearchItem[];
   listboxId: string;
   onSelect: () => void;
+  /** Enter was pressed while items were stale; the first up-to-date item should be selected */
+  onSelectWhenReady: () => void;
+  selectFirst: boolean;
   status?: string | undefined;
   terms: string[];
 }) {
@@ -28,6 +36,13 @@ export function SiteSearchList({
     // scrolling the item under the mouse would move the list out from under it
     scroll: boolean;
   }>({ index: 0, scroll: false });
+
+  // Select the first item once results catch up with an Enter key press
+  useEffect(() => {
+    if (selectFirst && items.length > 0) {
+      clickOption(listboxId, 0);
+    }
+  }, [items, listboxId, selectFirst]);
 
   useEffect(() => {
     if (!inputRef) {
@@ -42,6 +57,17 @@ export function SiteSearchList({
     }
 
     const onKeyDown = (event: KeyboardEvent) => {
+      // While composing text with an input method editor (e.g. Japanese), keys confirm the composition
+      if (event.isComposing) {
+        return;
+      }
+
+      if (event.key === "Enter" && isStale) {
+        event.preventDefault();
+        onSelectWhenReady();
+        return;
+      }
+
       if (items.length === 0) {
         return;
       }
@@ -65,12 +91,7 @@ export function SiteSearchList({
         }
         case "Enter": {
           event.preventDefault();
-          const link = document.getElementById(
-            getOptionId(listboxId, active.index)
-          )?.firstElementChild;
-          if (link instanceof HTMLAnchorElement) {
-            link.click();
-          }
+          clickOption(listboxId, active.index);
           break;
         }
       }
@@ -81,7 +102,7 @@ export function SiteSearchList({
       inputRef.removeEventListener("keydown", onKeyDown);
       inputRef.removeAttribute("aria-activedescendant");
     };
-  }, [active, inputRef, items, listboxId]);
+  }, [active, inputRef, isStale, items, listboxId, onSelectWhenReady]);
 
   return (
     <div className="border-t border-white/10 pt-3 mt-3 flex flex-col min-h-0">
@@ -125,4 +146,13 @@ export function SiteSearchList({
 
 function getOptionId(listboxId: string, index: number) {
   return `${listboxId}-${index}`;
+}
+
+function clickOption(listboxId: string, index: number) {
+  const link = document.getElementById(
+    getOptionId(listboxId, index)
+  )?.firstElementChild;
+  if (link instanceof HTMLAnchorElement) {
+    link.click();
+  }
 }

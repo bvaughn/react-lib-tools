@@ -35,6 +35,11 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   // Once the input is cleared, show all pages right away rather than waiting for the debounced value
   const query = searchText.trim() ? searchTextDeferred.trim() : "";
 
+  // Results lag behind typing (debounced); Enter pressed in the meantime selects the first result once they catch up
+  const isStale = searchText.trim() !== query;
+  const [selectWhenReady, setSelectWhenReady] = useState(false);
+  const onSelectWhenReady = useCallback(() => setSelectWhenReady(true), []);
+
   // Without search text, list all pages in reading order
   const pages = useMemo<SiteSearchItem[]>(
     () =>
@@ -48,6 +53,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
 
   const close = useCallback(() => {
     setSearchText("");
+    setSelectWhenReady(false);
     setIsSiteSearchVisible(false);
   }, [setIsSiteSearchVisible]);
 
@@ -59,25 +65,23 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
     }
   }, [isSiteSearchVisible]);
 
+  // Cmd/Ctrl+K toggles the search (and shouldn't also trigger the browser's own shortcut, e.g. Firefox's search bar)
   useEffect(() => {
-    if (!isSiteSearchVisible) {
-      const onKeyDown = (event: globalThis.KeyboardEvent) => {
-        switch (event.key) {
-          case "K":
-          case "k": {
-            if (event.metaKey || event.ctrlKey) {
-              setIsSiteSearchVisible(true);
-            }
-            break;
-          }
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+        event.preventDefault();
+        if (isSiteSearchVisible) {
+          close();
+        } else {
+          setIsSiteSearchVisible(true);
         }
-      };
-      document.body.addEventListener("keydown", onKeyDown);
-      return () => {
-        document.body.removeEventListener("keydown", onKeyDown);
-      };
-    }
-  }, [isSiteSearchVisible, setIsSiteSearchVisible]);
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [close, isSiteSearchVisible, setIsSiteSearchVisible]);
 
   // While open: focus the input (and return focus to wherever it was before opening, once closed)
   // and prevent the page behind the modal from scrolling
@@ -107,7 +111,8 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
     }
 
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
-      if (event.key === "Escape") {
+      // While composing text with an input method editor (e.g. Japanese), Escape cancels the composition
+      if (event.key === "Escape" && !event.isComposing) {
         event.preventDefault();
         close();
       }
@@ -146,6 +151,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
             className="grow text-lg md:text-base"
             onChange={(event) => {
               setSearchText(event.currentTarget.value);
+              setSelectWhenReady(false);
             }}
             placeholder="Search documentation"
             ref={setInputRef}
@@ -176,17 +182,23 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
             {query ? (
               <SiteSearchResults
                 inputRef={inputRef}
+                isStale={isStale}
                 key={query}
                 listboxId={listboxId}
                 onSelect={close}
+                onSelectWhenReady={onSelectWhenReady}
                 searchTextDeferred={query}
+                selectFirst={selectWhenReady && !isStale}
               />
             ) : (
               <SiteSearchList
                 inputRef={inputRef}
+                isStale={isStale}
                 items={pages}
                 listboxId={listboxId}
                 onSelect={close}
+                onSelectWhenReady={onSelectWhenReady}
+                selectFirst={false}
                 terms={[]}
               />
             )}

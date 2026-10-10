@@ -83,6 +83,11 @@ export function renderHighlightedText(
   return rendered;
 }
 
+/** Whether any of the search terms appear in the text (matched the same way they're highlighted) */
+export function hasMatch(text: string, terms: string[]) {
+  return findMatches(text, terms).length > 0;
+}
+
 /** Non-overlapping matches, in order; adjacent matches (e.g. "on" + "Layout" in "onLayout") are merged */
 function findMatches(text: string, terms: string[]) {
   const sortedTerms = Array.from(new Set(terms)).sort(
