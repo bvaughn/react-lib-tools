@@ -1,6 +1,7 @@
 import type { Section } from "../types";
 import { Box } from "./Box";
 import { Callout } from "./Callout";
+import { Code } from "./code/Code";
 
 export function DocsSection({
   className,
@@ -11,10 +12,14 @@ export function DocsSection({
 }) {
   return (
     <Box className={className} direction="column" gap={2}>
-      {sections.map(({ content, intent }, index) => {
+      {sections.map(({ code, content, intent }, index) => {
+        if (code) {
+          return <Code key={index} html={content} />;
+        }
+
         if (intent) {
           return (
-            <Callout key={index} html inline intent={intent} minimal>
+            <Callout key={index} html intent={intent}>
               {content}
             </Callout>
           );

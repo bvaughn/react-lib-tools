@@ -38,7 +38,7 @@ export async function crawlPage({
   page.on("console", (event) => console.log(event.text()));
 
   const result = await page.evaluate(
-    async ([HTML_ENTITIES, filterSelector]) => {
+    async ([HTML_ENTITIES, HEADING_MARKER, filterSelector]) => {
       const paths: string[] = [];
       for (const element of document.body.querySelectorAll("[data-link]")) {
         const to = element.getAttribute("data-link");
@@ -62,13 +62,38 @@ export async function crawlPage({
       const title = titleElement?.textContent ?? "";
 
       let text = "";
+      const headings: { id: string; title: string }[] = [];
 
       const main = document.body.querySelector("[data-main-scrollable]");
       if (main) {
+        // Remove site chrome that shouldn't be indexed (e.g. previous/next page links)
+        for (const element of main.querySelectorAll("[data-search-ignore]")) {
+          element.parentElement?.removeChild(element);
+        }
+
         // Pre-convert content inside of <code> blocks (example code) into plain text
         for (const code of main.querySelectorAll("code")) {
           // eslint-disable-next-line no-self-assign
           code.textContent = code.textContent;
+        }
+
+        // Mark the start of each heading (same as the "On this page" contents) so the text can be split into sections
+        for (const element of main.querySelectorAll<HTMLElement>(
+          "[data-toc][id]"
+        )) {
+          if (filterSelector && element.closest(filterSelector)) {
+            continue;
+          }
+
+          headings.push({
+            id: element.id,
+            title: (
+              element.dataset.tocTitle ??
+              element.textContent ??
+              ""
+            ).trim()
+          });
+          element.before(HEADING_MARKER);
         }
 
         text = main.innerHTML;
@@ -96,17 +121,27 @@ export async function crawlPage({
         text = text.replaceAll(/ {2,}/g, " ");
       }
 
+      const [intro, ...sectionTexts] = text.split(HEADING_MARKER);
+
       return {
+        headings: headings
+          .map((heading, index) => ({
+            ...heading,
+            text: sectionTexts[index]?.trim() ?? ""
+          }))
+          // Skip headings with no content of their own (e.g. a "Required props" label)
+          .filter((heading) => heading.text !== heading.title),
         paths,
         section,
-        text,
+        text: intro.trim(),
         title
       };
     },
-    [HTML_ENTITIES, filterSelector] as const
+    [HTML_ENTITIES, HEADING_MARKER, filterSelector] as const
   );
 
   siteMap[path] = {
+    headings: result.headings.length > 0 ? result.headings : undefined,
     path,
     section: result.section,
     text: result.text,
@@ -140,6 +175,9 @@ export async function crawlPage({
     )
   );
 }
+
+// Private use character that won't appear in page content
+const HEADING_MARKER = "\uE000";
 
 const HTML_ENTITIES: { [chars: string]: string } = {
   "&amp;": "&",

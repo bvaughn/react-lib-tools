@@ -1,90 +1,82 @@
 import { createElement, type ReactNode } from "react";
+import { MIN_PREFIX_TERM_LENGTH } from "./search";
+import { getStem } from "./stem";
 
+/**
+ * Highlights search terms (see getSearchTerms) within text, the same way search matched them:
+ * at the start of words, including camelCase words (e.g. "layout" within "onLayoutChange").
+ *
+ * When maxLength is specified, long text is trimmed to show the first match,
+ * with up to "leading" characters of context before it.
+ */
 export function renderHighlightedText(
   text: string,
-  query: string,
+  terms: string[],
   config?: {
-    maxLength: number;
-    leading: number;
+    leading?: number | undefined;
+    maxLength?: number | undefined;
   }
-) {
+): ReactNode[] {
   if (!text) {
-    return "";
+    return [];
   }
 
-  const { maxLength = 0, leading = 0 } = config ?? {};
+  const { leading = 0, maxLength = 0 } = config ?? {};
 
-  query = query.trim().toLowerCase();
+  const matches = findMatches(text, terms);
 
-  const terms = query.split(" ").filter(Boolean);
-  if (terms.length === 0) {
-    return text;
-  }
-
-  const length = text.length;
-
-  if (maxLength && length > maxLength) {
-    const [matchIndexStart, matchIndexStop] = findFirstMatch(
-      text.toLowerCase(),
-      terms
-    );
-
-    if (matchIndexStop <= maxLength) {
-      text = text.substring(0, maxLength) + "…";
+  let start = 0;
+  let stop = text.length;
+  if (maxLength && text.length > maxLength) {
+    const firstMatch = matches[0];
+    if (firstMatch === undefined || firstMatch.stop <= maxLength) {
+      stop = maxLength;
     } else {
-      const startIndex = Math.max(0, matchIndexStart - leading);
-      const stopIndex = Math.min(length, startIndex + maxLength);
+      start = Math.max(0, firstMatch.start - leading);
 
-      if (stopIndex > maxLength) {
-        text = "…" + text.substring(startIndex, stopIndex);
+      // Avoid starting in the middle of a word when possible
+      if (start > 0 && text.charAt(start - 1) !== " ") {
+        const space = text.indexOf(" ", start);
+        if (space !== -1 && space < firstMatch.start) {
+          start = space + 1;
+        }
       }
 
-      if (stopIndex < length) {
-        text += "…";
+      stop = Math.min(text.length, start + maxLength);
+    }
+
+    // Avoid ending in the middle of a word when possible
+    if (stop < text.length && text.charAt(stop) !== " ") {
+      const space = text.lastIndexOf(" ", stop);
+      if (space > start && space >= (matches[0]?.stop ?? 0)) {
+        stop = space;
       }
     }
-  }
-
-  let markedText = text;
-
-  if (query) {
-    terms.forEach((term) => {
-      markedText = markedText.replaceAll(new RegExp(`(${term})`, "gi"), "├$1┤");
-    });
   }
 
   const rendered: ReactNode[] = [];
 
-  let current = "";
-  let markOpenCount = 0;
-
-  for (let charIndex = 0; charIndex < markedText.length; charIndex++) {
-    const char = markedText.charAt(charIndex);
-
-    switch (char) {
-      case "├": {
-        markOpenCount++;
-        if (markOpenCount === 1 && current) {
-          rendered.push(current);
-          current = "";
-        }
-        break;
-      }
-      case "┤": {
-        markOpenCount--;
-        if (markOpenCount === 0 && current) {
-          rendered.push(createMark(current));
-          current = "";
-        }
-        break;
-      }
-      default: {
-        current += char;
-        break;
-      }
+  let current = start > 0 ? "…" : "";
+  let index = start;
+  for (const match of matches) {
+    if (match.start < start || match.stop > stop) {
+      continue;
     }
+
+    current += text.substring(index, match.start);
+    if (current) {
+      rendered.push(current);
+    }
+    rendered.push(createMark(text.substring(match.start, match.stop)));
+
+    current = "";
+    index = match.stop;
   }
 
+  current += text.substring(index, stop);
+  if (stop < text.length) {
+    current += "…";
+  }
   if (current) {
     rendered.push(current);
   }
@@ -92,27 +84,131 @@ export function renderHighlightedText(
   return rendered;
 }
 
+/** Whether any of the search terms appear in the text (matched the same way they're highlighted) */
+export function hasMatch(text: string, terms: string[]) {
+  return findMatches(text, terms).length > 0;
+}
+
+/** Non-overlapping matches, in order; adjacent matches (e.g. "on" + "Layout" in "onLayout") are merged */
+function findMatches(text: string, terms: string[]) {
+  const sortedTerms = Array.from(new Set(terms)).sort(
+    (a, b) => b.length - a.length
+  );
+
+  const matches: { start: number; stop: number }[] = [];
+  if (sortedTerms.length === 0) {
+    return matches;
+  }
+
+  const termStems = new Set<string>();
+  sortedTerms.forEach((term) => {
+    const stem = getStem(term);
+    if (stem !== undefined) {
+      termStems.add(stem);
+    }
+  });
+
+  const lowerCaseText = text.toLowerCase();
+
+  const addMatch = (start: number, stop: number) => {
+    const previous = matches[matches.length - 1];
+    if (previous && previous.stop === start) {
+      previous.stop = stop;
+    } else {
+      matches.push({ start, stop });
+    }
+  };
+
+  let index = 0;
+  while (index < text.length) {
+    if (isWordStart(text, index)) {
+      // Words with the same root as a term are highlighted in full (e.g. "Collapsible" for "collapse")
+      if (termStems.size > 0) {
+        let wordEnd = index + 1;
+        while (!isWordEnd(text, wordEnd)) {
+          wordEnd++;
+        }
+
+        const stem = getStem(lowerCaseText.substring(index, wordEnd));
+        if (stem !== undefined && termStems.has(stem)) {
+          addMatch(index, wordEnd);
+          index = wordEnd;
+          continue;
+        }
+      }
+
+      const term = sortedTerms.find(
+        (term) =>
+          lowerCaseText.startsWith(term, index) &&
+          (term.length >= MIN_PREFIX_TERM_LENGTH ||
+            isWordEnd(text, index + term.length))
+      );
+      if (term) {
+        addMatch(index, index + term.length);
+        index += term.length;
+        continue;
+      }
+    }
+
+    index++;
+  }
+
+  return matches;
+}
+
+// Mirrors how search splits text into words (see tokenize)
+function isWordStart(text: string, index: number) {
+  const char = text.charAt(index);
+  if (!isWordCharacter(char)) {
+    return false;
+  }
+
+  const previous = text.charAt(index - 1);
+  if (index === 0 || !isWordCharacter(previous)) {
+    return true;
+  }
+
+  if (isUpperCase(char)) {
+    // "onLayout" -> "on" "Layout"
+    if (isLowerCase(previous) || /\p{N}/u.test(previous)) {
+      return true;
+    }
+
+    // "HTMLElement" -> "HTML" "Element"
+    if (isUpperCase(previous) && isLowerCase(text.charAt(index + 1))) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+function isWordEnd(text: string, index: number) {
+  return (
+    index >= text.length ||
+    isWordStart(text, index) ||
+    !isWordCharacter(text.charAt(index))
+  );
+}
+
+function isWordCharacter(char: string) {
+  return /[\p{L}\p{N}]/u.test(char);
+}
+
+function isLowerCase(char: string) {
+  return /\p{Ll}/u.test(char);
+}
+
+function isUpperCase(char: string) {
+  return /\p{Lu}/u.test(char);
+}
+
 let key = 0;
 
 function createMark(text: string) {
   return createElement("mark", {
     children: text,
-    className: "bg-transparent text-sky-300",
+    className: "bg-transparent text-search-match",
     key: ++key
   });
-}
-
-function findFirstMatch(text: string, terms: string[]) {
-  let matchIndexStart = text.length;
-  let matchIndexStop = text.length;
-
-  terms.forEach((term) => {
-    const index = text.indexOf(term);
-    if (index < matchIndexStart) {
-      matchIndexStart = index;
-      matchIndexStop = index + term.length;
-    }
-  });
-
-  return [matchIndexStart, matchIndexStop];
 }

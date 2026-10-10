@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 
 export function Question({ children, id }: PropsWithChildren<{ id: string }>) {
   return (
-    <dt className="pt-4" id={id}>
+    <dt className="pt-4" data-toc="1" id={id}>
       <a
         className="text-lg text-common-question-header! font-bold"
         href={`#${id}`}

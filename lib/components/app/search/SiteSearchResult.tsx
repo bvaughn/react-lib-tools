@@ -1,65 +1,110 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useEffect, useMemo, useRef } from "react";
-import type { SiteMapPage } from "../../../../types";
 import { cn } from "../../../utils/cn";
 import { Link } from "../../Link";
 import { renderHighlightedText } from "./renderHighlightedText";
 
+export type SiteSearchItem = {
+  /** Shown before the title (e.g. the nav section, or the page title for a heading within a page) */
+  context?: string | undefined;
+  path: string;
+  /** Snippet of matching text */
+  text?: string | undefined;
+  title: string;
+};
+
+// Snippets show the first match with some context before it;
+// the max length roughly matches how much of a snippet fits on a desktop screen (CSS truncates the rest)
+const SNIPPET_LEADING_CHARACTERS = 30;
+const SNIPPET_MAX_LENGTH = 100;
+
 export function SiteSearchResult({
+  id,
   isActive,
-  result,
-  searchTextDeferred
+  item,
+  onHover,
+  onSelect,
+  scrollIntoView,
+  terms
 }: {
+  id: string;
   isActive: boolean;
-  result: SiteMapPage;
-  searchTextDeferred: string;
+  item: SiteSearchItem;
+  onHover: () => void;
+  onSelect: () => void;
+  scrollIntoView: boolean;
+  terms: string[];
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
-  const { section, text, title } = useMemo(
+  const { context, text, title } = useMemo(
     () => ({
-      section: renderHighlightedText(result.section ?? "", searchTextDeferred),
-      text: result.text,
-      title: renderHighlightedText(result.title, searchTextDeferred)
+      context: item.context
+        ? renderHighlightedText(item.context, terms)
+        : undefined,
+      text: item.text
+        ? renderHighlightedText(item.text, terms, {
+            leading: SNIPPET_LEADING_CHARACTERS,
+            maxLength: SNIPPET_MAX_LENGTH
+          })
+        : undefined,
+      title: renderHighlightedText(item.title, terms)
     }),
-    [result, searchTextDeferred]
+    [item, terms]
   );
 
   useEffect(() => {
-    if (isActive) {
+    if (scrollIntoView) {
       ref.current?.scrollIntoView({
         behavior: "smooth",
         block: "nearest"
       });
     }
-  }, [isActive]);
+  }, [scrollIntoView]);
 
   return (
-    <li ref={ref}>
+    <li aria-selected={isActive} id={id} ref={ref} role="option">
       <Link
         className={cn(
-          "rounded px-2 py-1 text-white/80 hover:text-white hover:bg-white/10 cursor-pointer transition-colors!",
+          "rounded px-2 py-1 text-white/80 cursor-pointer transition-colors!",
           "flex flex-row items-center gap-2 overflow-auto",
           {
-            "bg-sky-950 hover:bg-sky-950 text-white": isActive
+            "bg-search-result-active text-white": isActive
           }
         )}
-        data-active-search-result={isActive || undefined}
-        to={result.path}
+        onClick={(event) => {
+          // Modified clicks (e.g. open in new tab) leave the search open
+          if (
+            event.button === 0 &&
+            !event.altKey &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !event.shiftKey
+          ) {
+            onSelect();
+          }
+        }}
+        onMouseMove={onHover}
+        // Options are navigated with the arrow keys from the search input
+        tabIndex={-1}
+        to={item.path}
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
           <div className="grow text-lg truncate text-white">
-            {section && (
+            {context && (
               <>
-                {section}
-                <ChevronRightIcon className="size-4 text-slate-400 inline" />{" "}
+                {context}
+                <ChevronRightIcon
+                  aria-hidden
+                  className="size-4 text-slate-400 inline"
+                />{" "}
               </>
             )}
             {title}
           </div>
           {text && <div className="text-sm truncate pb-1">{text}</div>}
         </div>
-        <ChevronRightIcon className="h-4 w-4 shrink-0" />
+        <ChevronRightIcon aria-hidden className="h-4 w-4 shrink-0" />
       </Link>
     </li>
   );

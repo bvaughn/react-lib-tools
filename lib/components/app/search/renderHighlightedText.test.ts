@@ -3,13 +3,17 @@ import { renderHighlightedText } from "./renderHighlightedText";
 
 describe("renderHighlightedText", () => {
   test("empty", () => {
-    expect(renderHighlightedText("", "")).toMatchInlineSnapshot(`""`);
-    expect(renderHighlightedText("foo", "")).toMatchInlineSnapshot(`"foo"`);
-    expect(renderHighlightedText("", "foo")).toMatchInlineSnapshot(`""`);
+    expect(renderHighlightedText("", [])).toMatchInlineSnapshot(`[]`);
+    expect(renderHighlightedText("foo", [])).toMatchInlineSnapshot(`
+      [
+        "foo",
+      ]
+    `);
+    expect(renderHighlightedText("", ["foo"])).toMatchInlineSnapshot(`[]`);
   });
 
   test("no matches", () => {
-    expect(renderHighlightedText("foo", "bar")).toMatchInlineSnapshot(`
+    expect(renderHighlightedText("foo", ["bar"])).toMatchInlineSnapshot(`
       [
         "foo",
       ]
@@ -17,7 +21,8 @@ describe("renderHighlightedText", () => {
   });
 
   test("matches", () => {
-    expect(renderHighlightedText("foo bar baz", "bar")).toMatchInlineSnapshot(`
+    expect(renderHighlightedText("foo bar baz", ["bar"]))
+      .toMatchInlineSnapshot(`
       [
         "foo ",
         <mark>bar</mark>,
@@ -26,196 +31,242 @@ describe("renderHighlightedText", () => {
     `);
   });
 
-  test("multi word matches", () => {
-    expect(renderHighlightedText("foo bar baz qux", "baz foo"))
+  test("multiple terms", () => {
+    expect(renderHighlightedText("foo bar baz qux bar", ["baz", "bar"]))
+      .toMatchInlineSnapshot(`
+      [
+        "foo ",
+        <mark>bar</mark>,
+        " ",
+        <mark>baz</mark>,
+        " qux ",
+        <mark>bar</mark>,
+      ]
+    `);
+  });
+
+  test("match at start or end", () => {
+    expect(renderHighlightedText("foo bar baz", ["foo", "baz"]))
       .toMatchInlineSnapshot(`
       [
         <mark>foo</mark>,
         " bar ",
         <mark>baz</mark>,
-        " qux",
       ]
     `);
+  });
 
-    expect(renderHighlightedText("foo bar baz qux bar foo baz qux", "baz bar"))
+  test("case insensitive", () => {
+    expect(renderHighlightedText("Foo BAR", ["foo", "bar"]))
+      .toMatchInlineSnapshot(`
+      [
+        <mark>Foo</mark>,
+        " ",
+        <mark>BAR</mark>,
+      ]
+    `);
+  });
+
+  test("matches the start of words, not the middle", () => {
+    expect(renderHighlightedText("Persistent layouts", ["is", "layout"]))
       .toMatchInlineSnapshot(`
         [
-          "foo ",
-          <mark>bar</mark>,
-          " ",
-          <mark>baz</mark>,
-          " qux ",
-          <mark>bar</mark>,
-          " foo ",
-          <mark>baz</mark>,
-          " qux",
+          "Persistent ",
+          <mark>layouts</mark>,
         ]
       `);
   });
 
-  test("match at start or end", () => {
-    expect(renderHighlightedText("foo bar baz", "foo")).toMatchInlineSnapshot(`
-      [
-        <mark>foo</mark>,
-        " bar baz",
-      ]
-    `);
-    expect(renderHighlightedText("foo bar baz", "baz")).toMatchInlineSnapshot(`
-      [
-        "foo bar ",
-        <mark>baz</mark>,
-      ]
-    `);
-    expect(renderHighlightedText("foo bar baz", "foo baz"))
+  test("matches camelCase words", () => {
+    expect(renderHighlightedText("Use onLayoutChange", ["layout"]))
       .toMatchInlineSnapshot(`
       [
-        <mark>foo</mark>,
-        " bar ",
-        <mark>baz</mark>,
+        "Use on",
+        <mark>Layout</mark>,
+        "Change",
+      ]
+    `);
+
+    // Adjacent matches are merged into a single mark
+    expect(
+      renderHighlightedText("Use onLayoutChange", ["on", "layout", "change"])
+    ).toMatchInlineSnapshot(`
+      [
+        "Use ",
+        <mark>onLayoutChange</mark>,
+      ]
+    `);
+
+    expect(renderHighlightedText("HTMLElement", ["element"]))
+      .toMatchInlineSnapshot(`
+      [
+        "HTML",
+        <mark>Element</mark>,
       ]
     `);
   });
 
-  test("overlapping matches", () => {
-    expect(renderHighlightedText("foo bar baz qux", "bar a"))
+  test("highlights whole words with the same root as a term", () => {
+    expect(renderHighlightedText("Collapsible panels", ["collapse", "panel"]))
       .toMatchInlineSnapshot(`
-      [
-        "foo ",
-        <mark>bar</mark>,
-        " b",
-        <mark>a</mark>,
-        "z qux",
-      ]
-    `);
-    expect(renderHighlightedText("foo bar baz qux", "bar ba"))
+        [
+          <mark>Collapsible</mark>,
+          " ",
+          <mark>panels</mark>,
+        ]
+      `);
+
+    expect(renderHighlightedText("Use onLayoutChanged", ["change"]))
       .toMatchInlineSnapshot(`
+        [
+          "Use onLayout",
+          <mark>Changed</mark>,
+        ]
+      `);
+
+    // Very short roots don't count (e.g. "one" and "on")
+    expect(renderHighlightedText("Turn it on", ["one"])).toMatchInlineSnapshot(`
       [
-        "foo ",
-        <mark>bar</mark>,
-        " ",
-        <mark>ba</mark>,
-        "z qux",
+        "Turn it on",
       ]
     `);
   });
 
-  test("leading or trailing space", () => {
-    expect(renderHighlightedText("foo bar baz", "  bar"))
+  test("prefers the longest matching term", () => {
+    expect(renderHighlightedText("gridlines", ["gr", "grid"]))
       .toMatchInlineSnapshot(`
-      [
-        "foo ",
-        <mark>bar</mark>,
-        " baz",
-      ]
-    `);
+        [
+          <mark>grid</mark>,
+          "lines",
+        ]
+      `);
+  });
 
-    expect(renderHighlightedText("foo bar baz", "bar  "))
+  test("single character terms only match whole words", () => {
+    expect(renderHighlightedText("use c++ in code", ["c"]))
       .toMatchInlineSnapshot(`
       [
-        "foo ",
-        <mark>bar</mark>,
-        " baz",
+        "use ",
+        <mark>c</mark>,
+        "++ in code",
       ]
     `);
   });
 
-  test("inner space", () => {
-    expect(renderHighlightedText("foo bar baz", "bar   baz"))
+  test("special characters in text are not treated as patterns", () => {
+    expect(renderHighlightedText("a.b (c) [d]", ["b", "c", "d"]))
       .toMatchInlineSnapshot(`
       [
-        "foo ",
-        <mark>bar</mark>,
-        " ",
-        <mark>baz</mark>,
+        "a.",
+        <mark>b</mark>,
+        " (",
+        <mark>c</mark>,
+        ") [",
+        <mark>d</mark>,
+        "]",
       ]
     `);
   });
 
   describe("config", () => {
+    const text = "one two three four five";
+
     test("should not truncate if text shorter than max-length", () => {
       expect(
-        renderHighlightedText("1234567890", "5", {
-          maxLength: 10,
-          leading: 5
+        renderHighlightedText(text, ["three"], {
+          leading: 5,
+          maxLength: 100
         })
       ).toMatchInlineSnapshot(`
         [
-          "1234",
-          <mark>5</mark>,
-          "67890",
+          "one two ",
+          <mark>three</mark>,
+          " four five",
         ]
       `);
     });
 
-    test("should truncate (but not offset) if longer than max-length", () => {
+    test("should truncate (but not offset) if the first match is within max-length", () => {
       expect(
-        renderHighlightedText("1234567890", "5", {
-          maxLength: 6,
-          leading: 3
+        renderHighlightedText(text, ["two"], {
+          leading: 3,
+          maxLength: 10
         })
       ).toMatchInlineSnapshot(`
         [
-          "1234",
-          <mark>5</mark>,
-          "6…",
+          "one ",
+          <mark>two</mark>,
+          "…",
         ]
       `);
 
-      // Should orient around the first matching search term
+      // Should orient around the first match in the text, regardless of term order
       expect(
-        renderHighlightedText("1234567890", "8 5", {
-          maxLength: 6,
-          leading: 3
+        renderHighlightedText(text, ["five", "two"], {
+          leading: 3,
+          maxLength: 10
         })
       ).toMatchInlineSnapshot(`
         [
-          "1234",
-          <mark>5</mark>,
-          "6…",
-        ]
-      `);
-    });
-
-    test("should show both leading and trailing ellipsis if appropriate", () => {
-      expect(
-        renderHighlightedText("1234567890", "7", {
-          maxLength: 5,
-          leading: 2
-        })
-      ).toMatchInlineSnapshot(`
-        [
-          "…56",
-          <mark>7</mark>,
-          "89…",
-        ]
-      `);
-
-      // Should orient around the first matching search term
-      expect(
-        renderHighlightedText("1234567890", "0 7", {
-          maxLength: 5,
-          leading: 2
-        })
-      ).toMatchInlineSnapshot(`
-        [
-          "…56",
-          <mark>7</mark>,
-          "89…",
+          "one ",
+          <mark>two</mark>,
+          "…",
         ]
       `);
     });
 
-    test("should truncate and offset if longer than max-length and too far from the beginning", () => {
+    test("should show leading and trailing ellipsis if appropriate", () => {
       expect(
-        renderHighlightedText("1234567890", "8", {
-          maxLength: 6,
-          leading: 3
+        renderHighlightedText(text, ["four"], {
+          leading: 4,
+          maxLength: 10
         })
       ).toMatchInlineSnapshot(`
         [
-          "…567",
-          <mark>8</mark>,
-          "90",
+          "…",
+          <mark>four</mark>,
+          " five",
+        ]
+      `);
+
+      expect(
+        renderHighlightedText(text, ["three"], {
+          leading: 6,
+          maxLength: 12
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "…two ",
+          <mark>three</mark>,
+          "…",
+        ]
+      `);
+    });
+
+    test("should not start in the middle of a word", () => {
+      expect(
+        renderHighlightedText("alpha bravo charlie delta echo", ["delta"], {
+          leading: 10,
+          maxLength: 20
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "…charlie ",
+          <mark>delta</mark>,
+          " echo",
+        ]
+      `);
+    });
+
+    test("should truncate without highlighting if nothing matches", () => {
+      expect(
+        renderHighlightedText(text, ["xyz"], {
+          leading: 3,
+          maxLength: 7
+        })
+      ).toMatchInlineSnapshot(`
+        [
+          "one two…",
         ]
       `);
     });

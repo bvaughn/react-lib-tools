@@ -1,4 +1,8 @@
-import { useTransition, type HTMLAttributes, type ReactNode } from "react";
+import {
+  useTransition,
+  type AnchorHTMLAttributes,
+  type ReactNode
+} from "react";
 import { useMatch, useNavigate } from "react-router-dom";
 
 type RenderFunction = (params: {
@@ -11,7 +15,7 @@ export function Link({
   onClick,
   to,
   ...rest
-}: Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+}: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & {
   children?: ReactNode | RenderFunction;
   to: string;
 }) {
@@ -27,8 +31,23 @@ export function Link({
           : children
       }
       data-link={to}
+      href={to}
       onClick={(event) => {
         onClick?.(event);
+
+        // Let the browser handle modified clicks (e.g. open in new tab)
+        if (
+          event.defaultPrevented ||
+          event.button !== 0 ||
+          event.altKey ||
+          event.ctrlKey ||
+          event.metaKey ||
+          event.shiftKey
+        ) {
+          return;
+        }
+
+        event.preventDefault();
 
         startTransition(() => {
           navigate(to);

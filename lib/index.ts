@@ -13,11 +13,10 @@ export { Header } from "./components/Header";
 export { Input } from "./components/Input";
 export { Link } from "./components/Link";
 export { LoadingSpinner } from "./components/LoadingSpinner";
-export { NavLink } from "./components/nav/NavLink";
-export { NavSection } from "./components/nav/NavSection";
 export { ComponentProps } from "./components/props/ComponentProps";
 export { ComponentPropsSection } from "./components/props/ComponentPropsSection";
 export { Radio } from "./components/Radio";
+export { SectionHeader } from "./components/SectionHeader";
 export { Select } from "./components/Select";
 export { Tooltip } from "./components/Tooltip";
 
@@ -31,6 +30,9 @@ export type {
   ComponentMetadata,
   ImperativeHandleMetadata,
   Intent,
+  NavConfig,
+  NavLinkConfig,
+  NavSectionConfig,
   Section,
   SiteSearchRecord
 } from "./types";

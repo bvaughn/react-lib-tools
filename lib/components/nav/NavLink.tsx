@@ -14,7 +14,7 @@ export function NavLink<Path extends string = DefaultPath>({
   path: Path;
 }>) {
   return (
-    <Link to={path}>
+    <Link className="block" data-nav-link to={path}>
       {({ isActive, isPending }) => (
         <NavButton
           className={cn(

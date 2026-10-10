@@ -20,10 +20,13 @@ export async function parseDescription(rawText: string) {
   });
 
   for (const chunk of text.split("\n\n")) {
+    let code = false;
     let content = "";
     let intent: Intent | undefined = undefined;
 
     if (chunk.startsWith("```")) {
+      code = true;
+
       const match = chunk.match(/^```([a-z]+)/)!;
       const language = match[1].toUpperCase() as Language;
 
@@ -47,6 +50,7 @@ export async function parseDescription(rawText: string) {
     content = content.replace(/\n@return.+/, "");
 
     sections.push({
+      code: code || undefined,
       content,
       intent
     });

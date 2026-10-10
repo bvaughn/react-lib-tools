@@ -1,8 +1,10 @@
 import { useLibraryContext } from "../../../hooks/useLibraryContext";
 import { Box } from "../../Box";
 import { Callout } from "../../Callout";
+import { Code } from "../../code/Code";
 import { ExternalLink } from "../../ExternalLink";
 import { Header } from "../../Header";
+import { SectionHeader } from "../../SectionHeader";
 
 export default function GettingStartedRoute() {
   const { overview, packageName, showOpenCollectLink } = useLibraryContext();
@@ -11,16 +13,20 @@ export default function GettingStartedRoute() {
     <Box direction="column" gap={4}>
       <Header title={`Getting started with ${packageName}`} />
       {overview}
-      {overview && <div className="text-xl mt-4">Installation</div>}
+      {/* Getting started is short enough not to need an "On this page" list */}
+      {overview && (
+        <SectionHeader showInContents={false}>Installation</SectionHeader>
+      )}
       <div>Begin by installing the library from NPM:</div>
-      <code className="grow text-xs md:text-sm block text-left whitespace-pre-wrap rounded-md p-3 bg-black text-white!">
-        npm install <span className="tok-keyword">{packageName}</span>
-      </code>
+      <Code
+        // Code renders one <div> per line
+        html={`<div>npm install <span class="tok-keyword">${escapeHTML(packageName)}</span></div>`}
+      />
       <Callout intent="primary">
         TypeScript definitions are included within the published{" "}
         <code>dist</code> folder.
       </Callout>
-      <div className="text-xl mt-4">Support</div>
+      <SectionHeader showInContents={false}>Support</SectionHeader>
       <div>Here are some ways to support this project:</div>
       <ul className="pl-8">
         <li className="list-disc">
@@ -45,4 +51,11 @@ export default function GettingStartedRoute() {
       </ul>
     </Box>
   );
+}
+
+function escapeHTML(text: string) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;");
 }
