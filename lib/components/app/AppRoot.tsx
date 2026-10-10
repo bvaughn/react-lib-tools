@@ -144,7 +144,7 @@ function App({
                 onClick={() => setIsSiteSearchVisible(!isSiteSearchVisible)}
                 title="Site search"
               >
-                <div className="h-8 flex items-center justify-center gap-1 px-2 rounded-full text-sm bg-black/40 hover:bg-black/60 transition-colors!">
+                <div className="h-8 flex items-center justify-center gap-1 px-2 rounded-full text-sm text-white bg-black/40 hover:bg-black/60 transition-colors!">
                   <MagnifyingGlassIcon className="w-4 h-4" />
                   {/* Keyboard shortcuts don't apply on touch-sized screens */}
                   <span className="hidden sm:inline">

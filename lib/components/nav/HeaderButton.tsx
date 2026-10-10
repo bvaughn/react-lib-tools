@@ -19,7 +19,7 @@ export function HeaderButton({
     <Tooltip className={className} content={title}>
       <button
         aria-label={ariaLabel || title}
-        className={cn("cursor-pointer", className)}
+        className={cn("cursor-pointer text-header-icons", className)}
         onClick={onClick}
       >
         {children}
