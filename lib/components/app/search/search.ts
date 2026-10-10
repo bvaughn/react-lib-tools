@@ -18,7 +18,7 @@ const CORRECTED_MATCH_QUALITY = 0.8;
 const MIN_CORRECTABLE_TERM_LENGTH = 5;
 
 // Shorter terms (e.g. "c" from "c++") only match whole words
-const MIN_PREFIX_TERM_LENGTH = 2;
+export const MIN_PREFIX_TERM_LENGTH = 2;
 
 // Words typed without camelCase (e.g. "onlayoutchange") are only split into parts at least this long;
 // a shorter final part (e.g. the "r" in "usepanelr", partially typed) is ignored
@@ -102,22 +102,11 @@ export function search(
     return siteMap.map((page) => ({ page }));
   }
 
-  let queryTokens = tokenize(queryText);
-  if (queryTokens.length === 0) {
+  const index = getIndex(siteMap);
+  const terms = parseQuery(queryText, index);
+  if (terms.length === 0) {
     return [];
   }
-
-  const meaningfulTokens = queryTokens.filter(
-    (token) => !STOP_WORDS.has(token)
-  );
-  if (meaningfulTokens.length > 0) {
-    queryTokens = meaningfulTokens;
-  }
-
-  const index = getIndex(siteMap);
-  const terms = queryTokens
-    .flatMap((token) => splitCompoundWord(token, index))
-    .map((token) => correctTerm(token, index));
 
   // Terms that appear on fewer pages are more distinctive and worth more
   const inverseDocumentFrequencies = terms.map((term) => {
@@ -212,6 +201,34 @@ export function search(
       headingResultCounts.set(page, count + 1);
       return count < MAX_HEADING_RESULTS_PER_PAGE;
     });
+}
+
+/**
+ * The words a query actually searches for, after splitting, ignoring common words, and correcting typos
+ * (e.g. "how do i persist pannel" -> ["persist", "panel"]); used to highlight matches the same way they were found
+ */
+export function getSearchTerms(
+  siteMap: SiteMapPage[],
+  queryText: string
+): string[] {
+  return parseQuery(queryText, getIndex(siteMap)).flatMap(
+    (term) => term.variants
+  );
+}
+
+function parseQuery(queryText: string, index: Index): Term[] {
+  let queryTokens = tokenize(queryText);
+
+  const meaningfulTokens = queryTokens.filter(
+    (token) => !STOP_WORDS.has(token)
+  );
+  if (meaningfulTokens.length > 0) {
+    queryTokens = meaningfulTokens;
+  }
+
+  return queryTokens
+    .flatMap((token) => splitCompoundWord(token, index))
+    .map((token) => correctTerm(token, index));
 }
 
 /** Splits text into lowercase words, breaking on punctuation and camelCase (e.g. "usePanelRef" -> ["use", "panel", "ref"]) */

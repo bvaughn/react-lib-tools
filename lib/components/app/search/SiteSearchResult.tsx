@@ -3,73 +3,108 @@ import { useEffect, useMemo, useRef } from "react";
 import { cn } from "../../../utils/cn";
 import { Link } from "../../Link";
 import { renderHighlightedText } from "./renderHighlightedText";
-import type { SearchResult } from "./search";
+
+export type SiteSearchItem = {
+  /** Shown before the title (e.g. the nav section, or the page title for a heading within a page) */
+  context?: string | undefined;
+  path: string;
+  /** Snippet of matching text */
+  text?: string | undefined;
+  title: string;
+};
+
+// Snippets show the first match with some context before it;
+// the max length roughly matches how much of a snippet fits on a desktop screen (CSS truncates the rest)
+const SNIPPET_LEADING_CHARACTERS = 30;
+const SNIPPET_MAX_LENGTH = 100;
 
 export function SiteSearchResult({
+  id,
   isActive,
-  result,
-  searchTextDeferred
+  item,
+  onHover,
+  onSelect,
+  scrollIntoView,
+  terms
 }: {
+  id: string;
   isActive: boolean;
-  result: SearchResult;
-  searchTextDeferred: string;
+  item: SiteSearchItem;
+  onHover: () => void;
+  onSelect: () => void;
+  scrollIntoView: boolean;
+  terms: string[];
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
-  const { path, section, text, title } = useMemo(() => {
-    const { heading, page } = result;
-
-    // Sections within a page are shown as "Page title > Heading title"
-    return {
-      path: heading ? `${page.path}#${heading.id}` : page.path,
-      section: renderHighlightedText(
-        (heading ? page.title : page.section) ?? "",
-        searchTextDeferred
-      ),
-      text: heading ? heading.text : page.text,
-      title: renderHighlightedText(
-        heading ? heading.title : page.title,
-        searchTextDeferred
-      )
-    };
-  }, [result, searchTextDeferred]);
+  const { context, text, title } = useMemo(
+    () => ({
+      context: item.context
+        ? renderHighlightedText(item.context, terms)
+        : undefined,
+      text: item.text
+        ? renderHighlightedText(item.text, terms, {
+            leading: SNIPPET_LEADING_CHARACTERS,
+            maxLength: SNIPPET_MAX_LENGTH
+          })
+        : undefined,
+      title: renderHighlightedText(item.title, terms)
+    }),
+    [item, terms]
+  );
 
   useEffect(() => {
-    if (isActive) {
+    if (scrollIntoView) {
       ref.current?.scrollIntoView({
         behavior: "smooth",
         block: "nearest"
       });
     }
-  }, [isActive]);
+  }, [scrollIntoView]);
 
   return (
-    <li ref={ref}>
+    <li aria-selected={isActive} id={id} ref={ref} role="option">
       <Link
         className={cn(
-          "rounded px-2 py-1 text-white/80 hover:text-white hover:bg-white/10 cursor-pointer transition-colors!",
+          "rounded px-2 py-1 text-white/80 cursor-pointer transition-colors!",
           "flex flex-row items-center gap-2 overflow-auto",
           {
-            "bg-search-result-active hover:bg-search-result-active text-white":
-              isActive
+            "bg-search-result-active text-white": isActive
           }
         )}
-        data-active-search-result={isActive || undefined}
-        to={path}
+        onClick={(event) => {
+          // Modified clicks (e.g. open in new tab) leave the search open
+          if (
+            event.button === 0 &&
+            !event.altKey &&
+            !event.ctrlKey &&
+            !event.metaKey &&
+            !event.shiftKey
+          ) {
+            onSelect();
+          }
+        }}
+        onMouseMove={onHover}
+        // Options are navigated with the arrow keys from the search input
+        tabIndex={-1}
+        to={item.path}
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
           <div className="grow text-lg truncate text-white">
-            {section && (
+            {context && (
               <>
-                {section}
-                <ChevronRightIcon className="size-4 text-slate-400 inline" />{" "}
+                {context}
+                <ChevronRightIcon
+                  aria-hidden
+                  className="size-4 text-slate-400 inline"
+                />{" "}
               </>
             )}
             {title}
           </div>
           {text && <div className="text-sm truncate pb-1">{text}</div>}
         </div>
-        <ChevronRightIcon className="h-4 w-4 shrink-0" />
+        <ChevronRightIcon aria-hidden className="h-4 w-4 shrink-0" />
       </Link>
     </li>
   );

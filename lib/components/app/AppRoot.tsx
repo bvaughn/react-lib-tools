@@ -231,7 +231,7 @@ function App({
         </div>
       </div>
 
-      {enableSiteSearch && <SiteSearchModal />}
+      {enableSiteSearch && <SiteSearchModal flatNav={flatNav} />}
     </BrowserRouter>
   );
 }

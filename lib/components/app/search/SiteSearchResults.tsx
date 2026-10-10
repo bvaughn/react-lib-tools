@@ -1,72 +1,56 @@
-import { use, useEffect, useMemo, useState } from "react";
+import { use, useMemo } from "react";
 import { read } from "./SiteSearchCache";
-import { SiteSearchResult } from "./SiteSearchResult";
-import { search } from "./search";
+import { SiteSearchList } from "./SiteSearchList";
+import type { SiteSearchItem } from "./SiteSearchResult";
+import { getSearchTerms, search } from "./search";
+
+const MAX_RESULTS = 10;
 
 export function SiteSearchResults({
   inputRef,
+  listboxId,
+  onSelect,
   searchTextDeferred
 }: {
   inputRef: HTMLInputElement | null;
+  listboxId: string;
+  onSelect: () => void;
   searchTextDeferred: string;
 }) {
   const siteMap = use(read());
 
-  const [index, setIndex] = useState(0);
+  const { items, terms } = useMemo(() => {
+    const items: SiteSearchItem[] = search(siteMap, searchTextDeferred)
+      .slice(0, MAX_RESULTS)
+      .map(({ heading, page }) =>
+        // Sections within a page are shown as "Page title > Heading title"
+        heading
+          ? {
+              context: page.title,
+              path: `${page.path}#${heading.id}`,
+              text: heading.text,
+              title: heading.title
+            }
+          : {
+              context: page.section,
+              path: page.path,
+              text: page.text,
+              title: page.title
+            }
+      );
 
-  const results = useMemo(() => {
-    if (searchTextDeferred) {
-      return search(siteMap, searchTextDeferred).slice(0, 10);
-    } else {
-      return [];
-    }
+    return { items, terms: getSearchTerms(siteMap, searchTextDeferred) };
   }, [searchTextDeferred, siteMap]);
 
-  useEffect(() => {
-    if (inputRef) {
-      const onKeyDown = (event: KeyboardEvent) => {
-        switch (event.key) {
-          case "ArrowDown": {
-            const nextIndex = index < results.length - 1 ? index + 1 : 0;
-            setIndex(nextIndex);
-            break;
-          }
-          case "ArrowUp": {
-            const nextIndex = index > 0 ? index - 1 : results.length - 1;
-            setIndex(nextIndex);
-            break;
-          }
-          case "Enter": {
-            const link = document.body.querySelector(
-              "[data-active-search-result]"
-            );
-            if (link instanceof HTMLAnchorElement) {
-              link.click();
-            }
-            break;
-          }
-        }
-      };
-      inputRef.addEventListener("keydown", onKeyDown);
-      return () => {
-        inputRef.removeEventListener("keydown", onKeyDown);
-      };
-    }
-  }, [index, inputRef, results, searchTextDeferred]);
-
   return (
-    <ul className="border-t border-white/10 pt-3 mt-3 flex flex-col gap-1 overflow-auto">
-      {searchTextDeferred && results.length === 0 && (
-        <div>No results for "{searchTextDeferred}"</div>
-      )}
-      {results.map((result, currentIndex) => (
-        <SiteSearchResult
-          isActive={index === currentIndex}
-          key={currentIndex}
-          result={result}
-          searchTextDeferred={searchTextDeferred}
-        />
-      ))}
-    </ul>
+    <SiteSearchList
+      emptyMessage={`No results for "${searchTextDeferred}"`}
+      inputRef={inputRef}
+      items={items}
+      listboxId={listboxId}
+      onSelect={onSelect}
+      status={`${items.length} result${items.length === 1 ? "" : "s"}`}
+      terms={terms}
+    />
   );
 }
