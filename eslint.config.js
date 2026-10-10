@@ -6,7 +6,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config([
-  globalIgnores(["dist", "docs", "generated", "integrations/next/.next"]),
+  globalIgnores(["coverage", "dist", "docs", "generated"]),
   {
     files: ["**/*.{ts,tsx}"],
     ignores: ["**/*.example.tsx"],

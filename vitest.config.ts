@@ -5,17 +5,14 @@ export default mergeConfig(
   viteConfig,
   defineConfig({
     test: {
-      // onConsoleLog(log, type) {
-      //   console.log("[config] onConsoleLog:", type, log);
-      //   switch (type) {
-      //     case "stderr": {
-      //       throw Error("Unexpected console error: " + log);
-      //     }
-      //   }
-      // },
+      coverage: {
+        include: ["lib/**/*.{ts,tsx}", "scripts/**/*.ts"],
+        exclude: ["**/*.test.{ts,tsx}"],
+        provider: "v8",
+        reporter: ["text-summary", "text", "html"]
+      },
       environment: "jsdom",
-      setupFiles: "./vitest.setup.js",
-      exclude: ["node_modules", "integrations"]
+      setupFiles: "./vitest.setup.ts"
     }
   })
 );

@@ -72,7 +72,7 @@ beforeAll(() => {
   });
 
   vi.spyOn(console, "warn").mockImplementation(() => {
-    throw Error("Unexpectec console warning");
+    throw Error("Unexpected console warning");
   });
 });
 
