@@ -1,5 +1,6 @@
 import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import {
+  Suspense,
   useCallback,
   useEffect,
   useId,
@@ -9,10 +10,11 @@ import {
   useState,
   type KeyboardEvent
 } from "react";
+import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import { useLibraryContext } from "../../../hooks/useLibraryContext";
 import type { FlatNavItem } from "../../../utils/flattenNav";
-import { read } from "./SiteSearchCache";
+import { clearFailedRead, read } from "./SiteSearchCache";
 import { SiteSearchList } from "./SiteSearchList";
 import type { SiteSearchItem } from "./SiteSearchResult";
 import { SiteSearchResults } from "./SiteSearchResults";
@@ -52,8 +54,8 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   // Start downloading the site map as soon as the modal opens, rather than after the first search
   useEffect(() => {
     if (isSiteSearchVisible) {
-      // Errors are surfaced when the results read the (cached) promise
-      read().catch(() => {});
+      // If this fails, the first search tries again (and shows an error if that fails too)
+      read().catch(clearFailedRead);
     }
   }, [isSiteSearchVisible]);
 
@@ -159,24 +161,61 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
             esc
           </button>
         </div>
-        {query ? (
-          <SiteSearchResults
-            inputRef={inputRef}
-            key={query}
-            listboxId={listboxId}
-            onSelect={close}
-            searchTextDeferred={query}
-          />
-        ) : (
-          <SiteSearchList
-            inputRef={inputRef}
-            items={pages}
-            listboxId={listboxId}
-            onSelect={close}
-            terms={[]}
-          />
-        )}
+        {/*
+          A failure to load the search index is shown here rather than breaking the page;
+          changing the search text (or clicking "Try again") clears the failed request and retries.
+          The Suspense boundary stays mounted so that, while the index loads during a search (a transition),
+          the current list remains visible rather than being replaced by the fallback.
+        */}
+        <ErrorBoundary
+          FallbackComponent={SearchUnavailable}
+          onReset={clearFailedRead}
+          resetKeys={[query]}
+        >
+          <Suspense fallback={<SearchLoading />}>
+            {query ? (
+              <SiteSearchResults
+                inputRef={inputRef}
+                key={query}
+                listboxId={listboxId}
+                onSelect={close}
+                searchTextDeferred={query}
+              />
+            ) : (
+              <SiteSearchList
+                inputRef={inputRef}
+                items={pages}
+                listboxId={listboxId}
+                onSelect={close}
+                terms={[]}
+              />
+            )}
+          </Suspense>
+        </ErrorBoundary>
       </div>
+    </div>
+  );
+}
+
+function SearchLoading() {
+  return (
+    <div className="border-t border-white/10 pt-3 mt-3 px-2 text-white/60">
+      Loading…
+    </div>
+  );
+}
+
+function SearchUnavailable({ resetErrorBoundary }: FallbackProps) {
+  return (
+    <div className="border-t border-white/10 pt-3 mt-3 px-2 flex items-center gap-3">
+      <span role="status">Search is unavailable right now.</span>
+      <button
+        className="border border-white/20 rounded text-sm px-1 cursor-pointer"
+        onClick={resetErrorBoundary}
+        type="button"
+      >
+        Try again
+      </button>
     </div>
   );
 }
