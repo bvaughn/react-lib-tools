@@ -220,4 +220,33 @@ describe("renderHighlightedText", () => {
       `);
     });
   });
+
+  test("special characters are matched literally", () => {
+    expect(renderHighlightedText("use c++ here", "c++")).toMatchInlineSnapshot(`
+      [
+        "use ",
+        <mark>c++</mark>,
+        " here",
+      ]
+    `);
+    expect(renderHighlightedText("onResize(size)", "(")).toMatchInlineSnapshot(`
+      [
+        "onResize",
+        <mark>(</mark>,
+        "size)",
+      ]
+    `);
+    expect(renderHighlightedText("a.b", ".")).toMatchInlineSnapshot(`
+      [
+        "a",
+        <mark>.</mark>,
+        "b",
+      ]
+    `);
+    expect(renderHighlightedText("abc", "[x")).toMatchInlineSnapshot(`
+      [
+        "abc",
+      ]
+    `);
+  });
 });

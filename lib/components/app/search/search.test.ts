@@ -74,4 +74,17 @@ describe("search", () => {
       siteMap[2]
     ]);
   });
+
+  test("special characters are matched literally", () => {
+    const pages: SiteMapPage[] = [
+      { path: "", title: "C++ interop", text: "onResize(size)" },
+      { path: "", title: "Other", text: "plain text" }
+    ];
+
+    expect(search(pages, "c++")).toEqual([pages[0]]);
+    expect(search(pages, "onResize(")).toEqual([pages[0]]);
+    expect(search(pages, "(")).toEqual([pages[0]]);
+    expect(search(pages, "[x")).toEqual([]);
+    expect(search(pages, ".")).toEqual([]);
+  });
 });

@@ -1,4 +1,5 @@
 import type { SiteMapPage } from "../../../../types";
+import { escapeRegExp } from "../../../utils/escapeRegExp";
 
 interface Match {
   page: SiteMapPage;
@@ -13,7 +14,7 @@ export function search(
     .toLowerCase()
     .split(" ")
     .filter(Boolean)
-    .map((word) => new RegExp(word, "ig"));
+    .map((word) => new RegExp(escapeRegExp(word), "ig"));
 
   if (expressions.length === 0) {
     return siteMap;

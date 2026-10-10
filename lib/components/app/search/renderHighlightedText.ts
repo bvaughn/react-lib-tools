@@ -1,4 +1,5 @@
 import { createElement, type ReactNode } from "react";
+import { escapeRegExp } from "../../../utils/escapeRegExp";
 
 export function renderHighlightedText(
   text: string,
@@ -49,7 +50,10 @@ export function renderHighlightedText(
 
   if (query) {
     terms.forEach((term) => {
-      markedText = markedText.replaceAll(new RegExp(`(${term})`, "gi"), "├$1┤");
+      markedText = markedText.replaceAll(
+        new RegExp(`(${escapeRegExp(term)})`, "gi"),
+        "├$1┤"
+      );
     });
   }
 
