@@ -3,7 +3,7 @@ import {
   type AnalyserOptions,
   type InterfaceNode
 } from "@ts-ast-parser/core";
-import { join, relative, resolve } from "node:path";
+import { relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 
@@ -18,7 +18,7 @@ export async function compileImperativeHandles({
   outputPath: string[];
   rootDir: string;
 }) {
-  const outputDir = join(rootDir, ...outputPath);
+  const outputDir = resolve(rootDir, ...outputPath);
   const libDir = resolve(rootDir, "lib");
 
   const result = await parseFromProject(analyserOptions);

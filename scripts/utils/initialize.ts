@@ -1,5 +1,5 @@
 import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
+import { resolve } from "node:path";
 import { getFilesWithExtensions } from "./getFilesWithExtensions.ts";
 import { rmFilesWithExtensions } from "./rmFilesWithExtensions.ts";
 
@@ -16,8 +16,8 @@ export async function initialize({
   outputPath: string[];
   rootDir: string;
 }) {
-  const inputDir = join(rootDir, ...inputPath);
-  const outputDir = join(rootDir, ...outputPath);
+  const inputDir = resolve(rootDir, ...inputPath);
+  const outputDir = resolve(rootDir, ...outputPath);
   await mkdir(outputDir, { recursive: true });
   await rmFilesWithExtensions(outputDir, [".json"]);
 

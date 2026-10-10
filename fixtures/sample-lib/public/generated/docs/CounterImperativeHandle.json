@@ -32,6 +32,9 @@
       "description": [
         {
           "content": "<p>Sets the current value.</p>\n"
+        },
+        {
+          "content": "<ul>\n<li><code>value</code> New value; clamped to the <code>min</code> and <code>max</code> props</li>\n</ul>\n"
         }
       ],
       "html": "<div><span class=\"tok-variableName\">setValue</span><span class=\"tok-punctuation\">(</span><span class=\"tok-variableName\">value</span><span class=\"tok-punctuation\">:</span><span class=\"\"> number</span><span class=\"tok-punctuation\">)</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-keyword\">void</span><span class=\"tok-punctuation\">;</span></div>",

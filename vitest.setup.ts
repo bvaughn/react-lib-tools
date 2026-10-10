@@ -4,6 +4,9 @@ import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 
+// Tests for Node scripts opt out of the DOM with a "@vitest-environment node" comment
+const HAS_DOM = typeof HTMLElement !== "undefined";
+
 const PROTOTYPE_PROPS = [
   "clientHeight",
   "clientWidth",
@@ -64,12 +67,14 @@ expect.extend({
 });
 
 beforeAll(() => {
-  PROTOTYPE_PROPS.forEach((propertyKey) => {
-    Object.defineProperty(HTMLElement.prototype, propertyKey, {
-      configurable: true,
-      value: 0
+  if (HAS_DOM) {
+    PROTOTYPE_PROPS.forEach((propertyKey) => {
+      Object.defineProperty(HTMLElement.prototype, propertyKey, {
+        configurable: true,
+        value: 0
+      });
     });
-  });
+  }
 
   vi.spyOn(console, "warn").mockImplementation(() => {
     throw Error("Unexpected console warning");
@@ -77,13 +82,17 @@ beforeAll(() => {
 });
 
 afterAll(() => {
-  PROTOTYPE_PROPS.forEach((propertyKey) => {
-    delete HTMLElement.prototype[
-      propertyKey as keyof typeof HTMLElement.prototype
-    ];
-  });
+  if (HAS_DOM) {
+    PROTOTYPE_PROPS.forEach((propertyKey) => {
+      delete HTMLElement.prototype[
+        propertyKey as keyof typeof HTMLElement.prototype
+      ];
+    });
+  }
 });
 
 afterEach(() => {
-  cleanup();
+  if (HAS_DOM) {
+    cleanup();
+  }
 });

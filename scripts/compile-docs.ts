@@ -1,5 +1,5 @@
 import type { AnalyserOptions } from "@ts-ast-parser/core";
-import { join } from "node:path";
+import { resolve } from "node:path";
 import { cwd } from "node:process";
 import { compileComponents } from "./utils/docs/compileComponents.ts";
 import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
@@ -67,7 +67,7 @@ export async function compileDocs({
   const analyserOptions: Partial<AnalyserOptions> = {
     ...analyserOptionsParam,
     compilerOptions,
-    include: [join(rootDir, "lib")]
+    include: [resolve(rootDir, "lib")]
   };
 
   await compileComponents({

@@ -51,6 +51,8 @@ This also starts a temporary dev server so the search index can be built by craw
 
 Review changes to the generated files as part of your pull request; they show exactly how a change to the scripts affects their output.
 
+[`scripts/compile.test.ts`](./scripts/compile.test.ts) runs `compileDocs` and `compileExamples` against the sample library and compares the result to the committed files, so tests (and CI) will fail until you regenerate them. The search index isn't checked by tests, because building it requires a browser.
+
 ## Common commands
 
 | Command                  | Description                                                     |

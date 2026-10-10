@@ -1,5 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { join, resolve } from "node:path";
 import { cwd } from "node:process";
 import type { SiteMapPage } from "../types";
 import { crawlPage } from "./utils/search/crawlPage";
@@ -63,7 +63,7 @@ export async function compileSearchIndex({
     })
   );
 
-  const outputDir = join(rootDir, ...outputPath);
+  const outputDir = resolve(rootDir, ...outputPath);
   await mkdir(outputDir, { recursive: true });
 
   await writeFile(

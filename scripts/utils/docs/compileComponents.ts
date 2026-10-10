@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { resolve } from "node:path";
 import { withCompilerOptions } from "react-docgen-typescript";
 import type { CompilerOptions } from "typescript";
 import { initialize } from "../initialize.ts";
@@ -37,7 +37,7 @@ export async function compileComponents({
     rootDir
   });
 
-  const markdownPath = readmePath ? join(rootDir, ...readmePath) : undefined;
+  const markdownPath = readmePath ? resolve(rootDir, ...readmePath) : undefined;
 
   let markdown = markdownPath
     ? await readFile(markdownPath, { encoding: "utf-8" })

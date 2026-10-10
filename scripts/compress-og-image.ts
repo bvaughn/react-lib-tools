@@ -1,6 +1,6 @@
 import bytes from "bytes";
 import { stat, writeFile } from "node:fs/promises";
-import { join } from "node:path";
+import { resolve } from "node:path";
 import { cwd } from "node:process";
 import sharp from "sharp";
 
@@ -21,7 +21,7 @@ export async function compressOgImage({
    */
   rootDir?: string | undefined;
 } = {}) {
-  const input = join(rootDir, ...inputPath);
+  const input = resolve(rootDir, ...inputPath);
   const statsBefore = await stat(input);
 
   const png = sharp(input).png({
@@ -29,7 +29,7 @@ export async function compressOgImage({
     compressionLevel: 9
   });
 
-  const output = join(rootDir, ...outputPath);
+  const output = resolve(rootDir, ...outputPath);
   const buffer = await png.toBuffer();
   await writeFile(output, buffer, {
     encoding: "base64"
