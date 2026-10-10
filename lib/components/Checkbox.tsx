@@ -8,6 +8,9 @@ import CheckedIcon from "../../public/svgs/checkbox-checked.svg?react";
 import IndeterminateIcon from "../../public/svgs/checkbox-indeterminate.svg?react";
 import UncheckedIcon from "../../public/svgs/checkbox-unchecked.svg?react";
 
+/**
+ * Checkbox for interactive demos; `children` is its label.
+ */
 export function Checkbox({
   checked,
   children,

@@ -2,12 +2,17 @@ import { CheckIcon, ClipboardDocumentIcon } from "@heroicons/react/20/solid";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../utils/cn";
 
+/**
+ * Syntax highlighted code block.
+ * `html` comes from `compileExamples` (or `compileDocs`); it's rendered as-is, so it must be trusted.
+ */
 export function Code({
   className = "",
   copyable = true,
   html
 }: {
   className?: string;
+  /** Show a button that copies the code's text to the clipboard */
   copyable?: boolean;
   html: string;
 }) {

@@ -41,7 +41,8 @@ const siteSearchShortcutKey =
     : "⌘K";
 
 /**
- * Displays an application shell with desktop and mobile layouts.
+ * Documentation site shell: header, sidebar navigation, previous/next page links, site search, and routing.
+ * Renders your pages (`routes`) along with a few default pages (getting started, common questions, support, versions, and not found).
  */
 export function AppRoot({
   enableSiteSearch,
@@ -49,17 +50,30 @@ export function AppRoot({
   routes,
   ...context
 }: {
+  /** Questions and answers shown on the "/common-questions" page */
   commonQuestions?: CommonQuestion[];
+  /**
+   * Show the search button and enable the Cmd/Ctrl+K shortcut.
+   * Requires a search index at "/generated/site-map.json" (see `compileSearchIndex`).
+   */
   enableSiteSearch?: boolean | undefined;
   /** Site navigation, in reading order; drives the sidebar and previous/next page links */
   nav: NavConfig;
+  /** Introduction shown on the getting started ("/") page */
   overview?: ReactNode | undefined;
+  /** Short description shown in the header */
   packageDescription: string;
+  /** Logo shown in the header; defaults to the React logo */
   packageLogo?: ReactNode;
+  /** npm package name; shown in the header and used for the npm link and installation instructions */
   packageName: string;
+  /** URL of the GitHub repository; used to link to source files from props pages */
   repositoryUrl: string;
+  /** Pages of the site, by path; these can also replace the default pages */
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
+  /** Add an Open Collective sponsorship link to the getting started page */
   showOpenCollectLink?: boolean | undefined;
+  /** Documentation URLs for older releases, by version number; adds a "/versions" page and a link to it in the header */
   versions?: Versions | undefined;
 }) {
   return (

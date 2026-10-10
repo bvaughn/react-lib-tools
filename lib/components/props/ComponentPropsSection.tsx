@@ -3,6 +3,10 @@ import { Box } from "../Box";
 import { SectionHeader } from "../SectionHeader";
 import { ComponentProp } from "./ComponentProp";
 
+/**
+ * A titled list of props; renders nothing if there are none.
+ * Used by `ComponentProps`, and useful for documenting a subset of props separately.
+ */
 export function ComponentPropsSection({
   header,
   props

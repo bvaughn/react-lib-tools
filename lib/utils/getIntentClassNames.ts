@@ -1,6 +1,6 @@
 import type { Intent } from "../types";
 
-/** Tinted surface + subtle border for the given intent. */
+/** Tailwind classes for a tinted background, border, and text matching the given intent (as used by `Callout`) */
 export function getIntentClassNames(intent: Intent) {
   switch (intent) {
     case "danger": {

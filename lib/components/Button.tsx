@@ -3,6 +3,9 @@ import type { KeyboardEvent, MouseEvent, PropsWithChildren } from "react";
 import type { Intent } from "../types";
 import { cn } from "../utils/cn";
 
+/**
+ * Button for interactive demos, colored by `intent`.
+ */
 export function Button({
   children,
   className,

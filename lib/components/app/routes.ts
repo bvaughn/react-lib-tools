@@ -11,4 +11,5 @@ export const routes = {
 } satisfies Record<string, Route>;
 
 export type Routes = Record<keyof typeof routes, Route>;
+/** Paths of the pages that `AppRoot` provides by default; useful for typing `NavConfig` (e.g. `NavConfig<Path | DefaultPath>`) */
 export type Path = keyof Routes;

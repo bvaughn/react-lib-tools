@@ -1,6 +1,10 @@
 import type { HTMLAttributes, PropsWithChildren } from "react";
 import { ErrorBoundary } from "./ErrorBoundary";
 
+/**
+ * Bordered container for live demos and other content set apart from the page's text.
+ * Errors thrown while rendering its children are caught and shown in place.
+ */
 export function Block({
   children,
   className,

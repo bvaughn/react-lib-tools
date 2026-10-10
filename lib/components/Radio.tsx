@@ -7,6 +7,10 @@ import {
 import CheckedIcon from "../../public/svgs/radio-checked.svg?react";
 import UncheckedIcon from "../../public/svgs/radio-unchecked.svg?react";
 
+/**
+ * Radio button for interactive demos; `children` is its label.
+ * Radios with the same `name` form a group.
+ */
 export function Radio<Value extends string>({
   checked,
   children,
