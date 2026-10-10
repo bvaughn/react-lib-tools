@@ -1,4 +1,5 @@
 import type { SiteMapHeading, SiteMapPage } from "../../../../types";
+import { getStem } from "./stem";
 
 // Relative importance of a term matching each part of a page
 const FIELD_WEIGHTS = {
@@ -10,6 +11,10 @@ const FIELD_WEIGHTS = {
 
 // A term that is a prefix of a word (e.g. "persist" -> "persistent") is worth less than an exact match
 const PREFIX_MATCH_QUALITY = 0.6;
+
+// A term with the same root as a word (e.g. "collapse" -> "collapsible") is worth less than an exact match,
+// but more than a prefix match
+const STEM_MATCH_QUALITY = 0.8;
 
 // A typo-corrected term (e.g. "pannel" -> "panel") is worth less than one the user actually typed
 const CORRECTED_MATCH_QUALITY = 0.8;
@@ -72,22 +77,34 @@ export interface SearchResult {
   page: SiteMapPage;
 }
 
+// Words are stored as ids (positions in the index's vocabulary) so matching them against a term is an array lookup
+type WordIds = number[];
+
 interface IndexedEntry {
   averageTextLength: number;
-  path: string[];
+  path: WordIds;
   result: SearchResult;
-  section: string[];
-  text: string[];
-  title: string[];
+  section: WordIds;
+  text: WordIds;
+  title: WordIds;
 }
 
 interface Index {
   entries: IndexedEntry[];
+  /** Every distinct word on the site; a word's id is its position */
   vocabulary: string[];
-  vocabularySet: Set<string>;
+  vocabularyIds: Map<string, number>;
+  vocabularyStems: Set<string>;
 }
 
+// How a word on the site matches a term
+const EXACT_MATCH = 1;
+const STEM_MATCH = 2;
+const PREFIX_MATCH = 3;
+
 interface Term {
+  /** How each word on the site (by id) matches this term, if at all; computed once per search so matching is a lookup */
+  matches: Uint8Array;
   quality: number;
   variants: string[];
 }
@@ -244,22 +261,36 @@ export function tokenize(text: string): string[] {
 function getIndex(siteMap: SiteMapPage[]): Index {
   let index = indexCache.get(siteMap);
   if (index === undefined) {
+    const vocabulary: string[] = [];
+    const vocabularyIds = new Map<string, number>();
+
+    const toWordIds = (text: string): WordIds =>
+      tokenize(text).map((word) => {
+        let id = vocabularyIds.get(word);
+        if (id === undefined) {
+          id = vocabulary.length;
+          vocabulary.push(word);
+          vocabularyIds.set(word, id);
+        }
+        return id;
+      });
+
     const pageEntries: IndexedEntry[] = [];
     const headingEntries: IndexedEntry[] = [];
 
     siteMap.forEach((page) => {
       const headings = page.headings ?? [];
 
-      const headingTexts = headings.map((heading) => tokenize(heading.text));
+      const headingTexts = headings.map((heading) => toWordIds(heading.text));
 
       // Pages are searched in full (including the text of their headings)
       pageEntries.push({
         averageTextLength: 0,
-        path: tokenize(page.path),
+        path: toWordIds(page.path),
         result: { page },
-        section: tokenize(page.section ?? ""),
-        text: [tokenize(page.text), ...headingTexts].flat(),
-        title: tokenize(page.title)
+        section: toWordIds(page.section ?? ""),
+        text: [toWordIds(page.text), ...headingTexts].flat(),
+        title: toWordIds(page.title)
       });
 
       // Headings are matched by their own title, with the page title as context;
@@ -269,9 +300,9 @@ function getIndex(siteMap: SiteMapPage[]): Index {
           averageTextLength: 0,
           path: [],
           result: { heading, page },
-          section: tokenize(page.title),
+          section: toWordIds(page.title),
           text: headingTexts[headingIndex],
-          title: tokenize(heading.title)
+          title: toWordIds(heading.title)
         });
       });
     });
@@ -289,24 +320,19 @@ function getIndex(siteMap: SiteMapPage[]): Index {
       });
     }
 
-    const entries = [...pageEntries, ...headingEntries];
-
-    const vocabulary = new Set<string>();
-    entries.forEach((entry) => {
-      for (const words of [
-        entry.path,
-        entry.section,
-        entry.text,
-        entry.title
-      ]) {
-        words.forEach((word) => vocabulary.add(word));
+    const vocabularyStems = new Set<string>();
+    vocabulary.forEach((word) => {
+      const stem = getStem(word);
+      if (stem !== undefined) {
+        vocabularyStems.add(stem);
       }
     });
 
     index = {
-      entries,
-      vocabulary: Array.from(vocabulary),
-      vocabularySet: vocabulary
+      entries: [...pageEntries, ...headingEntries],
+      vocabulary,
+      vocabularyIds,
+      vocabularyStems
     };
 
     indexCache.set(siteMap, index);
@@ -315,12 +341,40 @@ function getIndex(siteMap: SiteMapPage[]): Index {
   return index;
 }
 
-/** Whether any word on the site is (or starts with) the token */
+/** Whether any word on the site is (or starts with, or shares a root with) the token */
 function matchesVocabulary(token: string, index: Index) {
+  const stem = getStem(token);
   return (
-    index.vocabularySet.has(token) ||
+    index.vocabularyIds.has(token) ||
+    (stem !== undefined && index.vocabularyStems.has(stem)) ||
     index.vocabulary.some((word) => word.startsWith(token))
   );
+}
+
+function createTerm(variants: string[], quality: number, index: Index): Term {
+  const stems = new Set<string>();
+  variants.forEach((variant) => {
+    const stem = getStem(variant);
+    if (stem !== undefined) {
+      stems.add(stem);
+    }
+  });
+
+  const matches = new Uint8Array(index.vocabulary.length);
+  index.vocabulary.forEach((word, id) => {
+    if (variants.includes(word)) {
+      matches[id] = EXACT_MATCH;
+    } else {
+      const stem = getStem(word);
+      if (stem !== undefined && stems.has(stem)) {
+        matches[id] = STEM_MATCH;
+      } else if (variants.some((variant) => isPrefixMatch(variant, word))) {
+        matches[id] = PREFIX_MATCH;
+      }
+    }
+  });
+
+  return { matches, quality, variants };
 }
 
 /**
@@ -363,7 +417,7 @@ function splitCompoundWord(token: string, index: Index): string[] {
       const part = token.substring(start, end);
       const current = fewestWords[end];
       if (
-        index.vocabularySet.has(part) &&
+        index.vocabularyIds.has(part) &&
         (current === undefined || words.length + 1 < current.length)
       ) {
         fewestWords[end] = [...words, part];
@@ -386,7 +440,7 @@ function correctTerm(token: string, index: Index): Term {
     token.length < MIN_CORRECTABLE_TERM_LENGTH ||
     matchesVocabulary(token, index)
   ) {
-    return { quality: 1, variants: [token] };
+    return createTerm([token], 1, index);
   }
 
   // Also compare against word prefixes so that partially typed words can be corrected (e.g. "colaps" -> "collapsible")
@@ -399,22 +453,33 @@ function correctTerm(token: string, index: Index): Term {
           isWithinOneEdit(token, word.substring(0, token.length + 1))))
   );
   if (corrections.length === 0) {
-    return { quality: 1, variants: [token] };
+    return createTerm([token], 1, index);
   }
 
-  return { quality: CORRECTED_MATCH_QUALITY, variants: corrections };
+  return createTerm(corrections, CORRECTED_MATCH_QUALITY, index);
 }
 
-function wordMatchQuality(term: Term, word: string) {
-  let quality = 0;
-  for (const variant of term.variants) {
-    if (word === variant) {
+function wordMatchQuality(term: Term, wordId: number) {
+  switch (term.matches[wordId]) {
+    case EXACT_MATCH:
       return term.quality;
-    } else if (isPrefixMatch(variant, word)) {
-      quality = term.quality * PREFIX_MATCH_QUALITY;
-    }
+    case STEM_MATCH:
+      return term.quality * STEM_MATCH_QUALITY;
+    case PREFIX_MATCH:
+      return term.quality * PREFIX_MATCH_QUALITY;
+    default:
+      return 0;
   }
-  return quality;
+}
+
+/** Whether a word matches a term exactly or by root; a prefix match (e.g. while typing) can also be allowed */
+function isWordMatch(term: Term, wordId: number, allowPrefix: boolean) {
+  const kind = term.matches[wordId];
+  return (
+    kind === EXACT_MATCH ||
+    kind === STEM_MATCH ||
+    (allowPrefix && kind === PREFIX_MATCH)
+  );
 }
 
 function isPrefixMatch(variant: string, word: string) {
@@ -422,7 +487,7 @@ function isPrefixMatch(variant: string, word: string) {
 }
 
 /** Best match quality of a term against any word in a short field (e.g. title) */
-function matchQuality(term: Term, words: string[]) {
+function matchQuality(term: Term, words: WordIds) {
   let quality = 0;
   for (const word of words) {
     quality = Math.max(quality, wordMatchQuality(term, word));
@@ -453,7 +518,7 @@ function textScore(
 }
 
 /** Counts occurrences of consecutive terms within words; the final term may be a prefix (e.g. "use panel r") */
-function countPhrases(words: string[], terms: Term[]) {
+function countPhrases(words: WordIds, terms: Term[]) {
   let count = 0;
   for (let start = 0; start <= words.length - terms.length; start++) {
     if (matchesAt(words, terms, start)) {
@@ -464,7 +529,7 @@ function countPhrases(words: string[], terms: Term[]) {
 }
 
 /** Whether all of the words appear consecutively within the terms (e.g. title "min size" within query "panel min size") */
-function isWithinQuery(words: string[], terms: Term[]) {
+function isWithinQuery(words: WordIds, terms: Term[]) {
   if (words.length === 0) {
     return false;
   }
@@ -472,7 +537,7 @@ function isWithinQuery(words: string[], terms: Term[]) {
   for (let start = 0; start <= terms.length - words.length; start++) {
     if (
       words.every((word, offset) =>
-        terms[start + offset].variants.includes(word)
+        isWordMatch(terms[start + offset], word, false)
       )
     ) {
       return true;
@@ -481,27 +546,19 @@ function isWithinQuery(words: string[], terms: Term[]) {
   return false;
 }
 
-function endsWith(words: string[], terms: Term[]) {
+function endsWith(words: WordIds, terms: Term[]) {
   const start = words.length - terms.length;
   return start >= 0 && matchesAt(words, terms, start);
 }
 
-function equals(words: string[], terms: Term[]) {
+function equals(words: WordIds, terms: Term[]) {
   return words.length === terms.length && matchesAt(words, terms, 0);
 }
 
-function matchesAt(words: string[], terms: Term[], start: number) {
+function matchesAt(words: WordIds, terms: Term[], start: number) {
   const last = terms.length - 1;
   for (let offset = 0; offset <= last; offset++) {
-    const word = words[start + offset];
-    const { variants } = terms[offset];
-    const matches =
-      offset === last
-        ? variants.some(
-            (variant) => word === variant || isPrefixMatch(variant, word)
-          )
-        : variants.includes(word);
-    if (!matches) {
+    if (!isWordMatch(terms[offset], words[start + offset], offset === last)) {
       return false;
     }
   }

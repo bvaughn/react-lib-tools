@@ -50,9 +50,10 @@ describe("search", () => {
     expect(await searchPages(siteMap, "baz")).toEqual([siteMap[1], siteMap[2]]);
 
     // Multiple documents, each matching one of the search terms
+    // "qux" and "quxes" share a root, so the page containing both ranks first
     expect(await searchPages(siteMap, "Foo quxes")).toEqual([
-      siteMap[0],
-      siteMap[2]
+      siteMap[2],
+      siteMap[0]
     ]);
 
     expect(await searchPages(siteMap, "section")).toEqual([
@@ -86,9 +87,10 @@ describe("search", () => {
       siteMap[1],
       siteMap[2]
     ]);
+    // "qux" and "quxes" share a root, so the page containing both ranks first
     expect(await searchPages(siteMap, "foo    quxes")).toEqual([
-      siteMap[0],
-      siteMap[2]
+      siteMap[2],
+      siteMap[0]
     ]);
   });
 
@@ -213,6 +215,52 @@ describe("search", () => {
       ];
 
       expect(searchPages(pages, "layout persist")[0]).toBe(pages[2]);
+    });
+  });
+
+  describe("stemming", () => {
+    const pages: SiteMapPage[] = [
+      { path: "", title: "Collapsible panels", text: "" },
+      { path: "", title: "Resizing", text: "" },
+      { path: "", title: "One", text: "" }
+    ];
+
+    test("matches words with the same root", () => {
+      expect(searchPages(pages, "collapse")).toEqual([pages[0]]);
+      expect(searchPages(pages, "collapsed")).toEqual([pages[0]]);
+      expect(searchPages(pages, "resize")).toEqual([pages[1]]);
+    });
+
+    test("matches singular and plural forms", () => {
+      expect(searchPages(pages, "panel")).toEqual([pages[0]]);
+      expect(searchPages(pages, "panels")).toEqual([pages[0]]);
+    });
+
+    test("exact matches rank above stem matches", () => {
+      const pages: SiteMapPage[] = [
+        { path: "", title: "onLayoutChanged", text: "" },
+        { path: "", title: "onLayoutChange", text: "" }
+      ];
+
+      expect(searchPages(pages, "onLayoutChange")[0]).toBe(pages[1]);
+    });
+
+    test("very short roots are ignored", () => {
+      // "one" stems to "on", but shouldn't match the word "on"
+      const pages: SiteMapPage[] = [
+        { path: "", title: "Turn it on", text: "" }
+      ];
+
+      expect(searchPages(pages, "one")).toEqual([]);
+    });
+
+    test("stem matches are not typo-corrected", () => {
+      const pages: SiteMapPage[] = [
+        { path: "", title: "Collapsing", text: "" },
+        { path: "", title: "Collapsed", text: "" }
+      ];
+
+      expect(searchPages(pages, "collapsible")).toHaveLength(2);
     });
   });
 

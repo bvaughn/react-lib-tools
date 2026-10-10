@@ -70,12 +70,11 @@ describe("renderHighlightedText", () => {
   test("matches the start of words, not the middle", () => {
     expect(renderHighlightedText("Persistent layouts", ["is", "layout"]))
       .toMatchInlineSnapshot(`
-      [
-        "Persistent ",
-        <mark>layout</mark>,
-        "s",
-      ]
-    `);
+        [
+          "Persistent ",
+          <mark>layouts</mark>,
+        ]
+      `);
   });
 
   test("matches camelCase words", () => {
@@ -107,14 +106,40 @@ describe("renderHighlightedText", () => {
     `);
   });
 
-  test("prefers the longest matching term", () => {
-    expect(renderHighlightedText("panels", ["pan", "panel"]))
+  test("highlights whole words with the same root as a term", () => {
+    expect(renderHighlightedText("Collapsible panels", ["collapse", "panel"]))
       .toMatchInlineSnapshot(`
+        [
+          <mark>Collapsible</mark>,
+          " ",
+          <mark>panels</mark>,
+        ]
+      `);
+
+    expect(renderHighlightedText("Use onLayoutChanged", ["change"]))
+      .toMatchInlineSnapshot(`
+        [
+          "Use onLayout",
+          <mark>Changed</mark>,
+        ]
+      `);
+
+    // Very short roots don't count (e.g. "one" and "on")
+    expect(renderHighlightedText("Turn it on", ["one"])).toMatchInlineSnapshot(`
       [
-        <mark>panel</mark>,
-        "s",
+        "Turn it on",
       ]
     `);
+  });
+
+  test("prefers the longest matching term", () => {
+    expect(renderHighlightedText("gridlines", ["gr", "grid"]))
+      .toMatchInlineSnapshot(`
+        [
+          <mark>grid</mark>,
+          "lines",
+        ]
+      `);
   });
 
   test("single character terms only match whole words", () => {

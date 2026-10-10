@@ -1,5 +1,6 @@
 import { createElement, type ReactNode } from "react";
 import { MIN_PREFIX_TERM_LENGTH } from "./search";
+import { getStem } from "./stem";
 
 /**
  * Highlights search terms (see getSearchTerms) within text, the same way search matched them:
@@ -99,11 +100,43 @@ function findMatches(text: string, terms: string[]) {
     return matches;
   }
 
+  const termStems = new Set<string>();
+  sortedTerms.forEach((term) => {
+    const stem = getStem(term);
+    if (stem !== undefined) {
+      termStems.add(stem);
+    }
+  });
+
   const lowerCaseText = text.toLowerCase();
+
+  const addMatch = (start: number, stop: number) => {
+    const previous = matches[matches.length - 1];
+    if (previous && previous.stop === start) {
+      previous.stop = stop;
+    } else {
+      matches.push({ start, stop });
+    }
+  };
 
   let index = 0;
   while (index < text.length) {
     if (isWordStart(text, index)) {
+      // Words with the same root as a term are highlighted in full (e.g. "Collapsible" for "collapse")
+      if (termStems.size > 0) {
+        let wordEnd = index + 1;
+        while (!isWordEnd(text, wordEnd)) {
+          wordEnd++;
+        }
+
+        const stem = getStem(lowerCaseText.substring(index, wordEnd));
+        if (stem !== undefined && termStems.has(stem)) {
+          addMatch(index, wordEnd);
+          index = wordEnd;
+          continue;
+        }
+      }
+
       const term = sortedTerms.find(
         (term) =>
           lowerCaseText.startsWith(term, index) &&
@@ -111,13 +144,7 @@ function findMatches(text: string, terms: string[]) {
             isWordEnd(text, index + term.length))
       );
       if (term) {
-        const previous = matches[matches.length - 1];
-        if (previous && previous.stop === index) {
-          previous.stop = index + term.length;
-        } else {
-          matches.push({ start: index, stop: index + term.length });
-        }
-
+        addMatch(index, index + term.length);
         index += term.length;
         continue;
       }

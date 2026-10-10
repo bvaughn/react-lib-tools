@@ -23,14 +23,18 @@ export function getPageSnippetText(page: SiteMapPage, terms: string[]) {
     return page.text;
   }
 
-  // Prefer the section matching the most distinct terms, especially in its title
-  // (e.g. "onLayoutChange" over "defaultLayout" for the search "onLayoutChange")
+  // Prefer the section whose snippet matches the most distinct terms, then sections whose titles match too
+  // (e.g. "onLayoutChange" over "defaultLayout" for the search "onLayoutChange");
+  // only the snippet text counts toward being chosen, since that's what's shown
   let bestHeading: SiteMapHeading | undefined;
   let bestScore = 0;
   for (const heading of page.headings ?? []) {
-    const score =
-      2 * countMatchingTerms(heading.title, terms) +
-      countMatchingTerms(heading.text, terms);
+    const textScore = countMatchingTerms(getHeadingSnippetText(heading), terms);
+    if (textScore === 0) {
+      continue;
+    }
+
+    const score = 2 * textScore + countMatchingTerms(heading.title, terms);
     if (score > bestScore) {
       bestHeading = heading;
       bestScore = score;

@@ -100,6 +100,30 @@ describe("getPageSnippetText", () => {
     );
   });
 
+  test("ignores sections whose shown text doesn't match", () => {
+    const page: SiteMapPage = {
+      headings: [
+        {
+          id: "conditional",
+          text: "How do I render conditionally? Use a ResizeObserver",
+          title: "How do I render conditionally?"
+        },
+        {
+          id: "server",
+          text: "Why does it fail? Rendering on the server requires cookies",
+          title: "Why does it fail?"
+        }
+      ],
+      path: "/common-questions",
+      text: "",
+      title: "Common questions"
+    };
+
+    expect(getPageSnippetText(page, ["render"])).toBe(
+      "Rendering on the server requires cookies"
+    );
+  });
+
   test("falls back to the intro when nothing matches", () => {
     expect(getPageSnippetText(page, ["xyz"])).toBe(
       "A Panel wraps resizable content"
