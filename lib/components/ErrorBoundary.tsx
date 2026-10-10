@@ -7,6 +7,10 @@ import { Callout } from "./Callout";
 import { Box } from "./Box";
 import { Button } from "./Button";
 
+/**
+ * Shows an error message with a retry button, rather than unmounting the app, if its children throw.
+ * Each page rendered by `AppRoot` is wrapped in one.
+ */
 export function ErrorBoundary({ children }: PropsWithChildren) {
   return (
     <ErrorBoundaryExternal FallbackComponent={FallbackComponent}>

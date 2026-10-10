@@ -9,11 +9,15 @@ import { ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { Fragment } from "react";
 import { cn } from "../utils/cn";
 
+/** An option for the `Select` component */
 export type Option<Value extends string> = {
   label: string;
   value: Value;
 };
 
+/**
+ * Dropdown for interactive demos.
+ */
 export function Select<Value extends string>({
   className,
   defaultValue,

@@ -1,6 +1,5 @@
 import { mkdir } from "node:fs/promises";
-import { join } from "node:path";
-import { cwd } from "node:process";
+import { resolve } from "node:path";
 import { getFilesWithExtensions } from "./getFilesWithExtensions.ts";
 import { rmFilesWithExtensions } from "./rmFilesWithExtensions.ts";
 
@@ -8,15 +7,17 @@ export async function initialize({
   fileExtensions,
   fileFilter,
   inputPath,
-  outputPath
+  outputPath,
+  rootDir
 }: {
   fileExtensions: string[];
   fileFilter?: ((path: string) => boolean) | undefined;
   inputPath: string[];
   outputPath: string[];
+  rootDir: string;
 }) {
-  const inputDir = join(cwd(), ...inputPath);
-  const outputDir = join(cwd(), ...outputPath);
+  const inputDir = resolve(rootDir, ...inputPath);
+  const outputDir = resolve(rootDir, ...outputPath);
   await mkdir(outputDir, { recursive: true });
   await rmFilesWithExtensions(outputDir, [".json"]);
 

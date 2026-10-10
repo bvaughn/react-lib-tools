@@ -1,0 +1,41 @@
+name: "CI"
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Build
+            run: pnpm build
+          - name: ESLint
+            run: pnpm lint
+          - name: Prettier
+            run: pnpm prettier:ci
+          - name: TypeScript
+            run: pnpm tsc
+          - name: Vitest
+            run: pnpm test:coverage
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: ${{ matrix.name }}
+        run: ${{ matrix.run }}

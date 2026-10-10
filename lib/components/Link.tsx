@@ -10,13 +10,21 @@ type RenderFunction = (params: {
   isPending: boolean;
 }) => ReactNode;
 
+/**
+ * Link to another page of the docs site; navigates without reloading the page.
+ * Use this rather than `react-router-dom` (which isn't connected to `AppRoot`'s router), and `ExternalLink` for other sites.
+ *
+ * `compileSearchIndex` finds pages to index by following these links.
+ */
 export function Link({
   children,
   onClick,
   to,
   ...rest
 }: Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "href"> & {
+  /** Content, or a function that renders it based on whether the link's page is current (`isActive`) or loading (`isPending`) */
   children?: ReactNode | RenderFunction;
+  /** Path of the page to link to, optionally with a hash (e.g. "/props#size") */
   to: string;
 }) {
   const isActive = !!useMatch(to);

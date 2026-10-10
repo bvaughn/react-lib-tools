@@ -6,7 +6,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config([
-  globalIgnores(["dist", "docs", "generated", "integrations/next/.next"]),
+  globalIgnores(["coverage", "dist", "docs", "generated"]),
   {
     files: ["**/*.{ts,tsx}"],
     ignores: ["**/*.example.tsx"],
@@ -61,6 +61,13 @@ export default tseslint.config([
           ignoreRestSiblings: true
         }
       ]
+    }
+  },
+  {
+    // Fast refresh doesn't apply to tests
+    files: ["**/*.test.{ts,tsx}", "lib/test-utils.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off"
     }
   }
 ]);

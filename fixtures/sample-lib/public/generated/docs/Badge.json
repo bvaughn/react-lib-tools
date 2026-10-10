@@ -1,0 +1,49 @@
+{
+  "description": [
+    {
+      "content": "<p>Displays a short status label.</p>\n"
+    },
+    {
+      "content": "<p>Any other HTML attributes are passed through to the underlying <code>&lt;span&gt;</code>.</p>\n",
+      "intent": "success"
+    },
+    {
+      "content": "<p>Badges are not interactive; don't render buttons or links inside of them.</p>\n",
+      "intent": "danger"
+    }
+  ],
+  "filePath": "fixtures/sample-lib/lib/components/Badge.tsx",
+  "name": "Badge",
+  "props": {
+    "className": {
+      "description": [
+        {
+          "content": "<p>Class name applied to the badge.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">className</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">string</span></div>",
+      "name": "className",
+      "required": false
+    },
+    "children": {
+      "description": [
+        {
+          "content": "<p>Text to display.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">children</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">ReactNode</span></div>",
+      "name": "children",
+      "required": false
+    },
+    "intent": {
+      "description": [
+        {
+          "content": "<p>Controls the color of the badge.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">intent</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-string\">\"danger\"</span><span class=\"\"> </span><span class=\"tok-operator\">|</span><span class=\"\"> </span><span class=\"tok-string\">\"neutral\"</span><span class=\"\"> </span><span class=\"tok-operator\">|</span><span class=\"\"> </span><span class=\"tok-string\">\"success\"</span><span class=\"\"> </span><span class=\"tok-operator\">|</span><span class=\"\"> </span><span class=\"tok-string\">\"warning\"</span><span class=\"\"> </span><span class=\"tok-operator\">=</span><span class=\"\"> </span><span class=\"tok-string\">\"neutral\"</span></div>",
+      "name": "intent",
+      "required": false
+    }
+  }
+}

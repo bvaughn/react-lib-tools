@@ -4,6 +4,9 @@ import { cleanup } from "@testing-library/react";
 import { afterAll, afterEach, beforeAll, expect, vi } from "vitest";
 import failOnConsole from "vitest-fail-on-console";
 
+// Tests for Node scripts opt out of the DOM with a "@vitest-environment node" comment
+const HAS_DOM = typeof HTMLElement !== "undefined";
+
 const PROTOTYPE_PROPS = [
   "clientHeight",
   "clientWidth",
@@ -63,27 +66,52 @@ expect.extend({
   }
 });
 
+// Browser APIs that jsdom doesn't implement; tests that care about them can replace these
+if (HAS_DOM) {
+  globalThis.ResizeObserver ??= class {
+    disconnect() {}
+    observe() {}
+    unobserve() {}
+  };
+
+  Element.prototype.scrollIntoView ??= function () {};
+
+  window.matchMedia ??= (query: string) =>
+    ({
+      addEventListener() {},
+      matches: false,
+      media: query,
+      removeEventListener() {}
+    }) as unknown as MediaQueryList;
+}
+
 beforeAll(() => {
-  PROTOTYPE_PROPS.forEach((propertyKey) => {
-    Object.defineProperty(HTMLElement.prototype, propertyKey, {
-      configurable: true,
-      value: 0
+  if (HAS_DOM) {
+    PROTOTYPE_PROPS.forEach((propertyKey) => {
+      Object.defineProperty(HTMLElement.prototype, propertyKey, {
+        configurable: true,
+        value: 0
+      });
     });
-  });
+  }
 
   vi.spyOn(console, "warn").mockImplementation(() => {
-    throw Error("Unexpectec console warning");
+    throw Error("Unexpected console warning");
   });
 });
 
 afterAll(() => {
-  PROTOTYPE_PROPS.forEach((propertyKey) => {
-    delete HTMLElement.prototype[
-      propertyKey as keyof typeof HTMLElement.prototype
-    ];
-  });
+  if (HAS_DOM) {
+    PROTOTYPE_PROPS.forEach((propertyKey) => {
+      delete HTMLElement.prototype[
+        propertyKey as keyof typeof HTMLElement.prototype
+      ];
+    });
+  }
 });
 
 afterEach(() => {
-  cleanup();
+  if (HAS_DOM) {
+    cleanup();
+  }
 });

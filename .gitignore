@@ -10,9 +10,8 @@ lerna-debug.log*
 node_modules
 /dist
 /docs
+/coverage
 *.local
-
-integrations/vite/test-results
 
 # Editor directories and files
 .vscode/*

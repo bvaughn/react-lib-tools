@@ -6,6 +6,9 @@ import type { ImperativeHandleMetadata } from "../../../lib/types.ts";
 import { syntaxHighlight } from "../syntax-highlight.ts";
 import { parseDescription } from "./parseDescription.ts";
 
+type CommentNode = ReturnType<InterfaceNode["getJSDoc"]>;
+type CommentPart = NonNullable<ReturnType<CommentNode["getTag"]>>;
+
 export async function compileImperativeHandle({
   filePath,
   interfaceNode,
@@ -19,7 +22,7 @@ export async function compileImperativeHandle({
 
   const json: ImperativeHandleMetadata = {
     description: await parseDescription(
-      "" + interfaceNode.getJSDoc().getTag("description")?.text
+      getCommentText(interfaceNode.getJSDoc())
     ),
     filePath,
     methods: [],
@@ -28,13 +31,13 @@ export async function compileImperativeHandle({
 
   const methods = interfaceNode.getMethods();
   for (const method of methods) {
-    const jsDoc = method.getJSDoc();
-    assert(jsDoc);
+    // Comments on method signatures (e.g. "reset(): void") are attached to the signature;
+    // comments on function-typed properties (e.g. "reset: () => void") are attached to the method
+    const jsDoc = method.getJSDoc() ?? method.getSignatures()[0]?.getJSDoc();
+    assert(jsDoc, `Missing JSDoc comment for ${name}.${method.getName()}`);
 
     json.methods.push({
-      description: await parseDescription(
-        "" + jsDoc.getTag("description")?.text
-      ),
+      description: await parseDescription(getCommentText(jsDoc)),
       html: await syntaxHighlight(method.getTSNode().getText(), "TS"),
       name: method.getName()
     });
@@ -45,4 +48,26 @@ export async function compileImperativeHandle({
   console.debug("Writing to", outputFile);
 
   await writeFile(outputFile, JSON.stringify(json, null, 2));
+}
+
+function getCommentText(comment: CommentNode) {
+  let text = toText(comment.getTag("description")?.text);
+
+  // The parser separates @param tags from the description; add them back so they're displayed as a list
+  const params = comment.getAllTags("param");
+  if (params.length > 0) {
+    text += `\n\n${params
+      .map((param) => `@param ${param.name} ${toText(param.text)}`.trim())
+      .join("\n")}`;
+  }
+
+  return text;
+}
+
+function toText(text: CommentPart["text"]): string {
+  if (Array.isArray(text)) {
+    return text.map((part) => toText(part.text)).join("");
+  }
+
+  return text ?? "";
 }

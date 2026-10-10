@@ -1,5 +1,9 @@
 import { createConnection } from "net";
 
+/**
+ * Waits for a server to accept connections (e.g. a dev server that's still starting), retrying up to `retryAttempts` times.
+ * Exits the process if the server never becomes available.
+ */
 export async function waitForConnection({
   host = "localhost",
   port = 3000,

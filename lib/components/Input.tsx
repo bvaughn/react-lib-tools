@@ -1,5 +1,8 @@
 import type { InputHTMLAttributes, PropsWithChildren } from "react";
 
+/**
+ * Text input for interactive demos.
+ */
 export function Input<Type extends string>({
   children,
   className,

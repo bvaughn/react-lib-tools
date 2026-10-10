@@ -1,4 +1,6 @@
 import type { AnalyserOptions } from "@ts-ast-parser/core";
+import { resolve } from "node:path";
+import { cwd } from "node:process";
 import { compileComponents } from "./utils/docs/compileComponents.ts";
 import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
 import type { CompilerOptions } from "typescript";
@@ -17,7 +19,9 @@ export async function compileDocs({
   analyserOptions: analyserOptionsParam,
   componentNames = [],
   imperativeHandleNames = [],
-  outputPath = ["public", "generated", "docs"]
+  outputPath = ["public", "generated", "docs"],
+  readmePath = ["README.md"],
+  rootDir = cwd()
 }: {
   /**
    * AST Parser config; see `@ts-ast-parser/core` documentation for more information.
@@ -26,11 +30,13 @@ export async function compileDocs({
 
   /**
    * Which components should be compiled?
+   * Each name is matched against files in the `lib/components` directory, e.g. "Button" or "grid/Grid".
    */
   componentNames?: string[] | undefined;
 
   /**
    * Which imperative handles should be compiled?
+   * Each name is matched against interfaces declared within the `lib` directory.
    */
   imperativeHandleNames?: string[] | undefined;
 
@@ -39,6 +45,19 @@ export async function compileDocs({
    * By default examples are stored within the `public/generated/docs` directory.
    */
   outputPath?: string[] | undefined;
+
+  /**
+   * README file to update with component props tables, or `false` to skip updating a README.
+   * Tables are inserted between `<!-- Name:section:begin -->` and `<!-- Name:section:end -->` markers.
+   * By default this is the `README.md` file.
+   */
+  readmePath?: string[] | false | undefined;
+
+  /**
+   * Directory that all other paths are relative to.
+   * Defaults to the current working directory.
+   */
+  rootDir?: string | undefined;
 }) {
   const compilerOptions: Partial<CompilerOptions> = {
     ...defaultCompilerOptions,
@@ -48,19 +67,22 @@ export async function compileDocs({
   const analyserOptions: Partial<AnalyserOptions> = {
     ...analyserOptionsParam,
     compilerOptions,
-    include: ["lib"]
+    include: [resolve(rootDir, "lib")]
   };
 
   await compileComponents({
     compilerOptions,
     componentNames,
-    outputPath
+    outputPath,
+    readmePath,
+    rootDir
   });
 
   await compileImperativeHandles({
     analyserOptions,
     names: imperativeHandleNames,
-    outputPath
+    outputPath,
+    rootDir
   });
 }
 

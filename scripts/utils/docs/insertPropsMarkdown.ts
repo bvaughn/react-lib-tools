@@ -13,13 +13,15 @@ export function insertPropsMarkdown({
   const startToken = `<!-- ${flag}:begin -->`;
   const stopToken = `<!-- ${flag}:end -->`;
 
-  const startIndex = markdown.indexOf(startToken) + startToken.length;
+  const startTokenIndex = markdown.indexOf(startToken);
   const stopIndex = markdown.indexOf(stopToken);
-  if (startIndex < 0 || stopIndex < 0) {
+  if (startTokenIndex < 0 || stopIndex < startTokenIndex) {
     console.warn(`README tokens not found for component ${componentName}`);
 
     return markdown;
   }
+
+  const startIndex = startTokenIndex + startToken.length;
 
   return (
     markdown.substring(0, startIndex) +

@@ -2,6 +2,16 @@ import puppeteer from "puppeteer";
 import type { SiteMapPage } from "../../../types";
 import { scheduleWork } from "./scheduleWork";
 
+/**
+ * Loads a page of the docs site in a headless browser and records its searchable content in the site map,
+ * then schedules crawls of any pages it links to (via `data-link`) that haven't been seen yet.
+ *
+ * For each page this records:
+ * - its title and section, from the `[data-title]` and `[data-section]` elements rendered by `Header`
+ * - the text of the main content (`[data-main-scrollable]`), minus elements marked `data-search-ignore`
+ *   and anything matching `filterSelector`
+ * - the text of each `[data-toc]` heading's section, separately, so sections can be returned as their own results
+ */
 export async function crawlPage({
   chromeExecutablePath,
   filterSelector,
@@ -33,7 +43,12 @@ export async function crawlPage({
 
   // Navigate the page to a URL.
   await page.goto(`${host}${path}`);
-  await page.waitForSelector("main");
+  // Wait for the page's (lazy loaded) content, not just the app shell
+  await page.waitForFunction(
+    () =>
+      document.querySelector("main") !== null &&
+      document.querySelector("[data-route-loading]") === null
+  );
 
   page.on("console", (event) => console.log(event.text()));
 

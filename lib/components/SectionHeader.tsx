@@ -2,6 +2,11 @@ import type { HTMLAttributes, PropsWithChildren } from "react";
 import { cn } from "../utils/cn";
 import { slugify } from "../utils/slugify";
 
+/**
+ * Heading for a section within a page.
+ * Included in the "On this page" contents list and as its own search result unless `showInContents` is false;
+ * its `id` (for linking) defaults to a slug of its text.
+ */
 export function SectionHeader({
   children,
   className,

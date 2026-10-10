@@ -1,6 +1,9 @@
 import type { CSSProperties, HTMLAttributes } from "react";
 import { cn } from "../utils/cn";
 
+/**
+ * Flex layout container; `gap` uses the Tailwind spacing scale (e.g. `gap={4}` is `gap-4`).
+ */
 export function Box({
   align,
   children,

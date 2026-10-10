@@ -1,0 +1,162 @@
+[
+  {
+    "path": "/",
+    "text": "sample-lib is a fictional component library used to develop and test react-lib-tools. Start with the Counter component. Installation Begin by installing the library from NPM: npm install sample-lib TypeScript definitions are included within the published dist folder. Support Here are some ways to support this project: Become a GitHub sponsor Buy me a coffee",
+    "title": "Getting started with sample-lib"
+  },
+  {
+    "path": "/versions",
+    "text": "Click below to view documentation for past releases. 0.x source code 0.x source code",
+    "title": "Previous releases"
+  },
+  {
+    "path": "/counter",
+    "section": "Counter",
+    "text": "A Counter displays a number along with buttons to change it. The min and max props limit the range of allowed values: import { Counter } from \"sample-lib\";\n \nfunction CounterBasicExample() {\n return (\n <Counter\n initialValue={0}\n max={10}\n min={0}\n />\n );\n} Count: - 0 + The value can also be changed programmatically using the imperative handle.",
+    "title": "Basic usage"
+  },
+  {
+    "headings": [
+      {
+        "id": "initialValue",
+        "title": "initialValue",
+        "text": "initialValue: number Value displayed when the counter first renders."
+      },
+      {
+        "id": "className",
+        "title": "className",
+        "text": "className?: string Class name applied to the outer element."
+      },
+      {
+        "id": "counterRef",
+        "title": "counterRef",
+        "text": "counterRef?: Ref<CounterImperativeHandle> Ref to the counter's imperative API."
+      },
+      {
+        "id": "label",
+        "title": "label",
+        "text": "label?: string = \"Count\" Accessible label displayed before the value."
+      },
+      {
+        "id": "max",
+        "title": "max",
+        "text": "max?: number Largest allowed value.\n Values above this are clamped without warning."
+      },
+      {
+        "id": "min",
+        "title": "min",
+        "text": "min?: number Smallest allowed value."
+      },
+      {
+        "id": "onChange",
+        "title": "onChange",
+        "text": "onChange?: ((value: number) => void) Called with the new value whenever it changes.\n <Counter initialValue={0} onChange={(value) => console.log(value)} />"
+      },
+      {
+        "id": "size",
+        "title": "size",
+        "text": "size?: \"small\" | \"medium\" | \"large\" = \"medium\" Controls the size of the buttons and text."
+      },
+      {
+        "id": "step",
+        "title": "step",
+        "text": "step?: number = 1 Amount the value changes by each time a button is pressed."
+      },
+      {
+        "id": "title",
+        "title": "title",
+        "text": "title?: string This prop has been deprecated. Use the label prop instead."
+      }
+    ],
+    "path": "/counter/props",
+    "section": "Counter",
+    "text": "Displays a numeric value with buttons to increment and decrement it.\n Counter manages its own state; use the onChange prop to be notified when the value changes.",
+    "title": "Counter component props"
+  },
+  {
+    "headings": [
+      {
+        "id": "getValue",
+        "title": "getValue",
+        "text": "getValue Returns the current value.\n getValue(): number;"
+      },
+      {
+        "id": "reset",
+        "title": "reset",
+        "text": "reset Restores the counter to its initial value.\n reset(): void;"
+      },
+      {
+        "id": "setValue",
+        "title": "setValue",
+        "text": "setValue Sets the current value.\n \n value New value; clamped to the min and max props\n\n setValue(value: number): void;"
+      },
+      {
+        "id": "example",
+        "title": "Example",
+        "text": "Example import { useRef } from \"react\";\nimport { Counter, type CounterImperativeHandle } from \"sample-lib\";\n \nfunction CounterImperativeHandleExample() {\n const counterRef = useRef<CounterImperativeHandle>(null);\n \n return (\n <>\n <Counter counterRef={counterRef} initialValue={5} />\n <Button onClick={() => counterRef.current?.reset()}>Reset</Button>\n </>\n );\n} Count: - 5 + Reset"
+      }
+    ],
+    "path": "/counter/imperative-handle",
+    "section": "Counter",
+    "text": "Imperative API for the Counter component.\n Access this API by passing a ref to the counterRef prop.",
+    "title": "CounterImperativeHandle"
+  },
+  {
+    "headings": [
+      {
+        "id": "theming",
+        "title": "Theming",
+        "text": "Theming Badges accept a className for additional styles: .my-badge {\n border: 1px solid currentColor;\n letter-spacing: 0.05em;\n text-transform: uppercase;\n}"
+      }
+    ],
+    "path": "/badge",
+    "section": "Badge",
+    "text": "Use the intent prop to change the color of a badge: import { Badge } from \"sample-lib\";\n \nfunction BadgeIntentsExample() {\n return (\n <>\n <Badge>Neutral</Badge>\n <Badge intent=\"success\">Success</Badge>\n <Badge intent=\"warning\">Warning</Badge>\n <Badge intent=\"danger\">Danger</Badge>\n </>\n );\n} Neutral Success Warning Danger",
+    "title": "Intents"
+  },
+  {
+    "headings": [
+      {
+        "id": "children",
+        "title": "children",
+        "text": "children?: ReactNode Text to display."
+      },
+      {
+        "id": "className",
+        "title": "className",
+        "text": "className?: string Class name applied to the badge."
+      },
+      {
+        "id": "intent",
+        "title": "intent",
+        "text": "intent?: \"danger\" | \"neutral\" | \"success\" | \"warning\" = \"neutral\" Controls the color of the badge."
+      }
+    ],
+    "path": "/badge/props",
+    "section": "Badge",
+    "text": "Displays a short status label.\n Any other HTML attributes are passed through to the underlying <span>.\n Badges are not interactive; don't render buttons or links inside of them.",
+    "title": "Badge component props"
+  },
+  {
+    "headings": [
+      {
+        "id": "controlled-counter",
+        "title": "Can Counter be controlled?",
+        "text": "Can Counter be controlled? No. Counter manages its own value; use the onChange prop to observe changes or the imperative handle to update it."
+      },
+      {
+        "id": "custom-badge-styles",
+        "title": "Can I customize how badges look?",
+        "text": "Can I customize how badges look? Yes. Pass a className and style it with CSS: .my-badge {\n border: 1px solid currentColor;\n letter-spacing: 0.05em;\n text-transform: uppercase;\n}"
+      }
+    ],
+    "path": "/common-questions",
+    "text": "",
+    "title": "Common questions"
+  },
+  {
+    "path": "/support",
+    "text": "GitHub is the easiest place to look for help, but it's probably not the fastest. This project is maintained by a single developer so there is limited bandwidth for answering questions. I recommend asking questions on Stack Overflow or Reddit to start with. Both sites have active communities who often respond quickly. If you don't find an answer there you can try opening a GitHub issue- but please take a moment first to see if your question has has already been answered before opening a new one.",
+    "title": "Support"
+  }
+]

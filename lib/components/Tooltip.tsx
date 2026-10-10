@@ -19,6 +19,9 @@ import {
 import { createPortal } from "react-dom";
 import { cn } from "../utils/cn";
 
+/**
+ * Shows `content` in a floating tooltip when its children are hovered (or focused, with `showOnFocus`).
+ */
 export function Tooltip({
   children,
   className,
@@ -30,9 +33,11 @@ export function Tooltip({
 }: PropsWithChildren<{
   className?: string;
   content: ReactNode;
+  /** Placements to choose from; by default, whichever side has the most space */
   positions?: Array<Placement> | undefined;
   showOnFocus?: boolean;
   showOnHover?: boolean;
+  /** Render the tooltip in a portal (attached to `document.body`), e.g. to escape a parent with `overflow: hidden` */
   usePortal?: boolean;
 }>) {
   const [isOpen, setIsOpen] = useState(false);

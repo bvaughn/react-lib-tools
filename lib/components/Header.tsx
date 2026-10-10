@@ -2,12 +2,18 @@ import { ArrowTopRightOnSquareIcon } from "@heroicons/react/20/solid";
 import { useLibraryContext } from "../hooks/useLibraryContext";
 import { ExternalLink } from "./ExternalLink";
 
+/**
+ * Page title, with an optional section label above it.
+ * Also sets the document title (with React 19), and is read by `compileSearchIndex` to title the page's search results.
+ */
 export function Header({
   section,
   sourceCodePath,
   title
 }: {
+  /** Label shown above the title, e.g. the name of the nav section the page belongs to */
   section?: string;
+  /** Path of a source file within the repository; adds a link to it (using `repositoryUrl`) */
   sourceCodePath?: string;
   title: string;
 }) {

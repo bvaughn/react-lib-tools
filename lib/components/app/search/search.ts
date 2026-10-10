@@ -115,6 +115,21 @@ interface Term {
 
 const indexCache = new WeakMap<SiteMapPage[], Index>();
 
+/**
+ * Returns the pages (and sections within pages) that match the query, best first.
+ *
+ * 1. The site map is indexed once (and cached): each page, and each heading within a page, becomes an entry
+ *    whose title, path, section, and text are tokenized into words.
+ * 2. The query is split into terms, ignoring common words, splitting identifiers typed without camelCase,
+ *    and correcting typos (see parseQueryTerms).
+ * 3. Each entry is scored per term by where it matches (title > path > section > text; text uses BM25),
+ *    and how well (exact > same root > prefix), weighted by how distinctive the term is across the site (IDF).
+ * 4. Entries that match only some of the terms are penalized, and entries where the terms appear together
+ *    (e.g. a title that is exactly the query, or a path that ends with it) are boosted.
+ * 5. At most a couple of sections per page are kept, so one long page doesn't crowd out the rest.
+ *
+ * An empty query returns every page, in site map order.
+ */
 export function search(
   siteMap: SiteMapPage[],
   queryText: string

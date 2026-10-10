@@ -1,5 +1,9 @@
 import type { AnchorHTMLAttributes } from "react";
 
+/**
+ * Link to another site; opens in a new tab by default.
+ * Use `Link` for links to other pages of the docs site.
+ */
 export function ExternalLink({
   children,
   className,
