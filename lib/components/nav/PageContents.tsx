@@ -33,7 +33,7 @@ const ACTIVE_OFFSET = 48;
  */
 export function PageContents() {
   const { hash, key, pathname } = useLocation();
-  const { setIsNavVisible } = useLibraryContext();
+  const { isNavVisible, setIsNavVisible } = useLibraryContext();
   const entries = useEntries(pathname);
   const [pinnedId, setPinnedId] = usePinnedId(getHashId(hash), key);
   // Top-level entries with nested entries (e.g. props under "Required props") become labels
@@ -71,6 +71,12 @@ export function PageContents() {
       return;
     }
 
+    // On small screens the sidebar is hidden (display:none) while content is showing;
+    // nothing can be measured or scrolled, so wait until it's opened
+    if (container.clientHeight === 0) {
+      return;
+    }
+
     const containerRect = container.getBoundingClientRect();
 
     // When a page first opens, show its link near the top of the sidebar (followed by its contents),
@@ -101,13 +107,24 @@ export function PageContents() {
     } else if (elementRect.bottom > containerRect.bottom) {
       container.scrollTop += elementRect.bottom - containerRect.bottom + 8;
     }
-  }, [activeId, entries.length, pathname]);
+  }, [activeId, entries.length, isNavVisible, pathname]);
 
   if (entries.length < MIN_ENTRIES) {
     return null;
   }
 
   const onClick = (event: MouseEvent, id: string) => {
+    // Let the browser handle modified clicks (e.g. open in new tab)
+    if (
+      event.button !== 0 ||
+      event.altKey ||
+      event.ctrlKey ||
+      event.metaKey ||
+      event.shiftKey
+    ) {
+      return;
+    }
+
     event.preventDefault();
 
     setPinnedId(id);
