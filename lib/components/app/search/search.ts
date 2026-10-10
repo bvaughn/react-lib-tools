@@ -94,7 +94,11 @@ interface Index {
   /** Every distinct word on the site; a word's id is its position */
   vocabulary: string[];
   vocabularyIds: Map<string, number>;
+  /** Stem of each word on the site (by id), if it has one */
+  vocabularyStemsById: (string | undefined)[];
   vocabularyStems: Set<string>;
+  /** The most recently parsed query, reused when terms are requested again (e.g. for highlighting) */
+  lastQuery?: { queryText: string; terms: Term[] } | undefined;
 }
 
 // How a word on the site matches a term
@@ -234,6 +238,16 @@ export function getSearchTerms(
 }
 
 function parseQuery(queryText: string, index: Index): Term[] {
+  if (index.lastQuery?.queryText === queryText) {
+    return index.lastQuery.terms;
+  }
+
+  const terms = parseQueryTerms(queryText, index);
+  index.lastQuery = { queryText, terms };
+  return terms;
+}
+
+function parseQueryTerms(queryText: string, index: Index): Term[] {
   let queryTokens = tokenize(queryText);
 
   const meaningfulTokens = queryTokens.filter(
@@ -320,9 +334,9 @@ function getIndex(siteMap: SiteMapPage[]): Index {
       });
     }
 
+    const vocabularyStemsById = vocabulary.map(getStem);
     const vocabularyStems = new Set<string>();
-    vocabulary.forEach((word) => {
-      const stem = getStem(word);
+    vocabularyStemsById.forEach((stem) => {
       if (stem !== undefined) {
         vocabularyStems.add(stem);
       }
@@ -332,7 +346,8 @@ function getIndex(siteMap: SiteMapPage[]): Index {
       entries: [...pageEntries, ...headingEntries],
       vocabulary,
       vocabularyIds,
-      vocabularyStems
+      vocabularyStems,
+      vocabularyStemsById
     };
 
     indexCache.set(siteMap, index);
@@ -365,7 +380,7 @@ function createTerm(variants: string[], quality: number, index: Index): Term {
     if (variants.includes(word)) {
       matches[id] = EXACT_MATCH;
     } else {
-      const stem = getStem(word);
+      const stem = index.vocabularyStemsById[id];
       if (stem !== undefined && stems.has(stem)) {
         matches[id] = STEM_MATCH;
       } else if (variants.some((variant) => isPrefixMatch(variant, word))) {

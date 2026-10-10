@@ -3,6 +3,9 @@ import { stemmer } from "stemmer";
 // Very short stems are ambiguous (e.g. "on" from both "on" and "one", "us" from "use"), so they're ignored
 const MIN_STEM_LENGTH = 3;
 
+// Bounds memory used by stems of arbitrary strings (e.g. search text); cleared when full
+const MAX_CACHE_SIZE = 10_000;
+
 // Words without a meaningful stem are cached as "" so each lookup is a single Map access
 const cache = new Map<string, string>();
 
@@ -16,6 +19,10 @@ export function getStem(word: string): string | undefined {
     stem = stemmer(word);
     if (stem.length < MIN_STEM_LENGTH) {
       stem = "";
+    }
+
+    if (cache.size >= MAX_CACHE_SIZE) {
+      cache.clear();
     }
     cache.set(word, stem);
   }

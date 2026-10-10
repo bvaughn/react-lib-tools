@@ -7,9 +7,11 @@ import { SiteSearchResult, type SiteSearchItem } from "./SiteSearchResult";
  */
 export function SiteSearchList({
   emptyMessage,
+  footer,
   inputRef,
   isStale,
   items,
+  label,
   listboxId,
   onSelect,
   onSelectWhenReady,
@@ -18,10 +20,14 @@ export function SiteSearchList({
   terms
 }: {
   emptyMessage?: ReactNode;
+  /** Shown below the list (e.g. to show more results) */
+  footer?: ReactNode;
   inputRef: HTMLInputElement | null;
   /** Items don't yet reflect the latest search text (e.g. the search is debounced) */
   isStale: boolean;
   items: SiteSearchItem[];
+  /** Accessible name of the list (e.g. "Search results") */
+  label: string;
   listboxId: string;
   onSelect: () => void;
   /** Enter was pressed while items were stale; the first up-to-date item should be selected */
@@ -118,7 +124,7 @@ export function SiteSearchList({
         )
       )}
       <ul
-        aria-label="Search results"
+        aria-label={label}
         className="flex flex-col gap-1 overflow-auto overscroll-contain"
         id={listboxId}
         role="listbox"
@@ -140,6 +146,7 @@ export function SiteSearchList({
           />
         ))}
       </ul>
+      {footer}
     </div>
   );
 }

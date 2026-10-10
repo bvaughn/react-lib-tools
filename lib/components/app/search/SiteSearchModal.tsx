@@ -22,6 +22,10 @@ import { SiteSearchResults } from "./SiteSearchResults";
 // Searching is fast (well under 1ms); this mostly avoids re-rendering results on every keystroke
 const SEARCH_DEBOUNCE_MS = 100;
 
+// Enter pressed before results are ready only opens the first result if they arrive within this time;
+// opening a page long after the key press (e.g. on a slow connection) would be surprising
+const PENDING_SELECTION_TIMEOUT_MS = 1_000;
+
 export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   const { isSiteSearchVisible, setIsSiteSearchVisible } = useLibraryContext();
 
@@ -39,6 +43,16 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   const isStale = searchText.trim() !== query;
   const [selectWhenReady, setSelectWhenReady] = useState(false);
   const onSelectWhenReady = useCallback(() => setSelectWhenReady(true), []);
+
+  useEffect(() => {
+    if (selectWhenReady) {
+      const timeout = setTimeout(
+        () => setSelectWhenReady(false),
+        PENDING_SELECTION_TIMEOUT_MS
+      );
+      return () => clearTimeout(timeout);
+    }
+  }, [selectWhenReady]);
 
   // Without search text, list all pages in reading order
   const pages = useMemo<SiteSearchItem[]>(
@@ -195,6 +209,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
                 inputRef={inputRef}
                 isStale={isStale}
                 items={pages}
+                label="Pages"
                 listboxId={listboxId}
                 onSelect={close}
                 onSelectWhenReady={onSelectWhenReady}
