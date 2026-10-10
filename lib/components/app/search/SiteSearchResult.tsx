@@ -1,9 +1,9 @@
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useEffect, useMemo, useRef } from "react";
-import type { SiteMapPage } from "../../../../types";
 import { cn } from "../../../utils/cn";
 import { Link } from "../../Link";
 import { renderHighlightedText } from "./renderHighlightedText";
+import type { SearchResult } from "./search";
 
 export function SiteSearchResult({
   isActive,
@@ -11,19 +11,28 @@ export function SiteSearchResult({
   searchTextDeferred
 }: {
   isActive: boolean;
-  result: SiteMapPage;
+  result: SearchResult;
   searchTextDeferred: string;
 }) {
   const ref = useRef<HTMLLIElement>(null);
 
-  const { section, text, title } = useMemo(
-    () => ({
-      section: renderHighlightedText(result.section ?? "", searchTextDeferred),
-      text: result.text,
-      title: renderHighlightedText(result.title, searchTextDeferred)
-    }),
-    [result, searchTextDeferred]
-  );
+  const { path, section, text, title } = useMemo(() => {
+    const { heading, page } = result;
+
+    // Sections within a page are shown as "Page title > Heading title"
+    return {
+      path: heading ? `${page.path}#${heading.id}` : page.path,
+      section: renderHighlightedText(
+        (heading ? page.title : page.section) ?? "",
+        searchTextDeferred
+      ),
+      text: heading ? heading.text : page.text,
+      title: renderHighlightedText(
+        heading ? heading.title : page.title,
+        searchTextDeferred
+      )
+    };
+  }, [result, searchTextDeferred]);
 
   useEffect(() => {
     if (isActive) {
@@ -46,7 +55,7 @@ export function SiteSearchResult({
           }
         )}
         data-active-search-result={isActive || undefined}
-        to={result.path}
+        to={path}
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
           <div className="grow text-lg truncate text-white">

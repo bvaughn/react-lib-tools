@@ -1,4 +1,4 @@
-import type { SiteMapPage } from "../../../../types";
+import type { SiteMapHeading, SiteMapPage } from "../../../../types";
 
 // Relative importance of a term matching each part of a page
 const FIELD_WEIGHTS = {
@@ -19,6 +19,13 @@ const MIN_CORRECTABLE_TERM_LENGTH = 5;
 
 // Shorter terms (e.g. "c" from "c++") only match whole words
 const MIN_PREFIX_TERM_LENGTH = 2;
+
+// Words typed without camelCase (e.g. "onlayoutchange") are only split into parts at least this long;
+// a shorter final part (e.g. the "r" in "usepanelr", partially typed) is ignored
+const MIN_COMPOUND_PART_LENGTH = 2;
+
+// Longer tokens aren't split; real identifiers are shorter, and splitting cost grows with length (e.g. pasted text)
+const MAX_COMPOUND_WORD_LENGTH = 40;
 
 // Common words that are ignored unless the query contains nothing else (e.g. "how do i persist layout")
 const STOP_WORDS = new Set([
@@ -52,22 +59,32 @@ const STOP_WORDS = new Set([
   "with"
 ]);
 
+// Limit how many sections of a single page can appear in results so one long page doesn't crowd out the others
+const MAX_HEADING_RESULTS_PER_PAGE = 2;
+
 // BM25 (Best Matching 25) tuning parameters for body text
 const BM25_K1 = 1.2;
 const BM25_B = 0.75;
 
-interface IndexedPage {
+export interface SearchResult {
+  /** Set when the result is a section within the page */
+  heading?: SiteMapHeading | undefined;
   page: SiteMapPage;
+}
+
+interface IndexedEntry {
+  averageTextLength: number;
   path: string[];
+  result: SearchResult;
   section: string[];
   text: string[];
   title: string[];
 }
 
 interface Index {
-  averageTextLength: number;
-  pages: IndexedPage[];
+  entries: IndexedEntry[];
   vocabulary: string[];
+  vocabularySet: Set<string>;
 }
 
 interface Term {
@@ -80,9 +97,9 @@ const indexCache = new WeakMap<SiteMapPage[], Index>();
 export function search(
   siteMap: SiteMapPage[],
   queryText: string
-): SiteMapPage[] {
+): SearchResult[] {
   if (!queryText.trim()) {
-    return siteMap;
+    return siteMap.map((page) => ({ page }));
   }
 
   let queryTokens = tokenize(queryText);
@@ -98,21 +115,23 @@ export function search(
   }
 
   const index = getIndex(siteMap);
-  const terms = queryTokens.map((token) => correctTerm(token, index));
+  const terms = queryTokens
+    .flatMap((token) => splitCompoundWord(token, index))
+    .map((token) => correctTerm(token, index));
 
   // Terms that appear on fewer pages are more distinctive and worth more
   const inverseDocumentFrequencies = terms.map((term) => {
-    const documentFrequency = index.pages.filter(
-      (indexedPage) =>
-        matchQuality(term, indexedPage.title) > 0 ||
-        matchQuality(term, indexedPage.path) > 0 ||
-        matchQuality(term, indexedPage.section) > 0 ||
-        matchQuality(term, indexedPage.text) > 0
+    const documentFrequency = index.entries.filter(
+      (entry) =>
+        matchQuality(term, entry.title) > 0 ||
+        matchQuality(term, entry.path) > 0 ||
+        matchQuality(term, entry.section) > 0 ||
+        matchQuality(term, entry.text) > 0
     ).length;
 
     return Math.log(
       1 +
-        (index.pages.length - documentFrequency + 0.5) /
+        (index.entries.length - documentFrequency + 0.5) /
           (documentFrequency + 0.5)
     );
   });
@@ -122,18 +141,18 @@ export function search(
     0
   );
 
-  const matches: { page: SiteMapPage; score: number }[] = [];
+  const matches: { result: SearchResult; score: number }[] = [];
 
-  index.pages.forEach((indexedPage) => {
+  index.entries.forEach((entry) => {
     let score = 0;
     let matchedInverseDocumentFrequency = 0;
 
     terms.forEach((term, termIndex) => {
       const termScore =
-        FIELD_WEIGHTS.title * matchQuality(term, indexedPage.title) +
-        FIELD_WEIGHTS.path * matchQuality(term, indexedPage.path) +
-        FIELD_WEIGHTS.section * matchQuality(term, indexedPage.section) +
-        FIELD_WEIGHTS.text * textScore(term, indexedPage.text, index);
+        FIELD_WEIGHTS.title * matchQuality(term, entry.title) +
+        FIELD_WEIGHTS.path * matchQuality(term, entry.path) +
+        FIELD_WEIGHTS.section * matchQuality(term, entry.section) +
+        FIELD_WEIGHTS.text * textScore(term, entry);
 
       if (termScore > 0) {
         matchedInverseDocumentFrequency +=
@@ -156,27 +175,43 @@ export function search(
     }
 
     // Prefer pages where the terms appear together, in order
-    if (equals(indexedPage.title, terms)) {
+    if (equals(entry.title, terms)) {
       score += totalInverseDocumentFrequency * 10;
-    } else if (countPhrases(indexedPage.title, terms) > 0) {
+    } else if (
+      countPhrases(entry.title, terms) > 0 ||
+      isWithinQuery(entry.title, terms)
+    ) {
       score += totalInverseDocumentFrequency * 5;
     }
-    if (endsWith(indexedPage.path, terms)) {
+    if (endsWith(entry.path, terms)) {
       score += totalInverseDocumentFrequency * 10;
     }
     if (terms.length > 1) {
-      const phraseCount = countPhrases(indexedPage.text, terms);
+      const phraseCount = countPhrases(entry.text, terms);
       score +=
         (totalInverseDocumentFrequency * 2 * phraseCount) / (phraseCount + 1);
     }
 
     matches.push({
-      page: indexedPage.page,
+      result: entry.result,
       score
     });
   });
 
-  return matches.sort((a, b) => b.score - a.score).map((match) => match.page);
+  const headingResultCounts = new Map<SiteMapPage, number>();
+
+  return matches
+    .sort((a, b) => b.score - a.score)
+    .map((match) => match.result)
+    .filter(({ heading, page }) => {
+      if (heading === undefined) {
+        return true;
+      }
+
+      const count = headingResultCounts.get(page) ?? 0;
+      headingResultCounts.set(page, count + 1);
+      return count < MAX_HEADING_RESULTS_PER_PAGE;
+    });
 }
 
 /** Splits text into lowercase words, breaking on punctuation and camelCase (e.g. "usePanelRef" -> ["use", "panel", "ref"]) */
@@ -192,38 +227,69 @@ export function tokenize(text: string): string[] {
 function getIndex(siteMap: SiteMapPage[]): Index {
   let index = indexCache.get(siteMap);
   if (index === undefined) {
-    const vocabulary = new Set<string>();
+    const pageEntries: IndexedEntry[] = [];
+    const headingEntries: IndexedEntry[] = [];
 
-    const pages = siteMap.map((page) => {
-      const indexedPage: IndexedPage = {
-        page,
+    siteMap.forEach((page) => {
+      const headings = page.headings ?? [];
+
+      const headingTexts = headings.map((heading) => tokenize(heading.text));
+
+      // Pages are searched in full (including the text of their headings)
+      pageEntries.push({
+        averageTextLength: 0,
         path: tokenize(page.path),
+        result: { page },
         section: tokenize(page.section ?? ""),
-        text: tokenize(page.text),
+        text: [tokenize(page.text), ...headingTexts].flat(),
         title: tokenize(page.title)
-      };
+      });
 
+      // Headings are matched by their own title, with the page title as context;
+      // the page's path is omitted so that every heading on e.g. "/props/panel" doesn't match "panel"
+      headings.forEach((heading, headingIndex) => {
+        headingEntries.push({
+          averageTextLength: 0,
+          path: [],
+          result: { heading, page },
+          section: tokenize(page.title),
+          text: headingTexts[headingIndex],
+          title: tokenize(heading.title)
+        });
+      });
+    });
+
+    // Heading text is much shorter than page text, so each is normalized against its own kind
+    for (const entries of [pageEntries, headingEntries]) {
+      const totalTextLength = entries.reduce(
+        (sum, entry) => sum + entry.text.length,
+        0
+      );
+      const averageTextLength =
+        entries.length > 0 ? totalTextLength / entries.length : 0;
+      entries.forEach((entry) => {
+        entry.averageTextLength = averageTextLength;
+      });
+    }
+
+    const entries = [...pageEntries, ...headingEntries];
+
+    const vocabulary = new Set<string>();
+    entries.forEach((entry) => {
       for (const words of [
-        indexedPage.path,
-        indexedPage.section,
-        indexedPage.text,
-        indexedPage.title
+        entry.path,
+        entry.section,
+        entry.text,
+        entry.title
       ]) {
         words.forEach((word) => vocabulary.add(word));
       }
-
-      return indexedPage;
     });
 
-    const totalTextLength = pages.reduce(
-      (sum, indexedPage) => sum + indexedPage.text.length,
-      0
-    );
-
     index = {
-      averageTextLength: pages.length > 0 ? totalTextLength / pages.length : 0,
-      pages,
-      vocabulary: Array.from(vocabulary)
+      entries,
+      vocabulary: Array.from(vocabulary),
+      vocabularySet: vocabulary
     };
 
     indexCache.set(siteMap, index);
@@ -232,11 +298,76 @@ function getIndex(siteMap: SiteMapPage[]): Index {
   return index;
 }
 
+/** Whether any word on the site is (or starts with) the token */
+function matchesVocabulary(token: string, index: Index) {
+  return (
+    index.vocabularySet.has(token) ||
+    index.vocabulary.some((word) => word.startsWith(token))
+  );
+}
+
+/**
+ * Splits a token that matches nothing on the site into the fewest words that do,
+ * so identifiers typed without camelCase still match (e.g. "onlayoutchange" -> ["on", "layout", "change"]).
+ * The final part may be partially typed (e.g. "onlayoutch" -> ["on", "layout", "ch"]).
+ */
+function splitCompoundWord(token: string, index: Index): string[] {
+  if (
+    token.length > MAX_COMPOUND_WORD_LENGTH ||
+    matchesVocabulary(token, index)
+  ) {
+    return [token];
+  }
+
+  // Fewest whole words that spell the first N characters of the token
+  const fewestWords: (string[] | undefined)[] = [[]];
+  let best: string[] | undefined;
+
+  for (let start = 0; start < token.length; start++) {
+    const words = fewestWords[start];
+    if (words === undefined) {
+      continue;
+    }
+
+    const rest = token.substring(start);
+    if (
+      start > 0 &&
+      matchesVocabulary(rest, index) &&
+      (best === undefined || words.length + 1 < best.length)
+    ) {
+      best = [...words, rest];
+    }
+
+    for (
+      let end = start + MIN_COMPOUND_PART_LENGTH;
+      end < token.length;
+      end++
+    ) {
+      const part = token.substring(start, end);
+      const current = fewestWords[end];
+      if (
+        index.vocabularySet.has(part) &&
+        (current === undefined || words.length + 1 < current.length)
+      ) {
+        fewestWords[end] = [...words, part];
+      }
+    }
+  }
+
+  if (best === undefined) {
+    return [token];
+  }
+
+  // A single trailing character (e.g. the "r" in "usepanelr") is too short to match meaningfully
+  const last = best[best.length - 1];
+  return last.length < MIN_COMPOUND_PART_LENGTH ? best.slice(0, -1) : best;
+}
+
 /** Replaces a term that matches nothing on the site with similarly spelled words (e.g. "colapsible" -> "collapsible") */
 function correctTerm(token: string, index: Index): Term {
   if (
     token.length < MIN_CORRECTABLE_TERM_LENGTH ||
-    index.vocabulary.some((word) => word.startsWith(token))
+    matchesVocabulary(token, index)
   ) {
     return { quality: 1, variants: [token] };
   }
@@ -283,7 +414,10 @@ function matchQuality(term: Term, words: string[]) {
 }
 
 /** BM25 score of a term within body text; repeated matches have diminishing returns and long pages are normalized */
-function textScore(term: Term, words: string[], index: Index) {
+function textScore(
+  term: Term,
+  { averageTextLength, text: words }: IndexedEntry
+) {
   let frequency = 0;
   for (const word of words) {
     frequency += wordMatchQuality(term, word);
@@ -293,7 +427,7 @@ function textScore(term: Term, words: string[], index: Index) {
   }
 
   const lengthRatio =
-    index.averageTextLength > 0 ? words.length / index.averageTextLength : 1;
+    averageTextLength > 0 ? words.length / averageTextLength : 1;
 
   return (
     (frequency * (BM25_K1 + 1)) /
@@ -310,6 +444,24 @@ function countPhrases(words: string[], terms: Term[]) {
     }
   }
   return count;
+}
+
+/** Whether all of the words appear consecutively within the terms (e.g. title "min size" within query "panel min size") */
+function isWithinQuery(words: string[], terms: Term[]) {
+  if (words.length === 0) {
+    return false;
+  }
+
+  for (let start = 0; start <= terms.length - words.length; start++) {
+    if (
+      words.every((word, offset) =>
+        terms[start + offset].variants.includes(word)
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
 }
 
 function endsWith(words: string[], terms: Term[]) {

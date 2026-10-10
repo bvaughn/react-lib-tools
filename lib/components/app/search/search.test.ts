@@ -2,6 +2,10 @@ import { describe, expect, test } from "vitest";
 import { search } from "./search";
 import type { SiteMapPage } from "../../../../types";
 
+function searchPages(siteMap: SiteMapPage[], queryText: string) {
+  return search(siteMap, queryText).map(({ page }) => page);
+}
+
 describe("search", () => {
   const siteMap: SiteMapPage[] = [
     {
@@ -24,52 +28,65 @@ describe("search", () => {
   ];
 
   test("no pages", async () => {
-    expect(await search([], "")).toEqual([]);
+    expect(await searchPages([], "")).toEqual([]);
   });
 
   test("no search text", async () => {
-    expect(await search(siteMap, "")).toEqual(siteMap);
+    expect(await searchPages(siteMap, "")).toEqual(siteMap);
   });
 
   test("no matching terms", async () => {
-    expect(await search(siteMap, "xyz")).toEqual([]);
+    expect(await searchPages(siteMap, "xyz")).toEqual([]);
   });
 
   test("one matching document", async () => {
-    expect(await search(siteMap, "Foo")).toEqual([siteMap[0]]);
+    expect(await searchPages(siteMap, "Foo")).toEqual([siteMap[0]]);
 
     // Multiple matches within the same document
-    expect(await search(siteMap, "qux")).toEqual([siteMap[2]]);
+    expect(await searchPages(siteMap, "qux")).toEqual([siteMap[2]]);
   });
 
   test("multiple matching documents", async () => {
-    expect(await search(siteMap, "baz")).toEqual([siteMap[1], siteMap[2]]);
+    expect(await searchPages(siteMap, "baz")).toEqual([siteMap[1], siteMap[2]]);
 
     // Multiple documents, each matching one of the search terms
-    expect(await search(siteMap, "Foo quxes")).toEqual([
+    expect(await searchPages(siteMap, "Foo quxes")).toEqual([
       siteMap[0],
       siteMap[2]
     ]);
 
-    expect(await search(siteMap, "section")).toEqual([siteMap[0], siteMap[1]]);
+    expect(await searchPages(siteMap, "section")).toEqual([
+      siteMap[0],
+      siteMap[1]
+    ]);
   });
 
   test("sorting prefers matches with repeated terms", async () => {
-    expect(search(siteMap, "bar")).toEqual([siteMap[1], siteMap[0]]);
+    expect(searchPages(siteMap, "bar")).toEqual([siteMap[1], siteMap[0]]);
   });
 
   test("sorting prefers title matches", async () => {
-    expect(search(siteMap, "zot")).toEqual([siteMap[1], siteMap[0]]);
+    expect(searchPages(siteMap, "zot")).toEqual([siteMap[1], siteMap[0]]);
   });
 
   test("sorting prefers multiple matches", async () => {
-    expect(search(siteMap, "ba")).toEqual([siteMap[1], siteMap[0], siteMap[2]]);
+    expect(searchPages(siteMap, "ba")).toEqual([
+      siteMap[1],
+      siteMap[0],
+      siteMap[2]
+    ]);
   });
 
   test("extra spaces", async () => {
-    expect(await search(siteMap, "  baz")).toEqual([siteMap[1], siteMap[2]]);
-    expect(await search(siteMap, "baz  ")).toEqual([siteMap[1], siteMap[2]]);
-    expect(await search(siteMap, "foo    quxes")).toEqual([
+    expect(await searchPages(siteMap, "  baz")).toEqual([
+      siteMap[1],
+      siteMap[2]
+    ]);
+    expect(await searchPages(siteMap, "baz  ")).toEqual([
+      siteMap[1],
+      siteMap[2]
+    ]);
+    expect(await searchPages(siteMap, "foo    quxes")).toEqual([
       siteMap[0],
       siteMap[2]
     ]);
@@ -81,11 +98,11 @@ describe("search", () => {
       { path: "", title: "Other", text: "plain text" }
     ];
 
-    expect(search(pages, "c++")).toEqual([pages[0]]);
-    expect(search(pages, "onResize(")).toEqual([pages[0]]);
-    expect(search(pages, "(")).toEqual([]);
-    expect(search(pages, "[x")).toEqual([]);
-    expect(search(pages, ".")).toEqual([]);
+    expect(searchPages(pages, "c++")).toEqual([pages[0]]);
+    expect(searchPages(pages, "onResize(")).toEqual([pages[0]]);
+    expect(searchPages(pages, "(")).toEqual([]);
+    expect(searchPages(pages, "[x")).toEqual([]);
+    expect(searchPages(pages, ".")).toEqual([]);
   });
 
   test("single character terms only match whole words", () => {
@@ -94,8 +111,8 @@ describe("search", () => {
       { path: "", title: "Components", text: "" }
     ];
 
-    expect(search(pages, "c")).toEqual([pages[0]]);
-    expect(search(pages, "co")).toEqual([pages[1]]);
+    expect(searchPages(pages, "c")).toEqual([pages[0]]);
+    expect(searchPages(pages, "co")).toEqual([pages[1]]);
   });
 
   describe("word boundaries", () => {
@@ -105,18 +122,35 @@ describe("search", () => {
     ];
 
     test("camelCase, kebab-case, and separate words are equivalent", () => {
-      expect(search(pages, "usePanelRef")[0]).toBe(pages[0]);
-      expect(search(pages, "use-panel-ref")[0]).toBe(pages[0]);
-      expect(search(pages, "use panel ref")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "usePanelRef")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "use-panel-ref")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "use panel ref")[0]).toBe(pages[0]);
     });
 
     test("terms match the start of words", () => {
-      expect(search(pages, "pan")).toEqual([pages[1], pages[0]]);
-      expect(search(pages, "anel")).toEqual([]);
+      expect(searchPages(pages, "pan")).toEqual([pages[1], pages[0]]);
+      expect(searchPages(pages, "anel")).toEqual([]);
+    });
+
+    test("identifiers typed without camelCase still match", () => {
+      expect(searchPages(pages, "usepanelref")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "USEPANELREF")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "usePanelref")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "usepanelr")[0]).toBe(pages[0]);
+      expect(searchPages(pages, "usepanelxyz")).toEqual([]);
+    });
+
+    test("a trailing partial character does not match unrelated single-character words", () => {
+      const pages: SiteMapPage[] = [
+        { path: "", title: "Versions", text: "4.x 3.x" },
+        { path: "", title: "Gridline", text: "" }
+      ];
+
+      expect(searchPages(pages, "gridlinex")).toEqual([pages[1]]);
     });
 
     test("path is searched", () => {
-      expect(search(pages, "hooks")).toEqual([pages[0]]);
+      expect(searchPages(pages, "hooks")).toEqual([pages[0]]);
     });
   });
 
@@ -127,7 +161,7 @@ describe("search", () => {
         { path: "", title: "Rendering", text: "server rendering" }
       ];
 
-      expect(search(pages, "server rendering")[0]).toBe(pages[1]);
+      expect(searchPages(pages, "server rendering")[0]).toBe(pages[1]);
     });
 
     test("terms appearing together rank above scattered terms", () => {
@@ -136,7 +170,7 @@ describe("search", () => {
         { path: "", title: "Two", text: "foo min size bar" }
       ];
 
-      expect(search(pages, "min size")[0]).toBe(pages[1]);
+      expect(searchPages(pages, "min size")[0]).toBe(pages[1]);
     });
 
     test("long pages do not outrank short pages by repetition alone", () => {
@@ -149,7 +183,7 @@ describe("search", () => {
         { path: "", title: "Short", text: "grid" }
       ];
 
-      expect(search(pages, "grid")[0]).toBe(pages[1]);
+      expect(searchPages(pages, "grid")[0]).toBe(pages[1]);
     });
 
     test("common words are ignored", () => {
@@ -159,7 +193,7 @@ describe("search", () => {
         { path: "", title: "Another", text: "how do i how do i" }
       ];
 
-      expect(search(pages, "how do i persist")).toEqual([pages[0]]);
+      expect(searchPages(pages, "how do i persist")).toEqual([pages[0]]);
     });
 
     test("queries containing only common words still match", () => {
@@ -168,7 +202,7 @@ describe("search", () => {
         { path: "", title: "Another", text: "something else" }
       ];
 
-      expect(search(pages, "how")).toEqual([pages[0]]);
+      expect(searchPages(pages, "how")).toEqual([pages[0]]);
     });
 
     test("distinctive terms matter more than common ones", () => {
@@ -178,7 +212,7 @@ describe("search", () => {
         { path: "", title: "Three", text: "layout layout persist" }
       ];
 
-      expect(search(pages, "layout persist")[0]).toBe(pages[2]);
+      expect(searchPages(pages, "layout persist")[0]).toBe(pages[2]);
     });
   });
 
@@ -189,21 +223,21 @@ describe("search", () => {
     ];
 
     test("corrects a single typo", () => {
-      expect(search(pages, "colapsible")).toEqual([pages[0]]);
-      expect(search(pages, "seperator")).toEqual([pages[1]]);
-      expect(search(pages, "spearator")).toEqual([pages[1]]);
+      expect(searchPages(pages, "colapsible")).toEqual([pages[0]]);
+      expect(searchPages(pages, "seperator")).toEqual([pages[1]]);
+      expect(searchPages(pages, "spearator")).toEqual([pages[1]]);
     });
 
     test("corrects a partially typed word", () => {
-      expect(search(pages, "colaps")).toEqual([pages[0]]);
+      expect(searchPages(pages, "colaps")).toEqual([pages[0]]);
     });
 
     test("does not correct short terms", () => {
-      expect(search(pages, "panle")).toEqual([]);
+      expect(searchPages(pages, "panle")).toEqual([]);
     });
 
     test("does not correct terms with more than one typo", () => {
-      expect(search(pages, "colapsibel")).toEqual([]);
+      expect(searchPages(pages, "colapsibel")).toEqual([]);
     });
 
     test("corrected terms rank like correctly spelled terms", () => {
@@ -212,7 +246,82 @@ describe("search", () => {
         { path: "/props/panel", title: "Panel props", text: "" }
       ];
 
-      expect(search(pages, "pannel")).toEqual(search(pages, "panel"));
+      expect(searchPages(pages, "pannel")).toEqual(searchPages(pages, "panel"));
+    });
+  });
+
+  describe("headings", () => {
+    const pages: SiteMapPage[] = [
+      {
+        headings: [
+          {
+            id: "minSize",
+            text: "minSize?: number Minimum panel size",
+            title: "minSize"
+          },
+          {
+            id: "maxSize",
+            text: "maxSize?: number Maximum panel size",
+            title: "maxSize"
+          },
+          {
+            id: "collapsible",
+            text: "collapsible?: boolean Panel can collapse",
+            title: "collapsible"
+          }
+        ],
+        path: "/props/panel",
+        text: "Props for the Panel component",
+        title: "Panel component props"
+      },
+      {
+        path: "/examples/min-max",
+        text: "Panels can have a min size and max size",
+        title: "Min/max sizes"
+      }
+    ];
+
+    const toPaths = (queryText: string) =>
+      search(pages, queryText).map(({ heading, page }) =>
+        heading ? `${page.path}#${heading.id}` : page.path
+      );
+
+    test("matching headings are returned as separate results", () => {
+      expect(toPaths("minSize")[0]).toBe("/props/panel#minSize");
+      expect(search(pages, "minSize")[0].heading).toBe(pages[0].headings![0]);
+    });
+
+    test("pages are searched including the text of their headings", () => {
+      expect(toPaths("boolean")).toEqual([
+        "/props/panel#collapsible",
+        "/props/panel"
+      ]);
+    });
+
+    test("page title is used as context for headings", () => {
+      expect(toPaths("panel minSize")[0]).toBe("/props/panel#minSize");
+    });
+
+    test("headings do not match the page path", () => {
+      const pages: SiteMapPage[] = [
+        {
+          headings: [{ id: "minSize", text: "Minimum size", title: "minSize" }],
+          path: "/api/panel",
+          text: "",
+          title: "Panel"
+        }
+      ];
+
+      expect(search(pages, "api")).toEqual([{ page: pages[0] }]);
+    });
+
+    test("results from a single page are limited", () => {
+      const paths = toPaths("number");
+      expect(paths.filter((path) => path.includes("#"))).toHaveLength(2);
+    });
+
+    test("pages without headings are supported", () => {
+      expect(toPaths("min size")).toContain("/examples/min-max");
     });
   });
 });
