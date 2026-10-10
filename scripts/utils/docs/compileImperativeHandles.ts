@@ -3,20 +3,23 @@ import {
   type AnalyserOptions,
   type InterfaceNode
 } from "@ts-ast-parser/core";
-import { join } from "node:path";
+import { join, relative, resolve } from "node:path";
 import { cwd } from "node:process";
 import { compileImperativeHandle } from "./compileImperativeHandle.ts";
 
 export async function compileImperativeHandles({
   analyserOptions,
   names,
-  outputPath
+  outputPath,
+  rootDir
 }: {
   analyserOptions: Partial<AnalyserOptions>;
   names: string[];
   outputPath: string[];
+  rootDir: string;
 }) {
-  const outputDir = join(cwd(), ...outputPath);
+  const outputDir = join(rootDir, ...outputPath);
+  const libDir = resolve(rootDir, "lib");
 
   const result = await parseFromProject(analyserOptions);
   const reflectedModules = result.project?.getModules() ?? [];
@@ -30,8 +33,9 @@ export async function compileImperativeHandles({
     reflectedModules.forEach((reflectedModule) => {
       const node = reflectedModule.getDeclarationByName(name);
       if (node) {
+        // Source paths are relative to the current working directory
         const filePath = reflectedModule.getSourcePath();
-        if (filePath.startsWith("lib/")) {
+        if (!relative(libDir, resolve(cwd(), filePath)).startsWith("..")) {
           nodes.push({
             filePath,
             node: node as unknown as InterfaceNode

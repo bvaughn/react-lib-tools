@@ -53,9 +53,12 @@ const websiteConfig: UserConfig = {
       filename: "stats.html"
     })
   ],
+  // The dev site is the sample library's docs (plus internal tools like the color picker)
+  publicDir: resolve(__dirname, "fixtures/sample-lib/public"),
   resolve: {
     alias: {
-      "react-lib-tools": resolve(__dirname, "lib")
+      "react-lib-tools": resolve(__dirname, "lib"),
+      "sample-lib": resolve(__dirname, "fixtures/sample-lib/lib")
     }
   }
 };

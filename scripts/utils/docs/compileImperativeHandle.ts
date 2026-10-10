@@ -28,8 +28,10 @@ export async function compileImperativeHandle({
 
   const methods = interfaceNode.getMethods();
   for (const method of methods) {
-    const jsDoc = method.getJSDoc();
-    assert(jsDoc);
+    // Comments on method signatures (e.g. "reset(): void") are attached to the signature;
+    // comments on function-typed properties (e.g. "reset: () => void") are attached to the method
+    const jsDoc = method.getJSDoc() ?? method.getSignatures()[0]?.getJSDoc();
+    assert(jsDoc, `Missing JSDoc comment for ${name}.${method.getName()}`);
 
     json.methods.push({
       description: await parseDescription(

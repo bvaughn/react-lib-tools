@@ -23,7 +23,8 @@
     "exactOptionalPropertyTypes": true,
 
     "paths": {
-      "react-lib-tools": ["./lib"]
+      "react-lib-tools": ["./lib"],
+      "sample-lib": ["./fixtures/sample-lib/lib"]
     },
     "types": [
       "csstype",
@@ -31,6 +32,6 @@
       "@testing-library/jest-dom/vitest"
     ]
   },
-  "include": ["vitest.d.ts", "lib", "scripts", "src", "index.tsx"],
+  "include": ["vitest.d.ts", "fixtures", "lib", "scripts", "src", "index.tsx"],
   "exclude": []
 }

@@ -1,0 +1,124 @@
+{
+  "description": [
+    {
+      "content": "<p>Displays a numeric value with buttons to increment and decrement it.</p>\n"
+    },
+    {
+      "content": "<p>Counter manages its own state; use the <code>onChange</code> prop to be notified when the value changes.</p>\n",
+      "intent": "primary"
+    }
+  ],
+  "filePath": "fixtures/sample-lib/lib/components/Counter.tsx",
+  "name": "Counter",
+  "props": {
+    "className": {
+      "description": [
+        {
+          "content": "<p>Class name applied to the outer element.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">className</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">string</span></div>",
+      "name": "className",
+      "required": false
+    },
+    "counterRef": {
+      "description": [
+        {
+          "content": "<p>Ref to the counter's imperative API.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">counterRef</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">Ref</span><span class=\"\">&#60;</span><span class=\"tok-typeName\">CounterImperativeHandle</span><span class=\"\">&#62;</span></div>",
+      "name": "counterRef",
+      "required": false
+    },
+    "initialValue": {
+      "description": [
+        {
+          "content": "<p>Value displayed when the counter first renders.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-labelName\"><span class=\"tok-propertyName\">initialValue</span></span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">number</span></div>",
+      "name": "initialValue",
+      "required": true
+    },
+    "label": {
+      "description": [
+        {
+          "content": "<p>Accessible label displayed before the value.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">label</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">string</span><span class=\"\"> </span><span class=\"tok-operator\">=</span><span class=\"\"> </span><span class=\"tok-string\">\"Count\"</span></div>",
+      "name": "label",
+      "required": false
+    },
+    "max": {
+      "description": [
+        {
+          "content": "<p>Largest allowed value.</p>\n"
+        },
+        {
+          "content": "<p>Values above this are clamped without warning.</p>\n",
+          "intent": "warning"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">max</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">number</span></div>",
+      "name": "max",
+      "required": false
+    },
+    "min": {
+      "description": [
+        {
+          "content": "<p>Smallest allowed value.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">min</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">number</span></div>",
+      "name": "min",
+      "required": false
+    },
+    "onChange": {
+      "description": [
+        {
+          "content": "<p>Called with the new value whenever it changes.</p>\n"
+        },
+        {
+          "code": true,
+          "content": "<div><span class=\"tok-punctuation\">&#60;</span><span class=\"tok-typeName\">Counter</span><span class=\"\"> </span><span class=\"tok-propertyName\">initialValue</span><span class=\"tok-operator\">=</span><span class=\"tok-punctuation\">{</span><span class=\"tok-number\">0</span><span class=\"tok-punctuation\">}</span><span class=\"\"> </span><span class=\"tok-propertyName\">onChange</span><span class=\"tok-operator\">=</span><span class=\"tok-punctuation\">{</span><span class=\"tok-punctuation\">(</span><span class=\"tok-variableName tok-definition\">value</span><span class=\"tok-punctuation\">)</span><span class=\"\"> </span><span class=\"tok-punctuation\">=&#62;</span><span class=\"\"> </span><span class=\"tok-variableName\">console</span><span class=\"tok-operator\">.</span><span class=\"tok-propertyName\">log</span><span class=\"tok-punctuation\">(</span><span class=\"tok-variableName\">value</span><span class=\"tok-punctuation\">)</span><span class=\"tok-punctuation\">}</span><span class=\"\"> </span><span class=\"tok-punctuation\">/&#62;</span></div>"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">onChange</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-punctuation\">(</span><span class=\"tok-punctuation\">(</span><span class=\"tok-variableName tok-definition\">value</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-typeName\">number</span><span class=\"tok-punctuation\">)</span><span class=\"\"> </span><span class=\"tok-punctuation\">=&#62;</span><span class=\"\"> </span><span class=\"tok-keyword\">void</span><span class=\"tok-punctuation\">)</span></div>",
+      "name": "onChange",
+      "required": false
+    },
+    "size": {
+      "description": [
+        {
+          "content": "<p>Controls the size of the buttons and text.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">size</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-string\">\"small\"</span><span class=\"\"> </span><span class=\"tok-operator\">|</span><span class=\"\"> </span><span class=\"tok-string\">\"medium\"</span><span class=\"\"> </span><span class=\"tok-operator\">|</span><span class=\"\"> </span><span class=\"tok-string\">\"large\"</span><span class=\"\"> </span><span class=\"tok-operator\">=</span><span class=\"\"> </span><span class=\"tok-string\">\"medium\"</span></div>",
+      "name": "size",
+      "required": false
+    },
+    "step": {
+      "description": [
+        {
+          "content": "<p>Amount the value changes by each time a button is pressed.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">step</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">number</span><span class=\"\"> </span><span class=\"tok-operator\">=</span><span class=\"\"> </span><span class=\"tok-number\">1</span></div>",
+      "name": "step",
+      "required": false
+    },
+    "title": {
+      "description": [
+        {
+          "content": "<p>This prop has been deprecated. Use the <code>label</code> prop instead.</p>\n",
+          "intent": "danger"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\"><span class=\"tok-propertyName\">title</span></span><span class=\"tok-operator\">?</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">string</span></div>",
+      "name": "title",
+      "required": false
+    }
+  }
+}

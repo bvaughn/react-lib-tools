@@ -1,0 +1,42 @@
+{
+  "description": [
+    {
+      "content": "<p>Imperative API for the <code>Counter</code> component.</p>\n"
+    },
+    {
+      "content": "<p>Access this API by passing a ref to the <code>counterRef</code> prop.</p>\n",
+      "intent": "none"
+    }
+  ],
+  "filePath": "fixtures/sample-lib/lib/types.ts",
+  "methods": [
+    {
+      "description": [
+        {
+          "content": "<p>Returns the current value.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\">getValue</span><span class=\"tok-punctuation\">(</span><span class=\"tok-punctuation\">)</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-variableName\">number</span><span class=\"tok-punctuation\">;</span></div>",
+      "name": "getValue"
+    },
+    {
+      "description": [
+        {
+          "content": "<p>Restores the counter to its initial value.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\">reset</span><span class=\"tok-punctuation\">(</span><span class=\"tok-punctuation\">)</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-keyword\">void</span><span class=\"tok-punctuation\">;</span></div>",
+      "name": "reset"
+    },
+    {
+      "description": [
+        {
+          "content": "<p>Sets the current value.</p>\n"
+        }
+      ],
+      "html": "<div><span class=\"tok-variableName\">setValue</span><span class=\"tok-punctuation\">(</span><span class=\"tok-variableName\">value</span><span class=\"tok-punctuation\">:</span><span class=\"\"> number</span><span class=\"tok-punctuation\">)</span><span class=\"tok-punctuation\">:</span><span class=\"\"> </span><span class=\"tok-keyword\">void</span><span class=\"tok-punctuation\">;</span></div>",
+      "name": "setValue"
+    }
+  ],
+  "name": "CounterImperativeHandle"
+}

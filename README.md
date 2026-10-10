@@ -15,6 +15,10 @@ await compileDocs({
 
 ```
 
+By default this also inserts props tables into your `README.md`, between `<!-- ComponentOne:description:begin -->`/`<!-- ComponentOne:description:end -->` style markers (for the `description`, `required-props` and `optional-props` sections). Pass `readmePath: false` to skip this.
+
+All of the scripts resolve paths relative to the current working directory; pass a `rootDir` option to use a different directory.
+
 Example snippets can be compiled into syntax-highlighted HTML using the compile-examples script:
 ```ts
 import { compileExamples } from "react-lib-tools/scripts/compile-examples.ts";

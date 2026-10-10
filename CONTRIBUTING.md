@@ -22,23 +22,50 @@ pnpm dev
 
 The dev server runs at http://localhost:3000. It also listens on your local network, so you can open it from a phone to test mobile layouts.
 
-> [!NOTE]
-> The dev server currently only hosts the internal color picker and OG image tools (`src/`). To see changes to the library components (`lib/`) you'll need to test them in a consuming project; see [Testing changes in a consuming project](#testing-changes-in-a-consuming-project).
+It serves two apps:
+
+- `/` is the documentation site for a fictional **sample library** (see below). It's built with `AppRoot` and the other components in `lib/`, so it's the quickest way to see your changes; edits to `lib/` hot-reload.
+- `/color-picker` is an internal tool for picking theme colors and generating OG images (`src/`).
+
+## The sample library
+
+[`fixtures/sample-lib/`](./fixtures/sample-lib) is a small, fictional component library that uses `react-lib-tools` the same way a real library (like `react-window`) does:
+
+| Path                  | Contents                                                                                              |
+| :-------------------- | :---------------------------------------------------------------------------------------------------- |
+| `lib/`                | Components and an imperative handle, with TSDoc comments covering the features `compileDocs` supports |
+| `src/`                | The documentation site: `App.tsx` (the `AppRoot` config), routes, and example snippets                |
+| `public/generated/`   | Output of the compile scripts: docs and examples JSON, plus the search index                          |
+| `README.md`           | Props tables inserted by `compileDocs`                                                                |
+| `scripts/generate.ts` | Runs every compile script against the sample library                                                  |
+
+Pages import from `react-lib-tools` and `sample-lib`; both are aliases for local source (`lib/` and `fixtures/sample-lib/lib/`).
+
+The generated files are committed, so you only need to regenerate them when you change the compile scripts in `scripts/`, the sample library's TSDoc or examples, or page content that affects search:
+
+```sh
+pnpm fixtures:generate
+```
+
+This also starts a temporary dev server so the search index can be built by crawling the site with Puppeteer. If Puppeteer can't find a browser, set `CHROME_PATH` to a Chrome executable.
+
+Review changes to the generated files as part of your pull request; they show exactly how a change to the scripts affects their output.
 
 ## Common commands
 
-| Command              | Description                                                   |
-| :------------------- | :------------------------------------------------------------ |
-| `pnpm dev`           | Start the dev server                                          |
-| `pnpm test`          | Run tests in watch mode                                       |
-| `pnpm test:ci`       | Run tests once                                                |
-| `pnpm test:coverage` | Run tests once with a coverage report (written to `coverage/`) |
-| `pnpm test:debug`    | Run tests with the Node inspector attached                    |
-| `pnpm lint`          | Run ESLint                                                    |
-| `pnpm prettier`      | Format all files                                              |
-| `pnpm tsc`           | Type check                                                    |
-| `pnpm build:lib`     | Build the published package into `dist/`                      |
-| `pnpm build`         | Build the package and the docs website                        |
+| Command                  | Description                                                     |
+| :----------------------- | :-------------------------------------------------------------- |
+| `pnpm dev`               | Start the dev server                                            |
+| `pnpm fixtures:generate` | Regenerate the sample library's docs, examples and search index |
+| `pnpm test`              | Run tests in watch mode                                         |
+| `pnpm test:ci`           | Run tests once                                                  |
+| `pnpm test:coverage`     | Run tests once with a coverage report (written to `coverage/`)  |
+| `pnpm test:debug`        | Run tests with the Node inspector attached                      |
+| `pnpm lint`              | Run ESLint                                                      |
+| `pnpm prettier`          | Format all files                                                |
+| `pnpm tsc`               | Type check                                                      |
+| `pnpm build:lib`         | Build the published package into `dist/`                        |
+| `pnpm build`             | Build the package and the docs website                          |
 
 CI runs the build, ESLint, Prettier, TypeScript, and Vitest checks on every pull request; it's a good idea to run them locally before pushing.
 
@@ -67,7 +94,7 @@ Tests use [Vitest](https://vitest.dev/) and live next to the code they test (`fo
 
 ## Testing changes in a consuming project
 
-Most changes are best verified in a real documentation site such as `react-window`'s.
+The sample library covers most changes, but it's worth checking larger changes in a real documentation site such as `react-window`'s.
 
 1. Build the package: `pnpm build:lib`. (Repeat this after each change to `lib/`. Changes to `scripts/` take effect immediately, because consumers import them as raw TypeScript.)
 2. In the consuming project, point the dependency at your local checkout:
@@ -88,8 +115,9 @@ Remember to restore the consumer's original dependency when you're done.
 
 1. Create a branch from `main`.
 2. Make your change, including tests where practical.
-3. Make sure `pnpm lint`, `pnpm prettier:ci`, `pnpm tsc`, and `pnpm test:ci` all pass.
-4. Open a pull request describing what changed and why. For visual changes, include before and after screenshots, ideally both desktop and mobile.
+3. If you changed anything in `scripts/`, run `pnpm fixtures:generate` and commit the updated output.
+4. Make sure `pnpm lint`, `pnpm prettier:ci`, `pnpm tsc`, and `pnpm test:ci` all pass.
+5. Open a pull request describing what changed and why. For visual changes, include before and after screenshots, ideally both desktop and mobile.
 
 ## Releasing (maintainers)
 

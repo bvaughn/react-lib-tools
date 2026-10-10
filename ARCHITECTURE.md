@@ -7,21 +7,24 @@
 
 ## Repository layout
 
-| Path                            | Published? | What it is                                                                                                                 |
-| :------------------------------ | :--------- | :------------------------------------------------------------------------------------------------------------------------- |
-| [`lib/`](./lib)                 | Yes, via `dist/` | React components, hooks, and utilities. The public API is whatever [`lib/index.ts`](./lib/index.ts) exports.               |
-| [`scripts/`](./scripts)         | Yes, as raw `.ts` | Node scripts that consumers import directly (for example `react-lib-tools/scripts/compile-docs.ts`).                       |
-| [`styles.css`](./styles.css)    | Yes        | Tailwind theme variables and base styles that consumers import.                                                            |
-| [`types.ts`](./types.ts)        | Yes        | Types shared between `scripts/` and `lib/` (the site map format).                                                          |
-| [`src/`](./src)                 | No         | Internal tools served by `pnpm dev`: a theme color picker and generators for each library's OG image.                      |
-| [`public/svgs/`](./public/svgs) | Bundled    | Icons imported by `lib/` components as React components (via `vite-plugin-svgr`).                                          |
+| Path                                            | Published?        | What it is                                                                                                                                       |
+| :---------------------------------------------- | :---------------- | :----------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`lib/`](./lib)                                 | Yes, via `dist/`  | React components, hooks, and utilities. The public API is whatever [`lib/index.ts`](./lib/index.ts) exports.                                     |
+| [`scripts/`](./scripts)                         | Yes, as raw `.ts` | Node scripts that consumers import directly (for example `react-lib-tools/scripts/compile-docs.ts`).                                             |
+| [`styles.css`](./styles.css)                    | Yes               | Tailwind theme variables and base styles that consumers import.                                                                                  |
+| [`types.ts`](./types.ts)                        | Yes               | Types shared between `scripts/` and `lib/` (the site map format).                                                                                |
+| [`src/`](./src)                                 | No                | Internal tools served by `pnpm dev`: a theme color picker and generators for each library's OG image.                                            |
+| [`fixtures/sample-lib/`](./fixtures/sample-lib) | No                | A fictional library with its own docs site, served at `/` by `pnpm dev`. Its `public/generated/` files come from running the scripts against it. |
+| [`public/svgs/`](./public/svgs)                 | Bundled           | Icons imported by `lib/` components as React components (via `vite-plugin-svgr`).                                                                |
 
 [`vite.config.ts`](./vite.config.ts) has two configurations, selected with the `TARGET` environment variable:
 
 - `TARGET=lib` builds `lib/index.ts` into `dist/` (ESM and CJS, plus a single rolled-up `.d.ts`). Only `react` and `react-dom` are external; everything else (React Router, Headless UI, Floating UI, Heroicons, etc.) is bundled.
-- Any other value builds the `src/` website into `docs/`.
+- Any other value builds the website into `docs/`. Its entry point, [`index.tsx`](./index.tsx), lazily loads either the color picker (`/color-picker`) or the sample library's docs (every other path), so that only one app's global CSS is applied. `publicDir` points at `fixtures/sample-lib/public`, so the sample site's `/generated/site-map.json` is served the same way it would be by a consumer.
 
 ## Data flow
+
+All of the scripts resolve their input and output paths relative to a `rootDir` option, which defaults to the current working directory. `filePath` values in the generated docs (used for "view source" links) are relative to the current working directory, which should be the repository root.
 
 ```
 consumer repo (build time)                         consumer docs site (runtime)
@@ -37,13 +40,13 @@ running dev server ──compileSearchIndex──▶  public/generated/site-map.
 
 ### `compileDocs` ([`scripts/compile-docs.ts`](./scripts/compile-docs.ts))
 
-- **Components** are parsed with `react-docgen-typescript`. Each name in `componentNames` must match a file named `lib/components/**/<Name>.tsx` in the consumer's repo. Props inherited from `node_modules` types (like HTML attributes) are dropped.
-- **Imperative handles** are parsed with `@ts-ast-parser/core`. Each name in `imperativeHandleNames` is looked up as an interface declared under `lib/`.
+- **Components** are parsed with `react-docgen-typescript`. Each name in `componentNames` must match a file named `lib/components/**/<Name>.tsx` under `rootDir` (by default the current working directory). Props inherited from `node_modules` types (like HTML attributes) are dropped.
+- **Imperative handles** are parsed with `@ts-ast-parser/core`. Each name in `imperativeHandleNames` is looked up as an interface declared under `lib/`. Every method needs a JSDoc comment; both method syntax (`reset(): void`) and function-typed properties (`reset: () => void`) are supported.
 - TSDoc descriptions are split into `Section`s by [`parseDescription`](./scripts/utils/docs/parseDescription.ts):
   - Paragraphs that start with `ℹ️`, `⚠️`, `❌`, `✅` or `NOTE:` become callouts with the matching intent.
   - Fenced code blocks are syntax highlighted.
   - `@deprecated`, `@param` and `@return` are rewritten into plain text.
-- **Side effect:** props tables are also written into the consumer's `README.md`, between `<!-- Name:description:begin -->` / `<!-- Name:description:end -->` style markers (sections `description`, `required-props` and `optional-props`).
+- **Side effect:** unless `readmePath` is `false`, props tables are also written into the consumer's `README.md`, between `<!-- Name:description:begin -->` / `<!-- Name:description:end -->` style markers (sections `description`, `required-props` and `optional-props`).
 
 ### `compileExamples` ([`scripts/compile-examples.ts`](./scripts/compile-examples.ts))
 

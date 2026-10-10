@@ -1,5 +1,6 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { basename, join } from "node:path";
+import { cwd } from "node:process";
 import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 import { initialize } from "./utils/initialize.ts";
 import { syntaxHighlight } from "./utils/syntax-highlight.ts";
@@ -10,7 +11,8 @@ import { syntaxHighlight } from "./utils/syntax-highlight.ts";
 export async function compileExamples({
   fileExtensions = [".css", ".html", ".json", ".js", ".jsx", ".ts", ".tsx"],
   inputPath = ["src", "routes"],
-  outputPath = ["public", "generated", "examples"]
+  outputPath = ["public", "generated", "examples"],
+  rootDir = cwd()
 }: {
   /**
    * Which file extension are supported?
@@ -29,11 +31,18 @@ export async function compileExamples({
    * By default examples are stored within the `public/generated/examples` directory.
    */
   outputPath?: string[] | undefined;
+
+  /**
+   * Directory that all other paths are relative to.
+   * Defaults to the current working directory.
+   */
+  rootDir?: string | undefined;
 } = {}) {
   const { files, outputDir } = await initialize({
     fileExtensions,
     inputPath,
-    outputPath
+    outputPath,
+    rootDir
   });
 
   for (const file of files) {

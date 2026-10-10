@@ -1,6 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import { cwd } from "node:process";
 import { withCompilerOptions } from "react-docgen-typescript";
 import type { CompilerOptions } from "typescript";
 import { initialize } from "../initialize.ts";
@@ -10,11 +9,15 @@ import { insertPropsMarkdown } from "./insertPropsMarkdown.ts";
 export async function compileComponents({
   compilerOptions,
   componentNames,
-  outputPath
+  outputPath,
+  readmePath,
+  rootDir
 }: {
   compilerOptions: Partial<CompilerOptions>;
   componentNames: string[];
   outputPath: string[];
+  readmePath: string[] | false;
+  rootDir: string;
 }) {
   const parser = withCompilerOptions(compilerOptions, {
     savePropValueAsString: true,
@@ -30,12 +33,15 @@ export async function compileComponents({
         file.includes(`/${componentName}.ts`)
       ),
     inputPath: ["lib", "components"],
-    outputPath
+    outputPath,
+    rootDir
   });
 
-  const markdownPath = join(cwd(), "README.md");
+  const markdownPath = readmePath ? join(rootDir, ...readmePath) : undefined;
 
-  let markdown = await readFile(markdownPath, { encoding: "utf-8" });
+  let markdown = markdownPath
+    ? await readFile(markdownPath, { encoding: "utf-8" })
+    : "";
 
   await Promise.all(
     files.map((filePath) =>
@@ -50,6 +56,10 @@ export async function compileComponents({
           optionalPropsTable,
           requiredPropsTable
         }) => {
+          if (!markdownPath) {
+            return;
+          }
+
           markdown = insertPropsMarkdown({
             componentMarkdown: description,
             componentName,
@@ -75,5 +85,7 @@ export async function compileComponents({
     )
   );
 
-  await writeFile(markdownPath, markdown);
+  if (markdownPath) {
+    await writeFile(markdownPath, markdown);
+  }
 }
