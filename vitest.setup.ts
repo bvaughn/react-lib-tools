@@ -66,6 +66,25 @@ expect.extend({
   }
 });
 
+// Browser APIs that jsdom doesn't implement; tests that care about them can replace these
+if (HAS_DOM) {
+  globalThis.ResizeObserver ??= class {
+    disconnect() {}
+    observe() {}
+    unobserve() {}
+  };
+
+  Element.prototype.scrollIntoView ??= function () {};
+
+  window.matchMedia ??= (query: string) =>
+    ({
+      addEventListener() {},
+      matches: false,
+      media: query,
+      removeEventListener() {}
+    }) as unknown as MediaQueryList;
+}
+
 beforeAll(() => {
   if (HAS_DOM) {
     PROTOTYPE_PROPS.forEach((propertyKey) => {

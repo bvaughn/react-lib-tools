@@ -33,7 +33,12 @@ export async function crawlPage({
 
   // Navigate the page to a URL.
   await page.goto(`${host}${path}`);
-  await page.waitForSelector("main");
+  // Wait for the page's (lazy loaded) content, not just the app shell
+  await page.waitForFunction(
+    () =>
+      document.querySelector("main") !== null &&
+      document.querySelector("[data-route-loading]") === null
+  );
 
   page.on("console", (event) => console.log(event.text()));
 

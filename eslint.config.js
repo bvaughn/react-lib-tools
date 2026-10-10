@@ -62,5 +62,12 @@ export default tseslint.config([
         }
       ]
     }
+  },
+  {
+    // Fast refresh doesn't apply to tests
+    files: ["**/*.test.{ts,tsx}", "lib/test-utils.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off"
+    }
   }
 ]);

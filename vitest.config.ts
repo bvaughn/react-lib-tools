@@ -7,7 +7,7 @@ export default mergeConfig(
     test: {
       coverage: {
         include: ["lib/**/*.{ts,tsx}", "scripts/**/*.ts"],
-        exclude: ["**/*.test.{ts,tsx}"],
+        exclude: ["**/*.test.{ts,tsx}", "lib/test-utils.tsx"],
         provider: "v8",
         reporter: ["text-summary", "text", "html"]
       },

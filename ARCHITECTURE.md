@@ -65,7 +65,7 @@ Crawls a running instance of the docs site with Puppeteer, starting at `/` and f
 
 At runtime, [`SiteSearchCache`](./lib/components/app/search/SiteSearchCache.ts) fetches `/generated/site-map.json`, and [`search.ts`](./lib/components/app/search/search.ts) ranks results using stemmed terms.
 
-This means **components in `lib/` contain attributes that the crawler depends on**. Renaming or removing `data-link`, `data-title`, `data-section`, `data-toc`, `data-search-ignore` or `data-main-scrollable` will silently degrade search.
+This means **components in `lib/` contain attributes that the crawler depends on**. Renaming or removing `data-link`, `data-title`, `data-section`, `data-toc`, `data-search-ignore`, `data-main-scrollable` or `data-route-loading` (on the loading indicator shown while a page's code loads) will silently degrade search.
 
 ## The app shell
 

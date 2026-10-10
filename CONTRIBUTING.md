@@ -83,7 +83,10 @@ Tests use [Vitest](https://vitest.dev/) and live next to the code they test (`fo
   expect(() => doSomething()).toLogError("Expected error message");
   ```
 
-- `clientWidth`, `clientHeight`, `offsetWidth` and `offsetHeight` are stubbed to `0` in tests, because jsdom doesn't do layout.
+- `clientWidth`, `clientHeight`, `offsetWidth` and `offsetHeight` are stubbed to `0` in tests, because jsdom doesn't do layout. `ResizeObserver`, `scrollIntoView` and `matchMedia` are stubbed with no-ops; tests that depend on them can replace the stubs (e.g. with `vi.stubGlobal`).
+- Most components need the library context and a router. Render them with `renderWithProviders` from [`lib/test-utils.tsx`](./lib/test-utils.tsx), which also renders the current location into an element with the test id `location`, so tests can check where navigation went.
+- `AppRoot` shows a loading indicator until the current route's lazy component has loaded; wait for page content (e.g. with `findBy*` queries) before making assertions about it.
+- Tests for components that render generated docs (like `ComponentProps`) use the sample library's committed output, so they cover the same data a real docs site would.
 
 ## Code conventions
 

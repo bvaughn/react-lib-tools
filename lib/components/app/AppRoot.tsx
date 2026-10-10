@@ -4,6 +4,7 @@ import {
   XMarkIcon
 } from "@heroicons/react/20/solid";
 import {
+  Suspense,
   useMemo,
   useRef,
   type ComponentType,
@@ -24,6 +25,7 @@ import { cn } from "../../utils/cn";
 import { flattenNav } from "../../utils/flattenNav";
 import { Box } from "../Box";
 import { ErrorBoundary } from "../ErrorBoundary";
+import { LoadingSpinner } from "../LoadingSpinner";
 import { HeaderButton } from "../nav/HeaderButton";
 import { HeaderLink } from "../nav/HeaderLink";
 import { Nav } from "../nav/Nav";
@@ -207,23 +209,36 @@ function App({
                   className="text-base md:text-[15px] leading-relaxed px-4 pt-7 pb-14 md:px-8 md:pt-9 md:pb-16 xl:px-10"
                   data-main-scrollable
                 >
-                  <Routes>
-                    {Object.entries({
-                      ...defaultRoutes,
-                      ...routes
-                    }).map(([path, Component]) => (
-                      <Route
-                        element={
-                          <ErrorBoundary key={path}>
-                            <Component />
-                          </ErrorBoundary>
-                        }
-                        key={path}
-                        path={path}
-                      />
-                    ))}
-                  </Routes>
-                  <PageNavigation items={flatNav} />
+                  {/*
+                    Routes are lazy loaded; without this boundary nothing (not even the header or nav) would render until the first one loads.
+                    Navigation happens in a transition, so later route changes keep showing the current page rather than this fallback.
+                  */}
+                  <Suspense
+                    fallback={
+                      // The search index crawler waits for this to go away before reading the page
+                      <div data-route-loading>
+                        <LoadingSpinner />
+                      </div>
+                    }
+                  >
+                    <Routes>
+                      {Object.entries({
+                        ...defaultRoutes,
+                        ...routes
+                      }).map(([path, Component]) => (
+                        <Route
+                          element={
+                            <ErrorBoundary key={path}>
+                              <Component />
+                            </ErrorBoundary>
+                          }
+                          key={path}
+                          path={path}
+                        />
+                      ))}
+                    </Routes>
+                    <PageNavigation items={flatNav} />
+                  </Suspense>
                 </div>
               </main>
             </div>

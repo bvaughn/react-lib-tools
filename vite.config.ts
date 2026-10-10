@@ -28,7 +28,15 @@ const libraryConfig: UserConfig = {
       }
     }
   },
-  plugins: [react(), svgr(), dts({ rollupTypes: true }), preserveDirectives()],
+  plugins: [
+    react(),
+    svgr(),
+    dts({
+      exclude: ["**/*.test.{ts,tsx}", "lib/test-utils.tsx"],
+      rollupTypes: true
+    }),
+    preserveDirectives()
+  ],
   publicDir: false
 };
 
