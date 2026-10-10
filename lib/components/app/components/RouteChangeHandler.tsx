@@ -1,12 +1,15 @@
 import { useLayoutEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { useLibraryContext } from "../../../hooks/useLibraryContext";
+import { getHashId } from "../../../utils/getHashId";
 import { scrollToAnchor } from "../../../utils/scrollToAnchor";
 
 export function RouteChangeHandler() {
   const { setIsNavVisible, setIsSiteSearchVisible } = useLibraryContext();
 
-  const { hash, pathname } = useLocation();
+  // The location key changes on every navigation, including to the current URL
+  // (e.g. selecting the search result for a heading that's already in the hash)
+  const { hash, key } = useLocation();
 
   useLayoutEffect(() => {
     setIsNavVisible(false);
@@ -16,10 +19,9 @@ export function RouteChangeHandler() {
     // before scrolling; scrolling an element while it's display:none is a no-op
     let cancelScrollToAnchor: (() => void) | undefined;
     const frame = requestAnimationFrame(() => {
-      if (hash.length > 1) {
-        cancelScrollToAnchor = scrollToAnchor(
-          decodeURIComponent(hash.slice(1))
-        );
+      const id = getHashId(hash);
+      if (id !== undefined) {
+        cancelScrollToAnchor = scrollToAnchor(id);
       } else {
         resetScrollPositions();
       }
@@ -29,7 +31,7 @@ export function RouteChangeHandler() {
       cancelAnimationFrame(frame);
       cancelScrollToAnchor?.();
     };
-  }, [hash, pathname, setIsNavVisible, setIsSiteSearchVisible]);
+  }, [hash, key, setIsNavVisible, setIsSiteSearchVisible]);
 
   return null;
 }

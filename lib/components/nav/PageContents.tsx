@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import { useLocation } from "react-router-dom";
 import { useLibraryContext } from "../../hooks/useLibraryContext";
 import { cn } from "../../utils/cn";
+import { getHashId } from "../../utils/getHashId";
 import { scrollToAnchor } from "../../utils/scrollToAnchor";
 
 type Entry = {
@@ -31,19 +32,26 @@ const ACTIVE_OFFSET = 48;
  * Rendered in the sidebar beneath the current page's link.
  */
 export function PageContents() {
-  const { hash, pathname } = useLocation();
+  const { hash, key, pathname } = useLocation();
   const { setIsNavVisible } = useLibraryContext();
   const entries = useEntries(pathname);
-  const [pinnedId, setPinnedId] = usePinnedId(
-    hash.length > 1 ? decodeURIComponent(hash.slice(1)) : undefined
-  );
-  // When a page has nested entries (e.g. props under "Required props"), the top-level entries
-  // become labels so the sidebar doesn't nest three levels deep
-  const hasNestedEntries = entries.some(({ level }) => level === 2);
-  const linkEntries = useMemo(
+  const [pinnedId, setPinnedId] = usePinnedId(getHashId(hash), key);
+  // Top-level entries with nested entries (e.g. props under "Required props") become labels
+  // so the sidebar doesn't nest three levels deep
+  const labelIds = useMemo(
     () =>
-      hasNestedEntries ? entries.filter(({ level }) => level === 2) : entries,
-    [entries, hasNestedEntries]
+      new Set(
+        entries
+          .filter(
+            ({ level }, index) => level === 1 && entries[index + 1]?.level === 2
+          )
+          .map(({ id }) => id)
+      ),
+    [entries]
+  );
+  const linkEntries = useMemo(
+    () => entries.filter(({ id }) => !labelIds.has(id)),
+    [entries, labelIds]
   );
 
   const scrolledId = useActiveId(linkEntries);
@@ -122,8 +130,8 @@ export function PageContents() {
       data-search-ignore
     >
       <ul>
-        {entries.map(({ id, level, title }) =>
-          hasNestedEntries && level === 1 ? (
+        {entries.map(({ id, title }) =>
+          labelIds.has(id) ? (
             <li
               className="pl-4 pt-2 pb-0.5 text-xs font-bold uppercase tracking-wide text-white/40"
               key={id}
@@ -214,12 +222,13 @@ function useEntries(pathname: string) {
  * After jumping to an entry (via click or URL hash), highlight it until the user scrolls themselves;
  * otherwise an entry near the bottom of the page would lose its highlight to the last entry.
  */
-function usePinnedId(initialId: string | undefined) {
+function usePinnedId(initialId: string | undefined, locationKey: string) {
   const [pinnedId, setPinnedId] = useState(initialId);
 
+  // Re-pin on every navigation, including to the current URL
   useEffect(() => {
     setPinnedId(initialId);
-  }, [initialId]);
+  }, [initialId, locationKey]);
 
   useEffect(() => {
     if (pinnedId === undefined) {
