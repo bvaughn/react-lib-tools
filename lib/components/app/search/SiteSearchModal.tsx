@@ -34,6 +34,9 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   const overlayRef = useRef<HTMLDivElement>(null);
   const listboxId = useId();
 
+  // The listbox isn't rendered while the search index is loading or failed to load
+  const [hasListbox, setHasListbox] = useState(false);
+
   const searchTextDeferred = useDebouncedValue(searchText, SEARCH_DEBOUNCE_MS);
 
   // Once the input is cleared, show all pages right away rather than waiting for the debounced value
@@ -159,8 +162,8 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
           <MagnifyingGlassIcon aria-hidden className="w-4 h-4" />
           <input
             aria-autocomplete="list"
-            aria-controls={listboxId}
-            aria-expanded="true"
+            aria-controls={hasListbox ? listboxId : undefined}
+            aria-expanded={hasListbox}
             aria-label="Search documentation"
             className="grow text-lg md:text-base"
             onChange={(event) => {
@@ -201,6 +204,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
                 listboxId={listboxId}
                 onSelect={close}
                 onSelectWhenReady={onSelectWhenReady}
+                onVisibilityChange={setHasListbox}
                 searchTextDeferred={query}
                 selectFirst={selectWhenReady && !isStale}
               />
@@ -213,6 +217,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
                 listboxId={listboxId}
                 onSelect={close}
                 onSelectWhenReady={onSelectWhenReady}
+                onVisibilityChange={setHasListbox}
                 selectFirst={false}
                 terms={[]}
               />

@@ -248,14 +248,16 @@ function parseQuery(queryText: string, index: Index): Term[] {
 }
 
 function parseQueryTerms(queryText: string, index: Index): Term[] {
-  let queryTokens = tokenize(queryText);
+  // Stop words are only ignored as standalone words; parts of identifiers (e.g. "is" in "isCollapsed") are kept
+  const words = queryText.split(/\s+/).filter(Boolean);
+  const meaningfulWords = words.filter((word) => {
+    const tokens = tokenize(word);
+    return !(tokens.length === 1 && STOP_WORDS.has(tokens[0]));
+  });
 
-  const meaningfulTokens = queryTokens.filter(
-    (token) => !STOP_WORDS.has(token)
-  );
-  if (meaningfulTokens.length > 0) {
-    queryTokens = meaningfulTokens;
-  }
+  const queryTokens = (
+    meaningfulWords.length > 0 ? meaningfulWords : words
+  ).flatMap(tokenize);
 
   return queryTokens
     .flatMap((token) => splitCompoundWord(token, index))

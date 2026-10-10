@@ -15,6 +15,7 @@ export function SiteSearchList({
   listboxId,
   onSelect,
   onSelectWhenReady,
+  onVisibilityChange,
   selectFirst,
   status,
   terms
@@ -32,6 +33,8 @@ export function SiteSearchList({
   onSelect: () => void;
   /** Enter was pressed while items were stale; the first up-to-date item should be selected */
   onSelectWhenReady: () => void;
+  /** Called when the listbox is mounted and unmounted (e.g. replaced by a loading or error message) */
+  onVisibilityChange: (isVisible: boolean) => void;
   selectFirst: boolean;
   status?: string | undefined;
   terms: string[];
@@ -42,6 +45,11 @@ export function SiteSearchList({
     // scrolling the item under the mouse would move the list out from under it
     scroll: boolean;
   }>({ index: 0, scroll: false });
+
+  useEffect(() => {
+    onVisibilityChange(true);
+    return () => onVisibilityChange(false);
+  }, [onVisibilityChange]);
 
   // Select the first item once results catch up with an Enter key press
   useEffect(() => {

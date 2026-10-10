@@ -198,6 +198,16 @@ describe("search", () => {
       expect(searchPages(pages, "how do i persist")).toEqual([pages[0]]);
     });
 
+    test("common words inside identifiers are kept", () => {
+      const pages: SiteMapPage[] = [
+        { path: "", title: "collapse", text: "" },
+        { path: "", title: "isCollapsed", text: "" }
+      ];
+
+      expect(searchPages(pages, "isCollapsed")[0]).toBe(pages[1]);
+      expect(searchPages(pages, "is-collapsed")[0]).toBe(pages[1]);
+    });
+
     test("queries containing only common words still match", () => {
       const pages: SiteMapPage[] = [
         { path: "", title: "Other", text: "how it works" },
