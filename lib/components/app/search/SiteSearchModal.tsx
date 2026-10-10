@@ -2,7 +2,11 @@ import { MagnifyingGlassIcon } from "@heroicons/react/20/solid";
 import { useEffect, useState } from "react";
 import { useDebouncedValue } from "../../../hooks/useDebouncedValue";
 import { useLibraryContext } from "../../../hooks/useLibraryContext";
+import { read } from "./SiteSearchCache";
 import { SiteSearchResults } from "./SiteSearchResults";
+
+// Searching is fast (well under 1ms); this mostly avoids re-rendering results on every keystroke
+const SEARCH_DEBOUNCE_MS = 100;
 
 export function SiteSearchModal() {
   const { isSiteSearchVisible, setIsSiteSearchVisible } = useLibraryContext();
@@ -10,7 +14,15 @@ export function SiteSearchModal() {
   const [inputRef, setInputRef] = useState<HTMLInputElement | null>(null);
   const [searchText, setSearchText] = useState("");
 
-  const searchTextDeferred = useDebouncedValue(searchText);
+  const searchTextDeferred = useDebouncedValue(searchText, SEARCH_DEBOUNCE_MS);
+
+  // Start downloading the site map as soon as the modal opens, rather than after the first search
+  useEffect(() => {
+    if (isSiteSearchVisible) {
+      // Errors are surfaced when the results read the (cached) promise
+      read().catch(() => {});
+    }
+  }, [isSiteSearchVisible]);
 
   useEffect(() => {
     if (!isSiteSearchVisible) {
