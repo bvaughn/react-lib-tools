@@ -82,7 +82,7 @@ export async function compileComponent({
         let html = await syntaxHighlight(textToFormat, "TS");
         html = html.replace(
           TOKEN_TO_REPLACE,
-          `<span class="tok-propertyName">${name}</span>`
+          () => `<span class="tok-propertyName">${name}</span>`
         );
 
         componentMetadata.props[name] = {

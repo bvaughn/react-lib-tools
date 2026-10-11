@@ -48,4 +48,12 @@ describe("propsToTable", () => {
 </table>
 `);
   });
+
+  test("should not interpret replacement patterns in descriptions", async () => {
+    expect(
+      await propsToTable([createProp("regex", "Matches `(a+)+$`, $' and $1.")])
+    ).toContain(
+      "<td><p>Matches <code>(a+)+$</code>, $&#39; and $1.</p>\n</td>"
+    );
+  });
 });
