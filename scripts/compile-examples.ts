@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { basename, join } from "node:path";
+import { basename, dirname, join, sep } from "node:path";
 import { cwd } from "node:process";
 import { trimExcludedText } from "./utils/examples/trimExcludedText.ts";
 import { initialize } from "./utils/initialize.ts";
@@ -46,7 +46,7 @@ export async function compileExamples({
   });
 
   for (const file of files) {
-    if (!file.includes("/examples/")) {
+    if (!dirname(file).split(sep).includes("examples")) {
       continue;
     }
 

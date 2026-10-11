@@ -1,6 +1,6 @@
 {
   "name": "react-lib-tools",
-  "version": "0.0.62",
+  "version": "0.0.63",
   "type": "module",
   "author": "Brian Vaughn <brian.david.vaughn@gmail.com> (https://github.com/bvaughn/)",
   "contributors": [
@@ -39,8 +39,8 @@
     "tsc": "tsc -b"
   },
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0",
-    "react-dom": "^18.0.0 || ^19.0.0"
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "dependencies": {
     "@codemirror/lang-css": "^6.3.1",

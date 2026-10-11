@@ -1,5 +1,5 @@
 import { readFile, writeFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { basename, resolve } from "node:path";
 import { withCompilerOptions } from "react-docgen-typescript";
 import type { CompilerOptions } from "typescript";
 import { initialize } from "../initialize.ts";
@@ -28,10 +28,14 @@ export async function compileComponents({
 
   const { files, outputDir } = await initialize({
     fileExtensions: [".ts", ".tsx"],
-    fileFilter: (file) =>
-      componentNames.some((componentName) =>
-        file.includes(`/${componentName}.ts`)
-      ),
+    fileFilter: (file) => {
+      const fileName = basename(file);
+      return componentNames.some(
+        (componentName) =>
+          fileName === `${componentName}.ts` ||
+          fileName === `${componentName}.tsx`
+      );
+    },
     inputPath: ["lib", "components"],
     outputPath,
     rootDir

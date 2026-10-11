@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 export type SiteSearchRecord = {
   path: string;
   section?: string | undefined;
+  text: string;
   title: string;
 };
 

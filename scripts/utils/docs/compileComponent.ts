@@ -30,7 +30,7 @@ export async function compileComponent({
   const component = parsed[0];
 
   // Convert to local paths. Replacement normalizes path on Windows
-  component.filePath = relative(cwd(), filePath).replace("\\", "/");
+  component.filePath = relative(cwd(), filePath).replaceAll("\\", "/");
 
   // Filter inherited HTML attributes
   for (const key in component.props) {
