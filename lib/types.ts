@@ -70,6 +70,8 @@ export type CommonQuestion = {
 export type NavLinkConfig<Path extends string = string> = {
   /** Nested pages, rendered indented beneath this link */
   children?: NavLinkConfig<Path>[] | undefined;
+  /** Shorter label shown in the sidebar; defaults to `title` (which is still used for previous/next links and search) */
+  navTitle?: string | undefined;
   path: Path;
   title: string;
 };

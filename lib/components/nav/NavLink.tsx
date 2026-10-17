@@ -21,7 +21,8 @@ export function NavLink<Path extends string = DefaultPath>({
             "px-4 cursor-pointer",
             "active:animate-pulse",
             {
-              "font-bold text-nav-active hover:text-nav-hover": isActive,
+              "[-webkit-text-stroke:0.5px_currentColor] text-nav-active hover:text-nav-hover":
+                isActive,
               "animate-pulse pointer-events-none": isPending
             },
             className

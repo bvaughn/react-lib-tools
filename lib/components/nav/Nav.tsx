@@ -49,7 +49,7 @@ function NavItem({ link }: { link: NavLinkConfig }) {
 
   return (
     <div>
-      <NavLink<string> path={link.path}>{link.title}</NavLink>
+      <NavLink<string> path={link.path}>{link.navTitle ?? link.title}</NavLink>
       {isActive && <PageContents />}
       {link.children && (
         <div className="ml-4 border-l border-white/10">

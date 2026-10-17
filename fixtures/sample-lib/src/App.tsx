@@ -43,7 +43,11 @@ const nav: NavConfig<Path | DefaultPath> = [
     links: [
       { path: "/counter", title: "Basic usage" },
       { path: "/counter/props", title: "Counter props" },
-      { path: "/counter/imperative-handle", title: "Imperative handle" }
+      {
+        path: "/counter/imperative-handle",
+        navTitle: "Imperative handle",
+        title: "Imperative handle methods and refs"
+      }
     ]
   },
   {
@@ -52,7 +56,13 @@ const nav: NavConfig<Path | DefaultPath> = [
       {
         path: "/badge",
         title: "Intents",
-        children: [{ path: "/badge/props", title: "Badge props" }]
+        children: [
+          {
+            path: "/badge/props",
+            // Intentionally long (and nested) to exercise wrapping in the sidebar
+            title: "Badge props, intents, and theme customization options"
+          }
+        ]
       }
     ]
   },

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.64
+
+- Nav links accept an optional `navTitle`, a shorter label shown in the sidebar. `title` is still used for previous/next page links and site search.
+- The active sidebar link no longer re-wraps when selected. It is emphasized with a text stroke instead of bold, which made the text wider.
+- Long sidebar link titles now wrap onto multiple lines instead of overflowing into the next link.
+- The sidebar is wider (`w-72`, up from `w-64`).
+
 ## 0.0.63
 
 - **Breaking:** The `react` and `react-dom` peer dependency ranges are now `^19.0.0`. Site search (`use()`) and `Header` page titles (`<title>` hoisting) already required React 19; React 18 is no longer listed as supported.
