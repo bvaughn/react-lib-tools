@@ -199,6 +199,48 @@ describe("AppRoot", () => {
     ).toEqual(["/", "/basics", "/advanced", "/support"]);
   });
 
+  test("should expand nav sections by default", async () => {
+    await renderApp();
+
+    expect(
+      within(getSidebar()).getByRole("link", { name: "Basics" })
+    ).toBeVisible();
+  });
+
+  test("should collapse nav sections that don't contain the current page when collapseNavSections is enabled", async () => {
+    await renderApp({ collapseNavSections: true });
+
+    const sidebar = getSidebar();
+    expect(
+      within(sidebar).getByRole("button", { name: /Guides/ })
+    ).toHaveAttribute("aria-expanded", "false");
+    expect(within(sidebar).queryByRole("link", { name: "Basics" })).toBeNull();
+  });
+
+  test("should expand the nav section containing the current page when collapseNavSections is enabled", async () => {
+    await renderApp({ collapseNavSections: true }, "/advanced");
+
+    const sidebar = getSidebar();
+    expect(
+      within(sidebar).getByRole("button", { name: /Guides/ })
+    ).toHaveAttribute("aria-expanded", "true");
+    expect(within(sidebar).getByRole("link", { name: "Basics" })).toBeVisible();
+  });
+
+  test("should expand a collapsed nav section when navigating to a page in it", async () => {
+    await renderApp({ collapseNavSections: true });
+
+    const pageNavigation = screen.getByRole("navigation", {
+      name: "Previous and next pages"
+    });
+    fireEvent.click(within(pageNavigation).getByRole("link", { name: /Next/ }));
+
+    expect(await screen.findByText("Basics page")).toBeVisible();
+    expect(
+      within(getSidebar()).getByRole("link", { name: "Basics" })
+    ).toBeVisible();
+  });
+
   test("should navigate when a nav link is clicked", async () => {
     await renderApp();
 

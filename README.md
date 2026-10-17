@@ -90,6 +90,7 @@ export function App() {
 | `packageName`         | Yes      | Shown in the header and used for the npm link and installation instructions.                                                                      |
 | `repositoryUrl`       | Yes      | Used for "view source" links on props pages.                                                                                                      |
 | `routes`              | Yes      | Map of paths to lazy-loaded page components.                                                                                                      |
+| `collapseNavSections` | No       | Collapses sidebar nav sections by default, except for the section containing the current page.                                                    |
 | `commonQuestions`     | No       | Questions and answers shown on the `/common-questions` page.                                                                                      |
 | `enableSiteSearch`    | No       | Shows the search button and enables the Cmd/Ctrl+K shortcut. Requires a [search index](#search-index).                                            |
 | `overview`            | No       | Introduction shown on the getting started (`/`) page.                                                                                             |

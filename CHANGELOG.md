@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.65
+
+- New `AppRoot` `collapseNavSections` prop. When enabled, sidebar nav sections are collapsed by default, except for the section containing the current page. Navigating to a page in a collapsed section expands it.
+
 ## 0.0.64
 
 - Nav links accept an optional `navTitle`, a shorter label shown in the sidebar. `title` is still used for previous/next page links and site search.

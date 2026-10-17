@@ -1,10 +1,18 @@
-import { useMatch } from "react-router-dom";
+import { matchPath, useLocation, useMatch } from "react-router-dom";
 import type { NavConfig, NavLinkConfig, NavSectionConfig } from "../../types";
 import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
 import { PageContents } from "./PageContents";
 
-export function Nav({ nav }: { nav: NavConfig }) {
+export function Nav({
+  collapseSections = false,
+  nav
+}: {
+  collapseSections?: boolean | undefined;
+  nav: NavConfig;
+}) {
+  const { pathname } = useLocation();
+
   // Group consecutive top-level links so they render as a single block
   const groups: Array<NavLinkConfig[] | NavSectionConfig> = [];
   for (const item of nav) {
@@ -31,7 +39,13 @@ export function Nav({ nav }: { nav: NavConfig }) {
             <NavLinks links={group} />
           </div>
         ) : (
-          <NavSection key={index} label={group.title}>
+          <NavSection
+            isActive={
+              collapseSections ? containsPath(group.links, pathname) : true
+            }
+            key={index}
+            label={group.title}
+          >
             <NavLinks links={group.links} />
           </NavSection>
         )
@@ -57,5 +71,13 @@ function NavItem({ link }: { link: NavLinkConfig }) {
         </div>
       )}
     </div>
+  );
+}
+
+function containsPath(links: NavLinkConfig[], pathname: string): boolean {
+  return links.some(
+    (link) =>
+      matchPath(link.path, pathname) !== null ||
+      (link.children !== undefined && containsPath(link.children, pathname))
   );
 }
