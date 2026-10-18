@@ -70,8 +70,14 @@ export async function compileSearchIndex({
   const outputDir = resolve(rootDir, ...outputPath);
   await mkdir(outputDir, { recursive: true });
 
+  // Pages are crawled concurrently, so they're added to the site map in a different order each time;
+  // sort them by path so the output only changes when the content does
+  const pages = Object.values(siteMap).sort((a, b) =>
+    a.path < b.path ? -1 : a.path > b.path ? 1 : 0
+  );
+
   await writeFile(
     join(outputDir, `site-map.json`),
-    JSON.stringify(Object.values(siteMap), null, 2)
+    JSON.stringify(pages, null, 2)
   );
 }

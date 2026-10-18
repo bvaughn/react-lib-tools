@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.67
+
+- `compileSearchIndex` output is now the same each time it runs (when the site hasn't changed):
+  - Pages in `site-map.json` are sorted by path. Before, they were written in the order they were found, which varied because pages are crawled concurrently.
+  - `Block` content is no longer indexed (`Block` now sets `data-search-ignore`). Live demos inside a `Block` (e.g. one that waits to be measured before rendering) sometimes rendered before the crawler read the page and sometimes after. Pass `data-search-ignore={undefined}` to a `Block` to index its content.
+
 ## 0.0.66
 
 - The docs dev server port can now be configured with a `"react-lib-tools": { "devServerPort": number }` field in package.json (the default is still 3000). Pass `getDevServerConfig()` (from `react-lib-tools/scripts/dev-server.js`) to your Vite config's `server` options; it also sets `strictPort`, so the dev server fails to start if the port is in use instead of switching to another port.
