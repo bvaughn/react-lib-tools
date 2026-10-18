@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.0.66
+
+- The docs dev server port can now be configured with a `"react-lib-tools": { "devServerPort": number }` field in package.json (the default is still 3000). Pass `getDevServerConfig()` (from `react-lib-tools/scripts/dev-server.js`) to your Vite config's `server` options; it also sets `strictPort`, so the dev server fails to start if the port is in use instead of switching to another port.
+- `compileSearchIndex` now connects to the configured dev server port by default, instead of always using `http://localhost:3000`.
+
 ## 0.0.65
 
 - New `AppRoot` `collapseNavSections` prop. When enabled, sidebar nav sections are collapsed by default, except for the section containing the current page. Navigating to a page in a collapsed section expands it.

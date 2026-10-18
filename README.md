@@ -177,6 +177,33 @@ Override any of these CSS variables in your root CSS file (after importing `reac
 
 [This tool](https://react-lib-tools.vercel.app/color-picker?color1=emerald-400&color2=indigo-500&color3=emerald-400&packageDescription=render+everything&packageName=react-window) can help with picking theme colors, and generates an OG image to match.
 
+### Dev server
+
+The docs dev server uses port 3000 by default. To use a different port, add a `react-lib-tools` field to your package.json:
+
+```json
+{
+  "react-lib-tools": {
+    "devServerPort": 3010
+  }
+}
+```
+
+Then pass `getDevServerConfig()` to your Vite config's `server` options:
+
+```ts
+import { getDevServerConfig } from "react-lib-tools/scripts/dev-server.js";
+
+export default defineConfig({
+  server: {
+    ...getDevServerConfig(),
+    host: true
+  }
+});
+```
+
+`getDevServerConfig` sets Vite's `strictPort` option, so the dev server fails to start if the port is already in use, rather than switching to another port. Scripts that connect to the dev server, like [`compileSearchIndex`](#search-index), use the same port, so they won't accidentally crawl some other website.
+
 ## Generating content
 
 The build scripts are imported from `react-lib-tools/scripts/*` and write JSON into `public/generated/` by default. A typical setup is one small script per step, run with tsx:
@@ -266,10 +293,11 @@ import { BasicList } from "./examples/BasicList";
 import { compileSearchIndex } from "react-lib-tools/scripts/compile-search-index.ts";
 
 await compileSearchIndex({
-  host: "http://localhost:3000",
   chromeExecutablePath: process.env.CHROME_PATH
 });
 ```
+
+- By default the crawler connects to `http://localhost:<port>`, using the [dev server port](#dev-server) from your package.json (or 3000). Pass a `host` to crawl a different URL.
 
 - The crawler starts at `/` and follows every `Link`, so pages that aren't linked from anywhere won't be indexed.
 - Headings rendered by `SectionHeader`, `ComponentProps` and `ImperativeHandle` become separate search results that link directly to that part of the page.

@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { cwd } from "node:process";
 import type { SiteMapPage } from "../types";
+import { getDevServerPort } from "./dev-server.js";
 import { crawlPage } from "./utils/search/crawlPage";
 import { scheduleWork } from "./utils/search/scheduleWork";
 import { waitForConnection } from "./utils/search/waitForConnection";
@@ -12,7 +13,7 @@ import { waitForConnection } from "./utils/search/waitForConnection";
 export async function compileSearchIndex({
   chromeExecutablePath,
   filterSelector,
-  host = "http://localhost:3000",
+  host,
   outputPath = ["public", "generated"],
   rootDir = cwd()
 }: {
@@ -28,7 +29,8 @@ export async function compileSearchIndex({
 
   /**
    * URL of the running docs site to crawl.
-   * By default this is `http://localhost:3000`.
+   * By default this is `http://localhost:<port>`, where the port is read from the
+   * `"react-lib-tools": { "devServerPort": number }` field in `rootDir`'s package.json (or 3000).
    */
   host?: string;
 
@@ -45,6 +47,8 @@ export async function compileSearchIndex({
   rootDir?: string | undefined;
 } = {}) {
   const siteMap: Record<string, SiteMapPage> = {};
+
+  host ??= `http://localhost:${getDevServerPort({ rootDir })}`;
 
   const url = new URL(host);
 

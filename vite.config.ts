@@ -7,6 +7,7 @@ import preserveDirectives from "rollup-preserve-directives";
 import { defineConfig, type UserConfig } from "vite";
 import dts from "vite-plugin-dts";
 import svgr from "vite-plugin-svgr";
+import { getDevServerConfig } from "./scripts/dev-server.js";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -74,8 +75,8 @@ const websiteConfig: UserConfig = {
 // Allow iPhone to connect to the DEV site using a local IP
 if (process.env.NODE_ENV === "development") {
   websiteConfig.server = {
-    host: true,
-    port: 3000
+    ...getDevServerConfig({ rootDir: __dirname }),
+    host: true
   };
 }
 

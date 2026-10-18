@@ -67,6 +67,12 @@ At runtime, [`SiteSearchCache`](./lib/components/app/search/SiteSearchCache.ts) 
 
 This means **components in `lib/` contain attributes that the crawler depends on**. Renaming or removing `data-link`, `data-title`, `data-section`, `data-toc`, `data-search-ignore`, `data-main-scrollable` or `data-route-loading` (on the loading indicator shown while a page's code loads) will silently degrade search.
 
+### Dev server port ([`scripts/dev-server.js`](./scripts/dev-server.js))
+
+Reads the docs dev server port from the `"react-lib-tools": { "devServerPort": number }` field in the consumer's package.json (3000 by default). Consumers pass `getDevServerConfig()` to their Vite config, and `compileSearchIndex` uses the same port for its default `host`. The config sets `strictPort`, so a port conflict stops the dev server rather than leaving the crawler to index whatever else is listening on that port.
+
+Unlike the other scripts, this one is **plain JavaScript** (with its types in [`dev-server.d.ts`](./scripts/dev-server.d.ts)). Vite doesn't bundle dependencies when it loads a config file, and Node won't strip TypeScript types from files inside `node_modules`, so a `.ts` file would fail to load from a consumer's `vite.config.ts`.
+
 ## The app shell
 
 [`AppRoot`](./lib/components/app/AppRoot.tsx) is the main entry point for consumers. It:
