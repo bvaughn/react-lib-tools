@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.68
+
+- New `HookSignature` and `HookSignatureItem` components, for documenting a hook's parameters or return values. Each `HookSignatureItem` shows a `name`, `type`, and optional `defaultValue` (pass `optional` to mark it with `?:`), followed by its description (`children`). Render items within a `HookSignature`, which lays them out as a list.
+
 ## 0.0.67
 
 - `compileSearchIndex` output is now the same each time it runs (when the site hasn't changed):

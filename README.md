@@ -122,6 +122,7 @@ Pages are ordinary React components. This package exports components for the com
 | `Code`                                           | Syntax-highlighted code from [compiled examples](#code-examples), with a copy button.                     |
 | `ComponentProps`                                 | A component's props, from [compiled docs](#props-documentation).                                          |
 | `ImperativeHandle`                               | An imperative API's methods, from [compiled docs](#props-documentation).                                  |
+| `HookSignature`, `HookSignatureItem`             | A hook's parameters or return values, with their types and default values.                                |
 | `Callout`                                        | A highlighted note, with an `intent` of `"none"`, `"primary"`, `"success"`, `"warning"` or `"danger"`.    |
 | `Link`                                           | A link to another page of the site.                                                                       |
 | `ExternalLink`                                   | A link to another site; opens in a new tab.                                                               |

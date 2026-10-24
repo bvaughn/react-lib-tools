@@ -10,6 +10,8 @@ export { ErrorBoundary } from "./components/ErrorBoundary";
 export { ExternalLink } from "./components/ExternalLink";
 export { ImperativeHandle } from "./components/handles/ImperativeHandle";
 export { Header } from "./components/Header";
+export { HookSignature } from "./components/hooks/HookSignature";
+export { HookSignatureItem } from "./components/hooks/HookSignatureItem";
 export { Input } from "./components/Input";
 export { Link } from "./components/Link";
 export { LoadingSpinner } from "./components/LoadingSpinner";
