@@ -46,9 +46,12 @@ function getClassNames(intent: Intent, disabled: boolean) {
       });
     }
     case "none": {
-      return cn("bg-white/20 text-slate-300 focus:text-white", {
-        "hover:bg-white/10 focus:text-white": !disabled
-      });
+      return cn(
+        "bg-black/10 text-slate-700 focus:text-black dark:bg-white/20 dark:text-slate-300 dark:focus:text-white",
+        {
+          "hover:bg-black/5 dark:hover:bg-white/10": !disabled
+        }
+      );
     }
     case "success": {
       return cn("bg-emerald-400 text-emerald-950 focus:text-black", {

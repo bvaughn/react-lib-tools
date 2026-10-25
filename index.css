@@ -34,7 +34,10 @@
     font-size: 16px;
   }
 
+  /* The color picker only has a dark theme (the sample library's docs follow the system preference) */
   color-scheme: dark;
+  background-color: var(--color-slate-950);
+  color: var(--color-white);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

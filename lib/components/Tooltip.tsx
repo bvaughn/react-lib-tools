@@ -88,7 +88,7 @@ export function Tooltip({
     tooltip = (
       <div
         className={cn(
-          "bg-white/80 text-black rounded-md px-2 py-1 shadow-md whitespace-nowrap z-40",
+          "bg-slate-800/90 text-white dark:bg-white/80 dark:text-black rounded-md px-2 py-1 shadow-md whitespace-nowrap z-40",
           className
         )}
         ref={refs.setFloating}

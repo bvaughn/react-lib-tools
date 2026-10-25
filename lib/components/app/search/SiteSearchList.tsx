@@ -119,7 +119,7 @@ export function SiteSearchList({
   }, [active, inputRef, isStale, items, listboxId, onSelectWhenReady]);
 
   return (
-    <div className="border-t border-white/10 pt-3 mt-3 flex flex-col min-h-0">
+    <div className="border-t border-ink/10 pt-3 mt-3 flex flex-col min-h-0">
       {items.length === 0 && emptyMessage ? (
         <div className="px-2 py-1" role="status">
           {emptyMessage}

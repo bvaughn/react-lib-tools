@@ -23,7 +23,7 @@ export function SectionHeader({
   return (
     <h2
       className={cn(
-        "text-2xl font-semibold tracking-tight leading-tight text-white mt-6",
+        "text-2xl font-semibold tracking-tight leading-tight text-ink mt-6",
         className
       )}
       data-toc={showInContents ? "1" : undefined}

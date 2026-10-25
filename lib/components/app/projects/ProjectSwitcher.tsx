@@ -38,7 +38,7 @@ export function ProjectSwitcher({
       </MenuButton>
       <MenuItems
         anchor="bottom start"
-        className="z-30 flex flex-col w-80 max-w-[calc(100vw-1.5rem)] p-2 rounded-lg bg-black/80 backdrop-blur-md shadow-lg ring-1 ring-white/10 outline-none [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
+        className="z-30 flex flex-col w-80 max-w-[calc(100vw-1.5rem)] p-2 rounded-lg bg-paper/80 backdrop-blur-md shadow-lg ring-1 ring-ink/10 outline-none [--anchor-gap:0.5rem] origin-top transition duration-100 ease-out data-closed:scale-95 data-closed:opacity-0"
         modal={false}
         transition
       >
@@ -53,9 +53,9 @@ export function ProjectSwitcher({
           }
         >
           <Suspense
-            fallback={<div className="px-2 py-1 text-white/60">Loading…</div>}
+            fallback={<div className="px-2 py-1 text-ink/60">Loading…</div>}
           >
-            <div className="min-h-0 max-h-104 overflow-y-auto overscroll-contain [scrollbar-color:rgb(255_255_255/0.35)_transparent]">
+            <div className="min-h-0 max-h-104 overflow-y-auto overscroll-contain [scrollbar-color:rgb(0_0_0/0.25)_transparent] dark:[scrollbar-color:rgb(255_255_255/0.35)_transparent]">
               <ProjectList
                 packageName={packageName}
                 projectsUrl={projectsUrl}
@@ -72,10 +72,10 @@ export function ProjectSwitcher({
 function AllProjectsLink() {
   return (
     <>
-      <div className="shrink-0 my-2 border-t border-white/10" />
+      <div className="shrink-0 my-2 border-t border-ink/10" />
       <MenuItem>
         <a
-          className="block px-2 py-1 rounded border-none! text-white/80 data-focus:bg-search-result-active data-focus:text-white"
+          className="block px-2 py-1 rounded border-none! text-ink/80 data-focus:bg-search-result-active data-focus:text-ink"
           href={allProjectsUrl}
         >
           All projects on GitHub
@@ -102,19 +102,19 @@ function ProjectList({
       <MenuItem key={index}>
         <a
           aria-current={isCurrent ? "page" : undefined}
-          className="group flex flex-row items-center gap-3 px-2 py-1.5 rounded border-none! text-white/80 data-focus:bg-search-result-active data-focus:text-white"
+          className="group flex flex-row items-center gap-3 px-2 py-1.5 rounded border-none! text-ink/80 data-focus:bg-search-result-active data-focus:text-ink"
           href={url}
         >
           <img
             alt=""
-            className="shrink-0 size-6 brightness-0 invert"
+            className="shrink-0 size-6 brightness-0 dark:invert"
             onError={(event) => {
               event.currentTarget.style.visibility = "hidden";
             }}
             src={icon}
           />
           <div className="min-w-0">
-            <div className="truncate text-white group-aria-[current=page]:text-nav-active group-aria-[current=page]:[-webkit-text-stroke:0.5px_currentColor]">
+            <div className="truncate text-ink group-aria-[current=page]:text-nav-active group-aria-[current=page]:[-webkit-text-stroke:0.5px_currentColor]">
               {name}
             </div>
             {description && (

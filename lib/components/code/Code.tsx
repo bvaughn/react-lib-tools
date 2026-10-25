@@ -42,7 +42,7 @@ export function Code({
     <div className="group relative">
       <code
         className={cn(
-          "text-sm md:text-base block text-left whitespace-pre-wrap break-normal text-white! rounded-lg p-3 bg-black border border-white/10",
+          "text-sm md:text-base block text-left whitespace-pre-wrap break-normal text-ink! rounded-lg p-3 bg-code-background border border-ink/10",
           "flex flex-col",
           { "pr-10": copyable },
           className
@@ -55,9 +55,9 @@ export function Code({
           aria-label={copied ? "Copied" : "Copy code"}
           className={cn(
             "absolute top-2 right-2 p-1.5 rounded-md cursor-pointer",
-            "text-slate-400 hover:text-white hover:bg-white/10 focus-visible:text-white focus-visible:bg-white/10",
+            "text-slate-500 hover:text-ink hover:bg-ink/10 focus-visible:text-ink focus-visible:bg-ink/10 dark:text-slate-400 dark:hover:text-ink dark:focus-visible:text-ink",
             "opacity-100 md:opacity-0 md:group-hover:opacity-100 focus-visible:opacity-100",
-            { "opacity-100! text-emerald-400!": copied }
+            { "opacity-100! text-emerald-600! dark:text-emerald-400!": copied }
           )}
           onClick={copy}
           title={copied ? "Copied" : "Copy code"}

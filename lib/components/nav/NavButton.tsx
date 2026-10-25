@@ -11,8 +11,8 @@ export function NavButton({
     <Box
       align="center"
       className={cn(
-        "px-4 min-h-8 py-1.5 leading-snug cursor-pointer text-white/90 hover:text-white focus:bg-white/10 focus-within:bg-white/10",
-        { "pointer-events-none text-white/50": disabled },
+        "px-4 min-h-8 py-1.5 leading-snug cursor-pointer text-ink/90 hover:text-ink focus:bg-ink/10 focus-within:bg-ink/10",
+        { "pointer-events-none text-ink/50": disabled },
         className
       )}
       direction="row"

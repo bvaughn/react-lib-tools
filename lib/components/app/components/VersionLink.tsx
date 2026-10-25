@@ -15,14 +15,15 @@ export function VersionLink({
   return (
     <li className="list-disc">
       {version.split(".").slice(0, 1).join(".")}
-      <span className="text-slate-400">.x</span>
+      <span className="text-slate-500 dark:text-slate-400">.x</span>
       {url && (
         <ExternalLink
           aria-label={`Documentation for version ${version}`}
           className="ml-4"
           href={url}
         >
-          <GlobeIcon className="inline w-4 h-4 text-teal-200" /> documentation
+          <GlobeIcon className="inline w-4 h-4 text-teal-700 dark:text-teal-200" />{" "}
+          documentation
         </ExternalLink>
       )}
       <ExternalLink
@@ -30,7 +31,8 @@ export function VersionLink({
         className="ml-4"
         href={`https://github.com/bvaughn/${packageName}/releases/tag/${version}`}
       >
-        <TagsIcon className="inline w-4 h-4 text-teal-200" /> source code
+        <TagsIcon className="inline w-4 h-4 text-teal-700 dark:text-teal-200" />{" "}
+        source code
       </ExternalLink>
     </li>
   );

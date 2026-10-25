@@ -69,7 +69,7 @@ function PageNavigationLink({
     .join(" › ");
 
   const label = (
-    <span className="shrink-0 flex items-center gap-1.5 text-sm text-white/60 group-hover:text-white/80">
+    <span className="shrink-0 flex items-center gap-1.5 text-sm text-ink/60 group-hover:text-ink/80">
       {isNext ? (
         <>
           <span className="sr-only sm:not-sr-only">Next</span>
@@ -91,8 +91,8 @@ function PageNavigationLink({
         "items-end text-right": !isNext
       })}
     >
-      {context && <span className="text-sm text-white/40">{context}</span>}
-      <span className="font-semibold text-white md:text-lg leading-snug wrap-break-word">
+      {context && <span className="text-sm text-ink/40">{context}</span>}
+      <span className="font-semibold text-ink md:text-lg leading-snug wrap-break-word">
         {item.title}
       </span>
     </span>
@@ -101,8 +101,8 @@ function PageNavigationLink({
   return (
     <Link
       className={cn(
-        "group flex items-center justify-between gap-2 sm:gap-4 rounded-md px-3 py-3 sm:px-5 sm:py-4 shadow-md shadow-black/30",
-        "bg-white/10 hover:bg-white/15 active:bg-white/20",
+        "group flex items-center justify-between gap-2 sm:gap-4 rounded-md px-3 py-3 sm:px-5 sm:py-4 shadow-sm shadow-black/10 dark:shadow-md dark:shadow-black/30",
+        "bg-ink/5 hover:bg-ink/10 active:bg-ink/15 dark:bg-ink/10 dark:hover:bg-ink/15 dark:active:bg-ink/20",
         className
       )}
       to={item.path}

@@ -66,10 +66,10 @@ export function SiteSearchResult({
     <li aria-selected={isActive} id={id} ref={ref} role="option">
       <Link
         className={cn(
-          "rounded px-2 py-1 text-white/80 cursor-pointer transition-colors!",
+          "rounded px-2 py-1 text-ink/80 cursor-pointer transition-colors!",
           "flex flex-row items-center gap-2 overflow-auto",
           {
-            "bg-search-result-active text-white": isActive
+            "bg-search-result-active text-ink": isActive
           }
         )}
         onClick={(event) => {
@@ -90,13 +90,13 @@ export function SiteSearchResult({
         to={item.path}
       >
         <div className="grow-1 shrink-1 overflow-auto flex flex-col gap-1">
-          <div className="grow text-lg truncate text-white">
+          <div className="grow text-lg truncate text-ink">
             {context && (
               <>
                 {context}
                 <ChevronRightIcon
                   aria-hidden
-                  className="size-4 text-slate-400 inline"
+                  className="size-4 text-slate-500 dark:text-slate-400 inline"
                 />{" "}
               </>
             )}

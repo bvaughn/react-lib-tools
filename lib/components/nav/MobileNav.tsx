@@ -16,7 +16,7 @@ export function Nav() {
     <div
       className={cn(
         "absolute top-0 left-0 h-full z-400 md:relative w-full md:w-50 shrink-0 hidden md:flex",
-        "flex-col gap-4 py-2 border-r border-r-slate-800 overflow-y-auto",
+        "flex-col gap-4 py-2 border-r border-r-slate-200 dark:border-r-slate-800 overflow-y-auto",
         {
           flex: isNavVisible
         }

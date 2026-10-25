@@ -34,7 +34,7 @@ export function Header({
           <span data-title>{title}</span>
           {sourceCodePath && (
             <ExternalLink
-              className="text-sm text-emerald-300 hover:text-white"
+              className="text-sm text-emerald-700 hover:text-ink dark:text-emerald-300 dark:hover:text-ink"
               href={`${repositoryUrl}/blob/main/${sourceCodePath}`}
             >
               <ArrowTopRightOnSquareIcon className="inline-block size-4 fill-current ml-2 mb-1" />

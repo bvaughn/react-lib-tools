@@ -8,9 +8,9 @@ export function ImperativeHandleMethod({
   method: ImperativeHandleMethodMetadata;
 }) {
   return (
-    <div className="py-5 border-t border-white/10 first:border-t-0 first:pt-0">
+    <div className="py-5 border-t border-ink/10 first:border-t-0 first:pt-0">
       <dt
-        className="[&_code]:text-sky-300 text-lg font-bold"
+        className="[&_code]:text-sky-700 dark:[&_code]:text-sky-300 text-lg font-bold"
         data-toc="1"
         id={method.name}
       >

@@ -142,14 +142,14 @@ export function PageContents() {
     <nav
       aria-label="On this page"
       ref={navRef}
-      className="ml-4 mb-1 border-l border-white/10"
+      className="ml-4 mb-1 border-l border-ink/10"
       data-search-ignore
     >
       <ul>
         {entries.map(({ id, title }) =>
           labelIds.has(id) ? (
             <li
-              className="pl-4 pt-2 pb-0.5 text-xs font-bold uppercase tracking-wide text-white/40"
+              className="pl-4 pt-2 pb-0.5 text-xs font-bold uppercase tracking-wide text-ink/40"
               key={id}
             >
               {title}
@@ -161,8 +161,8 @@ export function PageContents() {
                 className={cn(
                   "block -ml-px border-l-2 py-1 pl-4 pr-2 text-sm leading-snug",
                   id === activeId
-                    ? "border-nav-active text-white"
-                    : "border-transparent text-white/60 hover:text-white"
+                    ? "border-nav-active text-ink"
+                    : "border-transparent text-ink/60 hover:text-ink"
                 )}
                 href={`#${encodeURIComponent(id)}`}
                 onClick={(event) => onClick(event, id)}

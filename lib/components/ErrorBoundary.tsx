@@ -24,7 +24,7 @@ function FallbackComponent({ error, resetErrorBoundary }: FallbackProps) {
     <Callout intent="danger">
       <Box align="start" direction="column" gap={2}>
         <div className="font-bold">Something went wrong!</div>
-        <pre className="text-sm font-monospace text-red-300">
+        <pre className="text-sm font-monospace text-red-700 dark:text-red-300">
           {error.message}
         </pre>
         <Button intent="danger" onClick={resetErrorBoundary}>

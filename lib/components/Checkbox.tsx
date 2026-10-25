@@ -30,7 +30,7 @@ export function Checkbox({
   let iconClassName: string;
   if (indeterminate) {
     IconElement = IndeterminateIcon;
-    iconClassName = "fill-white";
+    iconClassName = "fill-ink";
   } else if (checked) {
     IconElement = CheckedIcon;
     iconClassName = "fill-blue-600";

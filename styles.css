@@ -8,7 +8,9 @@
     font-size: 16px;
   }
 
-  color-scheme: dark;
+  /* Follows the system preference; the theme colors below have light variants (see the end of @theme) */
+  color-scheme: light dark;
+  color: var(--color-ink);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -28,6 +30,11 @@
 }
 
 @theme {
+  /* Text, borders, and tints use ink (e.g. text-ink/60); surfaces like the content card use paper */
+  --color-ink: var(--color-white);
+  --color-paper: var(--color-black);
+  --color-code-background: var(--color-black);
+
   --color-background-gradient-1: var(--color-fuchsia-500);
   --color-background-gradient-2: var(--color-violet-500);
   --color-background-gradient-3: var(--color-fuchsia-700);
@@ -46,6 +53,45 @@
   --color-nav-hover: var(--color-fuchsia-200);
 
   --color-common-question-header: var(--color-sky-400);
+}
+
+/*
+ * Light theme values. The header sits on the background gradient in both themes, so its colors don't change.
+ * Sites that customize these colors in @theme should also override them here (after importing this file),
+ * since the values above are chosen for a dark background:
+ *
+ *   @media (prefers-color-scheme: light) {
+ *     :root {
+ *       --color-nav-active: var(--color-emerald-700);
+ *     }
+ *   }
+ */
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-ink: var(--color-slate-900);
+    --color-paper: var(--color-white);
+    --color-code-background: color-mix(
+      in oklab,
+      var(--color-slate-900) 5%,
+      transparent
+    );
+
+    --color-header-section: var(--color-fuchsia-700);
+
+    --color-data-focus: var(--color-sky-600);
+    --color-link: var(--color-sky-700);
+
+    --color-nav-active: var(--color-fuchsia-700);
+    --color-search-match: var(--color-sky-700);
+    --color-search-result-active: var(--color-sky-100);
+    --color-nav-hover: var(--color-fuchsia-600);
+
+    --color-common-question-header: var(--color-sky-700);
+  }
+
+  * {
+    scrollbar-color: var(--color-slate-300) transparent;
+  }
 }
 
 #root {
@@ -96,7 +142,7 @@ a[href]:focus-visible {
   &[data-nav-link] {
     outline-offset: -2px;
     border-radius: 0;
-    background-color: rgb(255 255 255 / 0.1);
+    background-color: color-mix(in oklab, var(--color-ink) 10%, transparent);
   }
 }
 
@@ -177,7 +223,7 @@ a[href]:focus-visible {
 
   /* A visible (but quiet) border at rest, for interactive demos */
   &[data-focus-within="bold"] {
-    border-color: rgb(255 255 255 / 0.15);
+    border-color: color-mix(in oklab, var(--color-ink) 15%, transparent);
     &:focus-within {
       border: 2px solid var(--color-data-focus);
     }
@@ -185,7 +231,7 @@ a[href]:focus-visible {
 }
 
 code {
-  color: rgba(255, 255, 255, 0.8);
+  color: color-mix(in oklab, var(--color-ink) 80%, transparent);
 }
 
 .tok-bool {
@@ -228,4 +274,26 @@ code {
 .tok-variableName:not(.tok-definition) {
 }
 .tok-variableName2 {
+}
+
+/* Syntax colors for code on a light background (after the rules above, which they override) */
+@media (prefers-color-scheme: light) {
+  .tok-bool,
+  .tok-number,
+  .tok-string {
+    color: var(--color-teal-700);
+  }
+  .tok-keyword,
+  .tok-typeName {
+    color: var(--color-pink-600);
+  }
+  .tok-operator,
+  .tok-punctuation {
+    color: var(--color-slate-500);
+  }
+  .tok-labelName,
+  .tok-propertyName,
+  .tok-string2 {
+    color: var(--color-sky-700);
+  }
 }

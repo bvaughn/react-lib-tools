@@ -183,6 +183,27 @@ Override any of these CSS variables in your root CSS file (after importing `reac
 }
 ```
 
+#### Light theme
+
+Sites follow the system's light or dark preference. The header sits on the background gradient in both themes, so its colors are shared, but the other colors above are chosen for a dark background. If you customize them, also set light theme values (in a media query after your `@theme` block):
+
+```css
+@media (prefers-color-scheme: light) {
+  :root {
+    --color-header-section: var(--color-emerald-700);
+    --color-link: var(--color-sky-700);
+    --color-data-focus: var(--color-sky-600);
+    --color-nav-active: var(--color-emerald-700);
+    --color-nav-hover: var(--color-emerald-600);
+    --color-search-match: var(--color-emerald-700);
+    --color-search-result-active: var(--color-emerald-100);
+    --color-common-question-header: var(--color-indigo-700);
+  }
+}
+```
+
+For your own pages and demos, two more theme colors follow the color scheme: `ink` (white in the dark theme, near-black in the light theme) for text, borders, and tints, and `paper` for surfaces. For example, `text-ink/60` instead of `text-white/60`. For other colors, use Tailwind's `dark:` variant, which also follows the system preference.
+
 [This tool](https://react-lib-tools.vercel.app/color-picker?color1=emerald-400&color2=indigo-500&color3=emerald-400&packageDescription=render+everything&packageName=react-window) can help with picking theme colors, and generates an OG image to match.
 
 ### Dev server

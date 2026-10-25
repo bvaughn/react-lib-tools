@@ -153,7 +153,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
       <div
         aria-label="Search documentation"
         aria-modal="true"
-        className="shadow-lg ring-1 ring-white/10 bg-black/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200 max-h-full flex flex-col"
+        className="shadow-lg ring-1 ring-ink/10 bg-paper/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200 max-h-full flex flex-col"
         onClick={(event) => event.stopPropagation()}
         onKeyDown={trapFocus}
         role="dialog"
@@ -177,7 +177,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
           />
           <button
             aria-label="Close search"
-            className="border border-white/20 rounded text-sm px-1 cursor-pointer"
+            className="border border-ink/20 rounded text-sm px-1 cursor-pointer"
             onClick={close}
             type="button"
           >
@@ -231,7 +231,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
 
 function SearchLoading() {
   return (
-    <div className="border-t border-white/10 pt-3 mt-3 px-2 text-white/60">
+    <div className="border-t border-ink/10 pt-3 mt-3 px-2 text-ink/60">
       Loading…
     </div>
   );
@@ -239,10 +239,10 @@ function SearchLoading() {
 
 function SearchUnavailable({ resetErrorBoundary }: FallbackProps) {
   return (
-    <div className="border-t border-white/10 pt-3 mt-3 px-2 flex items-center gap-3">
+    <div className="border-t border-ink/10 pt-3 mt-3 px-2 flex items-center gap-3">
       <span role="status">Search is unavailable right now.</span>
       <button
-        className="border border-white/20 rounded text-sm px-1 cursor-pointer"
+        className="border border-ink/20 rounded text-sm px-1 cursor-pointer"
         onClick={resetErrorBoundary}
         type="button"
       >

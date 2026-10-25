@@ -236,7 +236,7 @@ function App({
             >
               <section
                 className={cn(
-                  "w-full bg-black/90 md:block md:w-72 md:shrink-0 md:bg-black/80",
+                  "w-full bg-paper/90 md:block md:w-72 md:shrink-0 md:bg-paper/80",
                   {
                     hidden: !isNavVisible
                   }
@@ -248,7 +248,7 @@ function App({
                 </div>
               </section>
               <main
-                className={cn("w-full min-w-0 bg-black/90 relative md:block", {
+                className={cn("w-full min-w-0 bg-paper/90 relative md:block", {
                   hidden: isNavVisible
                 })}
               >

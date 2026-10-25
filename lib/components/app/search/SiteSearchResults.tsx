@@ -69,7 +69,7 @@ export function SiteSearchResults({
       footer={
         hiddenCount > 0 && (
           <button
-            className="mt-2 mx-2 self-start border border-white/20 rounded text-sm px-1 cursor-pointer"
+            className="mt-2 mx-2 self-start border border-ink/20 rounded text-sm px-1 cursor-pointer"
             onClick={() => {
               setIsExpanded(true);
               // The button goes away; keep focus in the search input so arrow keys keep working

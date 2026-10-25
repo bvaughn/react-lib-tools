@@ -37,7 +37,7 @@ export function Select<Value extends string>({
     <Listbox value={(value ?? defaultValue)!} onChange={onChange}>
       <div className={`relative ${className}`}>
         <ListboxButton
-          className="w-full h-9 text-left rounded-md bg-black/30 border border-2 border-transparent py-1 px-2 outline-none focus:border-teal-300"
+          className="w-full h-9 text-left rounded-md bg-ink/5 border border-2 border-transparent py-1 px-2 outline-none focus:border-teal-600 dark:bg-black/30 dark:focus:border-teal-300"
           data-focus
         >
           {value?.label ? (
@@ -54,17 +54,17 @@ export function Select<Value extends string>({
         </ListboxButton>
         <Transition as={Fragment} leaveFrom="opacity-100" leaveTo="opacity-0">
           <ListboxOptions
-            className="absolute z-10 mt-1 max-h-50 w-full overflow-auto rounded-md py-1 bg-black/90"
+            className="absolute z-10 mt-1 max-h-50 w-full overflow-auto rounded-md py-1 bg-paper/90 shadow-md ring-1 ring-ink/10"
             data-focus
           >
             {options.map((option, index) => (
               <ListboxOption
                 key={index}
                 className={cn(
-                  "relative cursor-pointer select-none h-7 py-1 px-2 text-slate-300 border-none!",
-                  "data-focus:text-teal-300 data-focus:bg-black",
-                  "data-active:text-teal-300 data-active:bg-black",
-                  "data-selected:text-teal-300 data-selected:font-bold"
+                  "relative cursor-pointer select-none h-7 py-1 px-2 text-slate-700 dark:text-slate-300 border-none!",
+                  "data-focus:text-teal-700 data-focus:bg-ink/5 dark:data-focus:text-teal-300 dark:data-focus:bg-black",
+                  "data-active:text-teal-700 data-active:bg-ink/5 dark:data-active:text-teal-300 dark:data-active:bg-black",
+                  "data-selected:text-teal-700 dark:data-selected:text-teal-300 data-selected:font-bold"
                 )}
                 value={option}
               >

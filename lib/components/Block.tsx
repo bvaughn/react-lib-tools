@@ -17,7 +17,7 @@ export function Block({
   return (
     <ErrorBoundary>
       <div
-        className={`border-lg bg-black/30 text-slate-300 rounded-lg p-2 ${className}`}
+        className={`border-lg bg-ink/5 text-slate-700 dark:bg-black/30 dark:text-slate-300 rounded-lg p-2 ${className}`}
         data-search-ignore
         {...rest}
       >
