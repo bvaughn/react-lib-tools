@@ -107,7 +107,7 @@ function ProjectList({
         >
           <img
             alt=""
-            className="shrink-0 size-6"
+            className="shrink-0 size-6 brightness-0 invert"
             onError={(event) => {
               event.currentTarget.style.visibility = "hidden";
             }}
