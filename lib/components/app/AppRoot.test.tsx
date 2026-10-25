@@ -315,6 +315,118 @@ describe("AppRoot", () => {
     }
   });
 
+  describe("current page contents", () => {
+    const tocRoutes = {
+      ...routes,
+      "/advanced": route(() => (
+        <>
+          <h1>Advanced page</h1>
+          <h2 data-toc id="first">
+            First heading
+          </h2>
+          <h2 data-toc id="second">
+            Second heading
+          </h2>
+        </>
+      ))
+    };
+
+    // The current page's link toggles its contents (like a section header)
+    function getToggle() {
+      const link = within(getSidebar()).getByRole("link", { name: "Advanced" });
+      return link.hasAttribute("aria-expanded") ? link : null;
+    }
+
+    test("should collapse and expand the current page's contents", async () => {
+      await renderApp({ routes: tocRoutes }, "/advanced");
+
+      const toggle = await waitFor(() => {
+        const toggle = getToggle();
+        expect(toggle).not.toBeNull();
+        return toggle!;
+      });
+      expect(toggle).toHaveAttribute("aria-expanded", "true");
+      expect(
+        within(getSidebar()).getByRole("link", { name: "First heading" })
+      ).toBeVisible();
+
+      fireEvent.click(toggle);
+      expect(toggle).toHaveAttribute("aria-expanded", "false");
+      expect(
+        within(getSidebar()).queryByRole("link", { name: "First heading" })
+      ).toBeNull();
+
+      // It's still a link to the page (e.g. for opening in a new tab)
+      expect(toggle).toHaveAttribute("href", "/advanced");
+
+      fireEvent.click(toggle);
+      expect(toggle).toHaveAttribute("aria-expanded", "true");
+      expect(
+        within(getSidebar()).getByRole("link", { name: "Second heading" })
+      ).toBeVisible();
+    });
+
+    test("should expand the contents again after navigating away and back", async () => {
+      await renderApp({ routes: tocRoutes }, "/advanced");
+
+      const toggle = await waitFor(() => {
+        const toggle = getToggle();
+        expect(toggle).not.toBeNull();
+        return toggle!;
+      });
+      fireEvent.click(toggle);
+      expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+      fireEvent.click(
+        within(getSidebar()).getByRole("link", { name: "Basics" })
+      );
+      expect(await screen.findByText("Basics page")).toBeVisible();
+      fireEvent.click(
+        within(getSidebar()).getByRole("link", { name: "Advanced" })
+      );
+      expect(await screen.findByText("Advanced page")).toBeVisible();
+
+      await waitFor(() => {
+        expect(getToggle()).toHaveAttribute("aria-expanded", "true");
+      });
+    });
+
+    test("should not make the link a toggle for pages without contents", async () => {
+      await renderApp({}, "/basics");
+      expect(await screen.findByText("Basics page")).toBeVisible();
+
+      expect(
+        within(getSidebar()).getByRole("link", { name: "Basics" })
+      ).not.toHaveAttribute("aria-expanded");
+    });
+
+    test("should still navigate on modified clicks (e.g. open in new tab)", async () => {
+      await renderApp({ routes: tocRoutes }, "/advanced");
+
+      const toggle = await waitFor(() => {
+        const toggle = getToggle();
+        expect(toggle).not.toBeNull();
+        return toggle!;
+      });
+
+      // The browser handles these (e.g. opening a new tab), so the link doesn't toggle or prevent the default action.
+      // Record that from a listener that runs after the link's own, then stop jsdom from attempting the navigation.
+      let defaultPrevented: boolean | undefined;
+      const onClick = (event: MouseEvent) => {
+        defaultPrevented = event.defaultPrevented;
+        event.preventDefault();
+      };
+      window.addEventListener("click", onClick);
+      try {
+        fireEvent.click(toggle, { metaKey: true });
+      } finally {
+        window.removeEventListener("click", onClick);
+      }
+      expect(defaultPrevented).toBe(false);
+      expect(toggle).toHaveAttribute("aria-expanded", "true");
+    });
+  });
+
   describe("project menu", () => {
     const projects = [
       {

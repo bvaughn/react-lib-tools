@@ -4,15 +4,7 @@ import { useLibraryContext } from "../../hooks/useLibraryContext";
 import { cn } from "../../utils/cn";
 import { getHashId } from "../../utils/getHashId";
 import { scrollToAnchor } from "../../utils/scrollToAnchor";
-
-type Entry = {
-  id: string;
-  level: 1 | 2;
-  title: string;
-};
-
-/** Pages with fewer entries than this don't need a contents list */
-const MIN_ENTRIES = 2;
+import { MIN_PAGE_ENTRIES, type PageEntry } from "./usePageEntries";
 
 const SCROLL_KEYS = new Set([
   " ",
@@ -28,13 +20,12 @@ const SCROLL_KEYS = new Set([
 const ACTIVE_OFFSET = 48;
 
 /**
- * "On this page" contents list, built from elements in the main content marked with data-toc.
+ * "On this page" contents list, built from elements in the main content marked with data-toc (see usePageEntries).
  * Rendered in the sidebar beneath the current page's link.
  */
-export function PageContents() {
+export function PageContents({ entries }: { entries: PageEntry[] }) {
   const { hash, key, pathname } = useLocation();
   const { isNavVisible, setIsNavVisible } = useLibraryContext();
-  const entries = useEntries(pathname);
   const [pinnedId, setPinnedId] = usePinnedId(getHashId(hash), key);
   // Top-level entries with nested entries (e.g. props under "Required props") become labels
   // so the sidebar doesn't nest three levels deep
@@ -83,7 +74,9 @@ export function PageContents() {
     if (positionedPathnameRef.current !== pathname) {
       positionedPathnameRef.current = pathname;
 
-      const link = nav.previousElementSibling ?? nav;
+      const link =
+        nav.closest("[data-current-page]")?.querySelector("[data-nav-link]") ??
+        nav;
       const linkRect = link.getBoundingClientRect();
       const navRect = nav.getBoundingClientRect();
       if (
@@ -108,7 +101,7 @@ export function PageContents() {
     }
   }, [activeId, entries.length, isNavVisible, pathname]);
 
-  if (entries.length < MIN_ENTRIES) {
+  if (entries.length < MIN_PAGE_ENTRIES) {
     return null;
   }
 
@@ -178,60 +171,8 @@ export function PageContents() {
   );
 }
 
-function getMainContent() {
-  return document.querySelector<HTMLElement>("[data-main-scrollable]");
-}
-
 function getScroller() {
   return document.querySelector<HTMLElement>("[data-app-scroller]");
-}
-
-function readEntries(): Entry[] {
-  const main = getMainContent();
-  if (!main) {
-    return [];
-  }
-
-  return Array.from(main.querySelectorAll<HTMLElement>("[data-toc][id]")).map(
-    (element) => ({
-      id: element.id,
-      level: element.dataset.toc === "2" ? 2 : 1,
-      title: (element.dataset.tocTitle ?? element.textContent ?? "").trim()
-    })
-  );
-}
-
-function useEntries(pathname: string) {
-  const [entries, setEntries] = useState<Entry[]>([]);
-
-  useEffect(() => {
-    const main = getMainContent();
-    if (!main) {
-      return;
-    }
-
-    let key = "";
-    const update = () => {
-      const next = readEntries();
-      const nextKey = JSON.stringify(next);
-      if (nextKey !== key) {
-        key = nextKey;
-        setEntries(next);
-      }
-    };
-
-    update();
-
-    // Route content is lazy loaded (and may change without a pathname change)
-    const observer = new MutationObserver(update);
-    observer.observe(main, { childList: true, subtree: true });
-
-    return () => {
-      observer.disconnect();
-    };
-  }, [pathname]);
-
-  return entries;
 }
 
 /**
@@ -282,7 +223,7 @@ function usePinnedId(initialId: string | undefined, locationKey: string) {
   return [pinnedId, setPinnedId] as const;
 }
 
-function useActiveId(entries: Entry[]) {
+function useActiveId(entries: PageEntry[]) {
   const [activeId, setActiveId] = useState<string | undefined>(undefined);
 
   useEffect(() => {

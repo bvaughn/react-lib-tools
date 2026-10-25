@@ -9,13 +9,18 @@ import type { ReactNode } from "react";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { renderWithProviders } from "../../test-utils";
 import { PageContents } from "./PageContents";
+import { usePageEntries } from "./usePageEntries";
+
+function Contents() {
+  return <PageContents entries={usePageEntries()} />;
+}
 
 // Mirrors the parts of the AppRoot layout that PageContents reads from the DOM
 function renderPage(content: ReactNode, path = "/page") {
   return renderWithProviders(
     <div data-app-scroller>
       <div data-sidebar-scroller>
-        <PageContents />
+        <Contents />
       </div>
       <div data-main-scrollable>{content}</div>
     </div>,
