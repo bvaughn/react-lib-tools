@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.70
+
+- **Light theme:** docs sites now follow the system's light or dark preference (previously they were always dark). The dark theme is unchanged.
+  - The header stays on the background gradient in both themes; the content card, sidebar, search, project menu, code blocks, callouts, and form controls all have light variants.
+  - **Action needed** if your site customizes theme colors (e.g. `--color-nav-active`): those values are chosen for a dark background, so also set light theme values in a `@media (prefers-color-scheme: light)` block. Until you do, the light theme uses the defaults from `styles.css` for those colors. See "Light theme" in the README.
+  - **Action needed** if your pages or demos use light-on-dark colors like `text-white/60`: use the new `ink` and `paper` theme colors (e.g. `text-ink/60`, `bg-paper/80`), which follow the color scheme, or Tailwind's `dark:` variant.
+- The current page's contents (its headings, listed beneath its link in the sidebar) can be collapsed, e.g. to see the links below a long list: like a section header, clicking the current page's link toggles them (modified clicks, e.g. to open a new tab, still work). Contents are expanded each time a page opens.
+- Fixed project menu icons sometimes being drawn in the wrong color scheme's colors (e.g. dark icons on the menu's dark background in Safari on iOS). Icons are now always white in the dark theme and black in the light theme.
+
 ## 0.0.69
 
 - The header's logo and package name now open a menu linking to the docs sites of related projects. The list is shared by every site: it's loaded at runtime from `https://react-lib-tools.vercel.app/projects.json` (when the menu is first hovered, focused, or opened), so adding a project doesn't require updating each site. The current project is marked and can't be selected; projects without a `/favicon.svg` (or an `icon` in the list) are shown without an icon.
