@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.69
+
+- The header's logo and package name now open a menu linking to the docs sites of related projects. The list is shared by every site: it's loaded at runtime from `https://react-lib-tools.vercel.app/projects.json` (when the menu is first hovered, focused, or opened), so adding a project doesn't require updating each site. The current project is marked and can't be selected; projects without a `/favicon.svg` (or an `icon` in the list) are shown without an icon.
+- New `AppRoot` `projectsUrl` prop, to load the project list from a different URL; pass `false` to disable the menu.
+- **Behavior change:** `packageDescription` is no longer shown in the header while the project menu is enabled; it's still shown when `projectsUrl` is `false`.
+- The site search dialog now has a muted border instead of a shadow tinted with the theme's background gradient color.
+
 ## 0.0.68
 
 - New `HookSignature` and `HookSignatureItem` components, for documenting a hook's parameters or return values. Each `HookSignatureItem` shows a `name`, `type`, and optional `defaultValue` (pass `optional` to mark it with `?:`), followed by its description (`children`). Render items within a `HookSignature`, which lays them out as a list.

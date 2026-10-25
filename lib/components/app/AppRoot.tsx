@@ -32,8 +32,12 @@ import { Nav } from "../nav/Nav";
 import { PageNavigation } from "../nav/PageNavigation";
 import { LibraryContextProvider } from "./components/LibraryContextProvider";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
+import { ProjectSwitcher } from "./projects/ProjectSwitcher";
 import { routes as defaultRoutes } from "./routes";
 import { SiteSearchModal } from "./search/SiteSearchModal";
+
+/** Shared by every docs site, so adding a project doesn't require updating each of them */
+const defaultProjectsUrl = "https://react-lib-tools.vercel.app/projects.json";
 
 const siteSearchShortcutKey =
   typeof navigator !== "undefined" && navigator.userAgent.indexOf("Win") >= 0
@@ -48,6 +52,7 @@ export function AppRoot({
   collapseNavSections,
   enableSiteSearch,
   nav,
+  projectsUrl = defaultProjectsUrl,
   routes,
   ...context
 }: {
@@ -64,7 +69,7 @@ export function AppRoot({
   nav: NavConfig;
   /** Introduction shown on the getting started ("/") page */
   overview?: ReactNode | undefined;
-  /** Short description shown in the header */
+  /** Short description shown in the header when the project menu is disabled (`projectsUrl={false}`) */
   packageDescription: string;
   /** Logo shown in the header; defaults to the React logo */
   packageLogo?: ReactNode;
@@ -72,6 +77,11 @@ export function AppRoot({
   packageName: string;
   /** URL of the GitHub repository; used to link to source files from props pages */
   repositoryUrl: string;
+  /**
+   * URL of a JSON list of related projects (`{ name, description, url, icon? }[]`), shown in a menu opened from the header's package name.
+   * Defaults to the list shared by all of bvaughn's docs sites; pass `false` to disable the menu.
+   */
+  projectsUrl?: string | false | undefined;
   /** Pages of the site, by path; these can also replace the default pages */
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
   /** Add an Open Collective sponsorship link to the getting started page */
@@ -85,6 +95,7 @@ export function AppRoot({
         collapseNavSections={collapseNavSections}
         enableSiteSearch={enableSiteSearch}
         nav={nav}
+        projectsUrl={projectsUrl}
         routes={routes}
       />
     </LibraryContextProvider>
@@ -95,11 +106,13 @@ function App({
   collapseNavSections,
   enableSiteSearch,
   nav,
+  projectsUrl,
   routes
 }: {
   collapseNavSections?: boolean | undefined;
   enableSiteSearch?: boolean | undefined;
   nav: NavConfig;
+  projectsUrl: string | false;
   routes: Record<string, LazyExoticComponent<ComponentType<unknown>>>;
 }) {
   const {
@@ -112,6 +125,12 @@ function App({
     setIsSiteSearchVisible,
     versions
   } = useLibraryContext();
+
+  const logo = (
+    <div className="shrink-0 flex">
+      {packageLogo ?? <ReactLogoIcon className="w-8 h-8" />}
+    </div>
+  );
 
   const flatNav = useMemo(() => flattenNav(nav), [nav]);
 
@@ -132,20 +151,24 @@ function App({
           direction="row"
           gap={4}
         >
-          {packageLogo ?? <ReactLogoIcon className="shrink-0 w-8 h-8" />}
-          <Box
-            className="overflow-hidden"
-            align="center"
-            direction="row"
-            gap={4}
-          >
-            <div className="text-xl text-header-package-name font-bold truncate">
-              {packageName}
-            </div>
-            <div className="hidden md:block font-medium text-header-package-description text-shadow-xs text-shadow-black/40">
-              {packageDescription}
-            </div>
-          </Box>
+          {/* The project menu replaces the description, which looked out of place beside the menu's caret */}
+          {projectsUrl === false ? (
+            <Box className="min-w-0" align="center" direction="row" gap={4}>
+              {logo}
+              <div className="text-xl text-header-package-name font-bold truncate">
+                {packageName}
+              </div>
+              <div className="hidden md:block truncate font-medium text-header-package-description text-shadow-xs text-shadow-black/40">
+                {packageDescription}
+              </div>
+            </Box>
+          ) : (
+            <ProjectSwitcher
+              packageLogo={logo}
+              packageName={packageName}
+              projectsUrl={projectsUrl}
+            />
+          )}
           <div className="grow" />
           <Box align="center" direction="row" gap={4}>
             {enableSiteSearch && (

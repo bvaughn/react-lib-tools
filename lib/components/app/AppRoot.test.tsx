@@ -92,12 +92,12 @@ afterEach(() => {
 });
 
 describe("AppRoot", () => {
-  test("should render the package name and description in the header", async () => {
+  test("should render the package name (but not the description) in the header", async () => {
     await renderApp();
 
     const header = document.querySelector<HTMLElement>("[data-app-header]")!;
     expect(within(header).getByText("test-lib")).toBeVisible();
-    expect(within(header).getByText("a test library")).toBeVisible();
+    expect(within(header).queryByText("a test library")).toBeNull();
     expect(
       within(header).getByRole("link", { name: "NPM project page" })
     ).toHaveAttribute("href", "https://www.npmjs.com/package/test-lib");
@@ -313,6 +313,139 @@ describe("AppRoot", () => {
     } finally {
       vi.unstubAllGlobals();
     }
+  });
+
+  describe("project menu", () => {
+    const projects = [
+      {
+        name: "other-lib",
+        description: "another library",
+        url: "https://other-lib.example.com/"
+      },
+      {
+        name: "test-lib",
+        description: "a test library",
+        url: "https://test-lib.example.com/",
+        icon: "/logo.svg"
+      },
+      // Entries missing required fields are skipped
+      { name: "no-url" },
+      { name: "invalid-url", url: "not a url" }
+    ];
+
+    function getMenuButton() {
+      return within(
+        document.querySelector<HTMLElement>("[data-app-header]")!
+      ).getByRole("button", { name: /test-lib/ });
+    }
+
+    afterEach(() => {
+      vi.unstubAllGlobals();
+    });
+
+    test("should list projects loaded from projectsUrl", async () => {
+      const fetch = vi.fn(async () => new Response(JSON.stringify(projects)));
+      vi.stubGlobal("fetch", fetch);
+
+      await renderApp({ projectsUrl: "/projects-success.json" });
+
+      // Nothing is downloaded until the menu is used
+      expect(fetch).not.toHaveBeenCalled();
+
+      await act(async () => {
+        fireEvent.click(getMenuButton());
+      });
+
+      const menu = await screen.findByRole("menu");
+      const items = await within(menu).findAllByRole("menuitem");
+      expect(fetch).toHaveBeenCalledTimes(1);
+      expect(fetch).toHaveBeenCalledWith("/projects-success.json");
+      expect(items.map((item) => item.textContent)).toEqual([
+        "other-libanother library",
+        "test-liba test library",
+        "All projects on GitHub"
+      ]);
+
+      expect(items[0]).toHaveAttribute(
+        "href",
+        "https://other-lib.example.com/"
+      );
+      expect(items[0]).not.toHaveAttribute("aria-current");
+      expect(items[0].querySelector("img")).toHaveAttribute(
+        "src",
+        "https://other-lib.example.com/favicon.svg"
+      );
+
+      // The current project is marked, and icons are resolved relative to the project's URL
+      expect(items[1]).toHaveAttribute("aria-current", "page");
+      expect(items[1].querySelector("img")).toHaveAttribute(
+        "src",
+        "https://test-lib.example.com/logo.svg"
+      );
+
+      // The search index crawler follows data-link elements; it shouldn't leave the site
+      expect(menu.querySelector("[data-link]")).toBeNull();
+    });
+
+    test("should show an error if projects can't be loaded, and try again when reopened", async () => {
+      // React logs errors caught by error boundaries
+      const consoleError = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      const fetch = vi.fn(
+        async () =>
+          new Response("", { status: 500, statusText: "Server Error" })
+      );
+      vi.stubGlobal("fetch", fetch);
+
+      await renderApp({ projectsUrl: "/projects-error.json" });
+
+      await act(async () => {
+        fireEvent.click(getMenuButton());
+      });
+      const menu = await screen.findByRole("menu");
+      expect(
+        await within(menu).findByText("Projects are unavailable right now.")
+      ).toBeVisible();
+      expect(
+        within(menu).getByRole("menuitem", { name: "All projects on GitHub" })
+      ).toBeVisible();
+
+      // Close and reopen
+      fetch.mockImplementation(
+        async () => new Response(JSON.stringify(projects))
+      );
+      await act(async () => {
+        fireEvent.click(getMenuButton());
+      });
+      await waitFor(() => {
+        expect(screen.queryByRole("menu")).toBeNull();
+      });
+      await act(async () => {
+        fireEvent.click(getMenuButton());
+      });
+
+      expect(
+        await within(await screen.findByRole("menu")).findByRole("menuitem", {
+          name: /other-lib/
+        })
+      ).toBeVisible();
+      expect(fetch).toHaveBeenCalledTimes(2);
+
+      consoleError.mockRestore();
+    });
+
+    test("should render the description instead of the menu when projectsUrl is false", async () => {
+      await renderApp({ projectsUrl: false });
+
+      const header = document.querySelector<HTMLElement>("[data-app-header]")!;
+      expect(within(header).getByText("test-lib")).toBeVisible();
+      expect(within(header).getByText("a test library")).toBeVisible();
+      expect(
+        within(header).queryByRole("button", { name: /test-lib/ })
+      ).toBeNull();
+    });
   });
 
   test("should contain errors thrown by a page", async () => {

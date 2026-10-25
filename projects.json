@@ -1,0 +1,42 @@
+[
+  {
+    "name": "react-error-boundary",
+    "description": "runtime error handling",
+    "url": "https://react-error-boundary-lib.vercel.app/"
+  },
+  {
+    "name": "react-highlight-words",
+    "description": "highlight words within text",
+    "url": "https://react-highlight-words.vercel.app/"
+  },
+  {
+    "name": "react-resizable-panels",
+    "description": "flexible layout components",
+    "url": "https://react-resizable-panels.vercel.app/"
+  },
+  {
+    "name": "react-virtualized",
+    "description": "render large lists and tabular data",
+    "url": "https://react-virtualized-docs.vercel.app/"
+  },
+  {
+    "name": "react-virtualized-auto-sizer",
+    "description": "(re)sizing helper component",
+    "url": "https://react-virtualized-auto-sizer.vercel.app/"
+  },
+  {
+    "name": "react-window",
+    "description": "render everything",
+    "url": "https://react-window.vercel.app/"
+  },
+  {
+    "name": "react-window-infinite-loader",
+    "description": "load data as you scroll",
+    "url": "https://react-window-infinite-loader.vercel.app/"
+  },
+  {
+    "name": "use-context-menu",
+    "description": "configurable context menus",
+    "url": "https://use-context-menu.vercel.app/"
+  }
+]

@@ -86,7 +86,7 @@ export function App() {
 | Prop                  | Required | Description                                                                                                                                       |
 | :-------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `nav`                 | Yes      | Site navigation, in reading order. Links can be grouped into titled sections and nested with `children`. Also determines the previous/next links. |
-| `packageDescription`  | Yes      | Short description shown in the header.                                                                                                            |
+| `packageDescription`  | Yes      | Short description shown in the header when the [project menu](#project-menu) is disabled.                                                         |
 | `packageName`         | Yes      | Shown in the header and used for the npm link and installation instructions.                                                                      |
 | `repositoryUrl`       | Yes      | Used for "view source" links on props pages.                                                                                                      |
 | `routes`              | Yes      | Map of paths to lazy-loaded page components.                                                                                                      |
@@ -95,6 +95,7 @@ export function App() {
 | `enableSiteSearch`    | No       | Shows the search button and enables the Cmd/Ctrl+K shortcut. Requires a [search index](#search-index).                                            |
 | `overview`            | No       | Introduction shown on the getting started (`/`) page.                                                                                             |
 | `packageLogo`         | No       | Replaces the default React logo in the header.                                                                                                    |
+| `projectsUrl`         | No       | URL of the [project list](#project-menu) shown in a menu under the package name. Defaults to the shared list; pass `false` to disable the menu.   |
 | `showOpenCollectLink` | No       | Adds an Open Collective link to the getting started page.                                                                                         |
 | `versions`            | No       | Map of version numbers to documentation URLs for older releases; adds a `/versions` page and a link to it in the header.                          |
 
@@ -107,6 +108,12 @@ export function App() {
 | `/support`          | Where to ask questions and report bugs                 |
 | `/versions`         | Links to documentation for older releases (`versions`) |
 | any other path      | Page not found                                         |
+
+#### Project menu
+
+Clicking the logo and package name in the header opens a menu that links to other projects' docs sites. The list is loaded (when the menu is first hovered, focused, or opened) from [`projects.json`](./projects.json) in this repository, which is deployed to `https://react-lib-tools.vercel.app/projects.json`. To add a project to every site's menu, edit that file and deploy this repository; the sites themselves don't need to be updated.
+
+Each entry has a `name`, `description`, and `url`, plus an optional `icon` (resolved relative to `url`; defaults to `/favicon.svg`). The entry whose `name` matches `packageName` is marked as the current project.
 
 > [!NOTE]
 > Some links currently assume the package's repository is `github.com/bvaughn/<packageName>`: the GitHub icon in the header, the support and "page not found" pages, and the release links on the versions page. The getting started page also includes links for sponsoring the maintainer of this package.

@@ -1,10 +1,11 @@
 import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react-swc";
+import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { visualizer } from "rollup-plugin-visualizer";
 import preserveDirectives from "rollup-preserve-directives";
-import { defineConfig, type UserConfig } from "vite";
+import { defineConfig, type Plugin, type UserConfig } from "vite";
 import dts from "vite-plugin-dts";
 import svgr from "vite-plugin-svgr";
 import { getDevServerConfig } from "./scripts/dev-server.js";
@@ -41,6 +42,26 @@ const libraryConfig: UserConfig = {
   publicDir: false
 };
 
+// The list of projects shown in every docs site's header menu (see AppRoot's projectsUrl prop).
+// It lives at the repository root rather than in the sample library's public directory, but is served from "/projects.json" the same way.
+const projectsPath = resolve(__dirname, "projects.json");
+const projectsPlugin: Plugin = {
+  name: "projects-json",
+  configureServer(server) {
+    server.middlewares.use("/projects.json", (_request, response) => {
+      response.setHeader("Content-Type", "application/json");
+      response.end(readFileSync(projectsPath));
+    });
+  },
+  generateBundle() {
+    this.emitFile({
+      fileName: "projects.json",
+      source: readFileSync(projectsPath),
+      type: "asset"
+    });
+  }
+};
+
 const websiteConfig: UserConfig = {
   base: "/",
   build: {
@@ -56,6 +77,7 @@ const websiteConfig: UserConfig = {
   plugins: [
     react(),
     svgr(),
+    projectsPlugin,
     tailwindcss({ optimize: { minify: false } }),
     visualizer({
       emitFile: true,

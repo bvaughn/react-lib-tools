@@ -153,7 +153,7 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
       <div
         aria-label="Search documentation"
         aria-modal="true"
-        className="shadow-background-gradient-2/20 shadow-md bg-black/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200 max-h-full flex flex-col"
+        className="shadow-lg ring-1 ring-white/10 bg-black/80 rounded-lg py-3 pl-4 pr-3 max-w-full w-200 max-h-full flex flex-col"
         onClick={(event) => event.stopPropagation()}
         onKeyDown={trapFocus}
         role="dialog"

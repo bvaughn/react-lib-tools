@@ -29,6 +29,7 @@ export default function App() {
       }
       packageDescription="a sample component library"
       packageName="sample-lib"
+      projectsUrl="/projects.json"
       repositoryUrl="https://github.com/bvaughn/react-lib-tools"
       routes={routes}
       versions={versions}

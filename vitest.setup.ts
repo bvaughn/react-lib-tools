@@ -74,6 +74,9 @@ if (HAS_DOM) {
     unobserve() {}
   };
 
+  // Headless UI transitions wait for these to finish (and warn if the method is missing)
+  Element.prototype.getAnimations ??= () => [];
+
   Element.prototype.scrollIntoView ??= function () {};
 
   window.matchMedia ??= (query: string) =>

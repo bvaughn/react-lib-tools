@@ -83,6 +83,7 @@ Unlike the other scripts, this one is **plain JavaScript** (with its types in [`
 - creates a `BrowserRouter` and merges the consumer's `routes` over the [default routes](./lib/components/app/routes.ts) (`/`, `/common-questions`, `/support`, `/versions`, and a 404 page);
 - renders the header, the sidebar [`Nav`](./lib/components/nav/Nav.tsx), and previous/next [`PageNavigation`](./lib/components/nav/PageNavigation.tsx), all driven by the same `NavConfig`;
 - optionally renders the site search modal (`enableSiteSearch`).
+- renders the header's project menu ([`ProjectSwitcher`](./lib/components/app/projects/ProjectSwitcher.tsx)), which fetches the list of projects from `projectsUrl` at runtime. The default URL serves [`projects.json`](./projects.json) from this repository's deployed docs site (the website build in [`vite.config.ts`](./vite.config.ts) serves and emits it), so every consumer site shares one list without being rebuilt. Unknown or invalid entries are skipped, so the file's format can grow without breaking sites running older versions.
 
 Because React Router is bundled rather than a peer dependency, consumer route components must navigate with this package's [`Link`](./lib/components/Link.tsx). Their own copy of `react-router-dom` won't see `AppRoot`'s router.
 
