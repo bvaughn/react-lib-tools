@@ -33,6 +33,7 @@ export type {
   ImperativeHandleMetadata,
   Intent,
   NavConfig,
+  NavGroupConfig,
   NavLinkConfig,
   NavSectionConfig,
   Section,

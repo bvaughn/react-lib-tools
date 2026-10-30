@@ -1,20 +1,19 @@
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
+import { ChevronLeftIcon } from "@heroicons/react/20/solid";
 import { useId, useState } from "react";
 import { matchPath, useLocation, useMatch } from "react-router-dom";
 import { cn } from "../../utils/cn";
-import type { NavConfig, NavLinkConfig, NavSectionConfig } from "../../types";
+import type {
+  NavConfig,
+  NavGroupConfig,
+  NavLinkConfig,
+  NavSectionConfig
+} from "../../types";
 import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
 import { PageContents } from "./PageContents";
 import { MIN_PAGE_ENTRIES, usePageEntries } from "./usePageEntries";
 
-export function Nav({
-  collapseSections = false,
-  nav
-}: {
-  collapseSections?: boolean | undefined;
-  nav: NavConfig;
-}) {
+export function Nav({ nav }: { nav: NavConfig }) {
   const { pathname } = useLocation();
 
   // Group consecutive top-level links so they render as a single block
@@ -44,17 +43,39 @@ export function Nav({
           </div>
         ) : (
           <NavSection
-            isActive={
-              collapseSections ? containsPath(group.links, pathname) : true
-            }
+            isActive={containsPath(group.links, pathname)}
             key={index}
             label={group.title}
           >
-            <NavLinks links={group.links} />
+            {group.links.map((link, linkIndex) =>
+              "links" in link ? (
+                <NavGroup group={link} key={linkIndex} pathname={pathname} />
+              ) : (
+                <NavItem key={link.path} link={link} />
+              )
+            )}
           </NavSection>
         )
       )}
     </nav>
+  );
+}
+
+function NavGroup({
+  group,
+  pathname
+}: {
+  group: NavGroupConfig;
+  pathname: string;
+}) {
+  return (
+    <NavSection
+      isActive={containsPath(group.links, pathname)}
+      label={group.title}
+      variant="group"
+    >
+      <NavLinks links={group.links} />
+    </NavSection>
   );
 }
 
@@ -122,11 +143,11 @@ function CurrentPageNavItem({ link }: { link: NavLinkConfig }) {
         >
           {label}
         </NavLink>
-        <ChevronRightIcon
+        <ChevronLeftIcon
           aria-hidden
           className={cn(
             "absolute top-1/2 right-4 -translate-y-1/2 size-4 pointer-events-none fill-ink/60 group-hover:fill-ink",
-            { "rotate-90": isExpanded }
+            { "-rotate-90": isExpanded }
           )}
         />
       </div>
@@ -137,10 +158,14 @@ function CurrentPageNavItem({ link }: { link: NavLinkConfig }) {
   );
 }
 
-function containsPath(links: NavLinkConfig[], pathname: string): boolean {
-  return links.some(
-    (link) =>
-      matchPath(link.path, pathname) !== null ||
-      (link.children !== undefined && containsPath(link.children, pathname))
+function containsPath(
+  links: Array<NavGroupConfig | NavLinkConfig>,
+  pathname: string
+): boolean {
+  return links.some((link) =>
+    "links" in link
+      ? containsPath(link.links, pathname)
+      : matchPath(link.path, pathname) !== null ||
+        (link.children !== undefined && containsPath(link.children, pathname))
   );
 }

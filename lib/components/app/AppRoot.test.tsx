@@ -129,7 +129,7 @@ describe("AppRoot", () => {
       ).getByText("test-lib")
     ).toBeVisible();
     expect(
-      within(getSidebar()).getByRole("link", { name: "Basics" })
+      within(getSidebar()).getByRole("link", { name: "Support" })
     ).toBeVisible();
 
     await load(() => <h1>Slow page</h1>);
@@ -189,9 +189,10 @@ describe("AppRoot", () => {
     await renderApp();
 
     const sidebar = getSidebar();
-    expect(
-      within(sidebar).getByRole("button", { name: /Guides/ })
-    ).toBeVisible();
+    const section = within(sidebar).getByRole("button", { name: /Guides/ });
+    expect(section).toBeVisible();
+
+    fireEvent.click(section);
     expect(
       within(sidebar)
         .getAllByRole("link")
@@ -199,16 +200,8 @@ describe("AppRoot", () => {
     ).toEqual(["/", "/basics", "/advanced", "/support"]);
   });
 
-  test("should expand nav sections by default", async () => {
+  test("should collapse nav sections that don't contain the current page", async () => {
     await renderApp();
-
-    expect(
-      within(getSidebar()).getByRole("link", { name: "Basics" })
-    ).toBeVisible();
-  });
-
-  test("should collapse nav sections that don't contain the current page when collapseNavSections is enabled", async () => {
-    await renderApp({ collapseNavSections: true });
 
     const sidebar = getSidebar();
     expect(
@@ -217,8 +210,8 @@ describe("AppRoot", () => {
     expect(within(sidebar).queryByRole("link", { name: "Basics" })).toBeNull();
   });
 
-  test("should expand the nav section containing the current page when collapseNavSections is enabled", async () => {
-    await renderApp({ collapseNavSections: true }, "/advanced");
+  test("should expand the nav section containing the current page", async () => {
+    await renderApp({}, "/advanced");
 
     const sidebar = getSidebar();
     expect(
@@ -228,7 +221,7 @@ describe("AppRoot", () => {
   });
 
   test("should expand a collapsed nav section when navigating to a page in it", async () => {
-    await renderApp({ collapseNavSections: true });
+    await renderApp();
 
     const pageNavigation = screen.getByRole("navigation", {
       name: "Previous and next pages"
@@ -244,6 +237,9 @@ describe("AppRoot", () => {
   test("should navigate when a nav link is clicked", async () => {
     await renderApp();
 
+    fireEvent.click(
+      within(getSidebar()).getByRole("button", { name: /Guides/ })
+    );
     fireEvent.click(within(getSidebar()).getByRole("link", { name: "Basics" }));
 
     expect(await screen.findByText("Basics page")).toBeVisible();
@@ -288,6 +284,9 @@ describe("AppRoot", () => {
     expect(sidebarSection).not.toHaveClass("hidden");
     expect(main).toHaveClass("hidden");
 
+    fireEvent.click(
+      within(getSidebar()).getByRole("button", { name: /Guides/ })
+    );
     fireEvent.click(within(getSidebar()).getByRole("link", { name: "Basics" }));
     expect(await screen.findByText("Basics page")).toBeVisible();
     expect(sidebarSection).toHaveClass("hidden");

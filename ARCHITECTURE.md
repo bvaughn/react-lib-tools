@@ -60,7 +60,7 @@ running dev server ──compileSearchIndex──▶  public/generated/site-map.
 Crawls a running instance of the docs site with Puppeteer, starting at `/` and following every element with a `data-link` attribute. For each page it records:
 
 - the page title and section, read from `[data-title]` and `[data-section]` inside `<header>`
-- the page text from `[data-main-scrollable]`, minus anything marked `data-search-ignore` (including the content of every `Block`, since live demos may render after the page is read)
+- the page text from `[data-main-scrollable]`, minus anything marked `data-search-ignore`: including the content of every `Block` (since live demos may render after the page is read) and every `Code` block (so searches match prose rather than code, e.g. class names in examples; prop and method names are still indexed via their headings)
 - one entry per `[data-toc][id]` element (the same headings shown in "On this page"), each with its own text
 
 Pages are crawled concurrently, so `site-map.json` is sorted by path to keep the output the same between runs.

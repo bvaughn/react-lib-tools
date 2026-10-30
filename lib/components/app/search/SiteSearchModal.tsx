@@ -60,8 +60,9 @@ export function SiteSearchModal({ flatNav }: { flatNav: FlatNavItem[] }) {
   // Without search text, list all pages in reading order
   const pages = useMemo<SiteSearchItem[]>(
     () =>
-      flatNav.map(({ parent, path, section, title }) => ({
-        context: parent ?? section,
+      flatNav.map(({ group, parent, path, section, title }) => ({
+        context:
+          parent ?? (group && section ? `${section} › ${group}` : section),
         path,
         title
       })),

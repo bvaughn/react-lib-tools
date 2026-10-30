@@ -38,6 +38,53 @@ describe("flattenNav", () => {
     ]);
   });
 
+  test("includes links within groups, in reading order", () => {
+    expect(
+      flattenNav([
+        {
+          links: [
+            { links: [{ path: "/basics", title: "Basics" }], title: "Guides" },
+            {
+              links: [
+                {
+                  children: [{ path: "/list/child", title: "Child" }],
+                  path: "/list",
+                  title: "List"
+                }
+              ],
+              title: "Components"
+            },
+            { path: "/other", title: "Other" }
+          ],
+          title: "Section"
+        }
+      ])
+    ).toEqual([
+      {
+        group: "Guides",
+        parent: undefined,
+        path: "/basics",
+        section: "Section",
+        title: "Basics"
+      },
+      {
+        group: "Components",
+        parent: undefined,
+        path: "/list",
+        section: "Section",
+        title: "List"
+      },
+      {
+        group: "Components",
+        parent: "List",
+        path: "/list/child",
+        section: "Section",
+        title: "Child"
+      },
+      { parent: undefined, path: "/other", section: "Section", title: "Other" }
+    ]);
+  });
+
   test("skips duplicate paths", () => {
     expect(
       flattenNav([

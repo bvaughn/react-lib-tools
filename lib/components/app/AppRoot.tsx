@@ -49,15 +49,12 @@ const siteSearchShortcutKey =
  * Renders your pages (`routes`) along with a few default pages (getting started, common questions, support, versions, and not found).
  */
 export function AppRoot({
-  collapseNavSections,
   enableSiteSearch,
   nav,
   projectsUrl = defaultProjectsUrl,
   routes,
   ...context
 }: {
-  /** Collapse sidebar nav sections by default, except for the one containing the current page */
-  collapseNavSections?: boolean | undefined;
   /** Questions and answers shown on the "/common-questions" page */
   commonQuestions?: CommonQuestion[];
   /**
@@ -92,7 +89,6 @@ export function AppRoot({
   return (
     <LibraryContextProvider {...context}>
       <App
-        collapseNavSections={collapseNavSections}
         enableSiteSearch={enableSiteSearch}
         nav={nav}
         projectsUrl={projectsUrl}
@@ -103,13 +99,11 @@ export function AppRoot({
 }
 
 function App({
-  collapseNavSections,
   enableSiteSearch,
   nav,
   projectsUrl,
   routes
 }: {
-  collapseNavSections?: boolean | undefined;
   enableSiteSearch?: boolean | undefined;
   nav: NavConfig;
   projectsUrl: string | false;
@@ -244,7 +238,7 @@ function App({
               >
                 {/* Sticks below the header (h-15) while the page scrolls */}
                 <div className="sticky top-0 h-[calc(100dvh-3.75rem)]">
-                  <Nav collapseSections={collapseNavSections} nav={nav} />
+                  <Nav nav={nav} />
                 </div>
               </section>
               <main

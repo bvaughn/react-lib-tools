@@ -1,7 +1,7 @@
 [
   {
     "path": "/",
-    "text": "sample-lib is a fictional component library used to develop and test react-lib-tools. Start with the Counter component. Installation Begin by installing the library from NPM: npm install sample-lib TypeScript definitions are included within the published dist folder. Support Here are some ways to support this project: Become a GitHub sponsor Buy me a coffee",
+    "text": "sample-lib is a fictional component library used to develop and test react-lib-tools. Start with the Counter component. Installation Begin by installing the library from NPM: TypeScript definitions are included within the published dist folder. Support Here are some ways to support this project: Become a GitHub sponsor Buy me a coffee",
     "title": "Getting started with sample-lib"
   },
   {
@@ -9,12 +9,12 @@
       {
         "id": "theming",
         "title": "Theming",
-        "text": "Theming Badges accept a className for additional styles: .my-badge {\n border: 1px solid currentColor;\n letter-spacing: 0.05em;\n text-transform: uppercase;\n}"
+        "text": "Theming Badges accept a className for additional styles:"
       }
     ],
     "path": "/badge",
     "section": "Badge",
-    "text": "Use the intent prop to change the color of a badge: import { Badge } from \"sample-lib\";\n \nfunction BadgeIntentsExample() {\n return (\n <>\n <Badge>Neutral</Badge>\n <Badge intent=\"success\">Success</Badge>\n <Badge intent=\"warning\">Warning</Badge>\n <Badge intent=\"danger\">Danger</Badge>\n </>\n );\n}",
+    "text": "Use the intent prop to change the color of a badge:",
     "title": "Intents"
   },
   {
@@ -22,17 +22,17 @@
       {
         "id": "children",
         "title": "children",
-        "text": "children?: ReactNode Text to display."
+        "text": "Text to display."
       },
       {
         "id": "className",
         "title": "className",
-        "text": "className?: string Class name applied to the badge."
+        "text": "Class name applied to the badge."
       },
       {
         "id": "intent",
         "title": "intent",
-        "text": "intent?: \"danger\" | \"neutral\" | \"success\" | \"warning\" = \"neutral\" Controls the color of the badge."
+        "text": "Controls the color of the badge."
       }
     ],
     "path": "/badge/props",
@@ -50,7 +50,7 @@
       {
         "id": "custom-badge-styles",
         "title": "Can I customize how badges look?",
-        "text": "Can I customize how badges look? Yes. Pass a className and style it with CSS: .my-badge {\n border: 1px solid currentColor;\n letter-spacing: 0.05em;\n text-transform: uppercase;\n}"
+        "text": "Can I customize how badges look? Yes. Pass a className and style it with CSS:"
       }
     ],
     "path": "/common-questions",
@@ -60,7 +60,7 @@
   {
     "path": "/counter",
     "section": "Counter",
-    "text": "A Counter displays a number along with buttons to change it. The min and max props limit the range of allowed values: import { Counter } from \"sample-lib\";\n \nfunction CounterBasicExample() {\n return (\n <Counter\n initialValue={0}\n max={10}\n min={0}\n />\n );\n} The value can also be changed programmatically using the imperative handle.",
+    "text": "A Counter displays a number along with buttons to change it. The min and max props limit the range of allowed values: The value can also be changed programmatically using the imperative handle.",
     "title": "Basic usage"
   },
   {
@@ -68,22 +68,17 @@
       {
         "id": "getValue",
         "title": "getValue",
-        "text": "getValue Returns the current value.\n getValue(): number;"
+        "text": "getValue Returns the current value."
       },
       {
         "id": "reset",
         "title": "reset",
-        "text": "reset Restores the counter to its initial value.\n reset(): void;"
+        "text": "reset Restores the counter to its initial value."
       },
       {
         "id": "setValue",
         "title": "setValue",
-        "text": "setValue Sets the current value.\n \n value New value; clamped to the min and max props\n\n setValue(value: number): void;"
-      },
-      {
-        "id": "example",
-        "title": "Example",
-        "text": "Example import { useRef } from \"react\";\nimport { Counter, type CounterImperativeHandle } from \"sample-lib\";\n \nfunction CounterImperativeHandleExample() {\n const counterRef = useRef<CounterImperativeHandle>(null);\n \n return (\n <>\n <Counter counterRef={counterRef} initialValue={5} />\n <Button onClick={() => counterRef.current?.reset()}>Reset</Button>\n </>\n );\n}"
+        "text": "setValue Sets the current value.\n \n value New value; clamped to the min and max props"
       }
     ],
     "path": "/counter/imperative-handle",
@@ -96,52 +91,52 @@
       {
         "id": "initialValue",
         "title": "initialValue",
-        "text": "initialValue: number Value displayed when the counter first renders."
+        "text": "Value displayed when the counter first renders."
       },
       {
         "id": "className",
         "title": "className",
-        "text": "className?: string Class name applied to the outer element."
+        "text": "Class name applied to the outer element."
       },
       {
         "id": "counterRef",
         "title": "counterRef",
-        "text": "counterRef?: Ref<CounterImperativeHandle> Ref to the counter's imperative API."
+        "text": "Ref to the counter's imperative API."
       },
       {
         "id": "label",
         "title": "label",
-        "text": "label?: string = \"Count\" Accessible label displayed before the value."
+        "text": "Accessible label displayed before the value."
       },
       {
         "id": "max",
         "title": "max",
-        "text": "max?: number Largest allowed value.\n Values above this are clamped without warning."
+        "text": "Largest allowed value.\n Values above this are clamped without warning."
       },
       {
         "id": "min",
         "title": "min",
-        "text": "min?: number Smallest allowed value."
+        "text": "Smallest allowed value."
       },
       {
         "id": "onChange",
         "title": "onChange",
-        "text": "onChange?: ((value: number) => void) Called with the new value whenever it changes.\n <Counter initialValue={0} onChange={(value) => console.log(value)} />"
+        "text": "Called with the new value whenever it changes."
       },
       {
         "id": "size",
         "title": "size",
-        "text": "size?: \"small\" | \"medium\" | \"large\" = \"medium\" Controls the size of the buttons and text."
+        "text": "Controls the size of the buttons and text."
       },
       {
         "id": "step",
         "title": "step",
-        "text": "step?: number = 1 Amount the value changes by each time a button is pressed."
+        "text": "Amount the value changes by each time a button is pressed."
       },
       {
         "id": "title",
         "title": "title",
-        "text": "title?: string This prop has been deprecated. Use the label prop instead."
+        "text": "This prop has been deprecated. Use the label prop instead."
       }
     ],
     "path": "/counter/props",

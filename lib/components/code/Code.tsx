@@ -5,6 +5,8 @@ import { cn } from "../../utils/cn";
 /**
  * Syntax highlighted code block.
  * `html` comes from `compileExamples` (or `compileDocs`); it's rendered as-is, so it must be trusted.
+ * Its content is excluded from the search index (it's marked `data-search-ignore`), so that searches match prose
+ * rather than code (e.g. class names in examples).
  */
 export function Code({
   className = "",
@@ -39,7 +41,7 @@ export function Code({
   };
 
   return (
-    <div className="group relative">
+    <div className="group relative" data-search-ignore>
       <code
         className={cn(
           "text-sm md:text-base block text-left whitespace-pre-wrap break-normal text-ink! rounded-lg p-3 bg-code-background border border-ink/10",

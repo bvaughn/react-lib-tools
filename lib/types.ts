@@ -76,9 +76,15 @@ export type NavLinkConfig<Path extends string = string> = {
   title: string;
 };
 
-/** A titled, collapsible group of links in the site navigation */
-export type NavSectionConfig<Path extends string = string> = {
+/** A titled group of links within a nav section (e.g. "Guides" or "Components"); collapsed unless it contains the current page */
+export type NavGroupConfig<Path extends string = string> = {
   links: NavLinkConfig<Path>[];
+  title: string;
+};
+
+/** A titled group of links in the site navigation; collapsed unless it contains the current page */
+export type NavSectionConfig<Path extends string = string> = {
+  links: Array<NavGroupConfig<Path> | NavLinkConfig<Path>>;
   title: string;
 };
 

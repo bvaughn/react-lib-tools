@@ -86,7 +86,8 @@ export async function crawlPage({
           element.parentElement?.removeChild(element);
         }
 
-        // Pre-convert content inside of <code> blocks (example code) into plain text
+        // Pre-convert content inside of (inline) <code> elements into plain text;
+        // code blocks (the Code component) are marked data-search-ignore and were removed above
         for (const code of main.querySelectorAll("code")) {
           // eslint-disable-next-line no-self-assign
           code.textContent = code.textContent;

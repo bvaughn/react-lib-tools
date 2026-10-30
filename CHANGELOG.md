@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.0.71
+
+- Nav sections can be divided into titled groups (e.g. "Guides" or "Components"): include `{ title, links }` in a section's `links` (new `NavGroupConfig` type). Groups are rendered beneath small headings, their links are slightly indented, and they're included (in order) in the previous/next links and in site search (e.g. "Grids › Components").
+- **Behavior change:** nav sections and groups are now collapsed by default, unless they contain the current page. Like sections, groups can be expanded or collapsed by clicking their headings, and are expanded when navigating to a page in them.
+  - **Action needed** if your site passes the `AppRoot` `collapseNavSections` prop: remove it; it has been removed, since collapsing is now the default.
+- The collapsed caret on nav sections, groups, and the current page's contents now points left (instead of right), and points down when expanded.
+
 ## 0.0.70
 
 - **Light theme:** docs sites now follow the system's light or dark preference (previously they were always dark). The dark theme is unchanged.
