@@ -18,7 +18,7 @@ export function NavLink<Path extends string = DefaultPath>({
       {({ isActive, isPending }) => (
         <NavButton
           className={cn(
-            "px-4 cursor-pointer",
+            "px-4 max-md:min-h-10 max-md:text-lg cursor-pointer",
             "active:animate-pulse",
             {
               "[-webkit-text-stroke:0.5px_currentColor] text-nav-active hover:text-nav-hover":

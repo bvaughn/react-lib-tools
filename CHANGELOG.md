@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.74
+
+- Larger nav text on small screens (below 768px, where the nav opens as a full-screen menu): links, section headings, and group headings are each a size larger, with taller rows that are easier to tap.
+
 ## 0.0.73
 
 - `compileDocs` accepts a `componentsPath` option: the directory containing the components named by `componentNames` (default `["lib", "components"]`), for libraries that organize components elsewhere (e.g. `lib/flex/components` and `lib/grid/components`; pass `["lib"]` to search all of `lib`).

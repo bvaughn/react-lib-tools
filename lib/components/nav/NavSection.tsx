@@ -40,13 +40,15 @@ export function NavSection({
         data-open={isOpen || undefined}
         onClick={() => setIsOpen(!isOpen)}
       >
-        <NavButton className={cn(variant === "group" && "min-h-7 py-1")}>
+        <NavButton
+          className={cn(variant === "group" && "min-h-7 max-md:min-h-9 py-1")}
+        >
           <div
             className={cn(
               "uppercase text-ink/50",
               variant === "group"
-                ? "text-xs font-semibold tracking-wide"
-                : "text-sm font-bold"
+                ? "text-xs max-md:text-sm font-semibold tracking-wide"
+                : "text-sm max-md:text-base font-bold"
             )}
           >
             {label}
@@ -55,7 +57,9 @@ export function NavSection({
           <ChevronRightIcon
             className={cn(
               "fill-ink/60 group-data-hover:fill-ink/50 transition-transform! duration-250! motion-reduce:transition-none! group-data-open:rotate-90",
-              variant === "group" ? "size-3.5" : "size-4"
+              variant === "group"
+                ? "size-3.5 max-md:size-4"
+                : "size-4 max-md:size-5"
             )}
           />
         </NavButton>
