@@ -1,95 +1,33 @@
-import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
-import { useLocation } from "react-router-dom";
-import { useLibraryContext } from "../../hooks/useLibraryContext";
+import { useEffect, useRef, type MouseEvent } from "react";
 import { cn } from "../../utils/cn";
-import { getHashId } from "../../utils/getHashId";
-import { scrollToAnchor } from "../../utils/scrollToAnchor";
-import { MIN_PAGE_ENTRIES, type PageEntry } from "./usePageEntries";
-
-const SCROLL_KEYS = new Set([
-  " ",
-  "ArrowDown",
-  "ArrowUp",
-  "End",
-  "Home",
-  "PageDown",
-  "PageUp"
-]);
-
-/** How far below the top of the scroll container a heading can be and still count as "current" */
-const ACTIVE_OFFSET = 48;
+import type { PageContentsState } from "./usePageContents";
+import { MIN_PAGE_ENTRIES } from "./usePageEntries";
 
 /**
- * "On this page" contents list, built from elements in the main content marked with data-toc (see usePageEntries).
- * Rendered in the sidebar beneath the current page's link.
+ * "On this page" contents list.
+ * The list scrolls itself (when given a max height), keeping the current entry visible.
  */
-export function PageContents({ entries }: { entries: PageEntry[] }) {
-  const { hash, key, pathname } = useLocation();
-  const { isNavVisible, setIsNavVisible } = useLibraryContext();
-  const [pinnedId, setPinnedId] = usePinnedId(getHashId(hash), key);
-  // Top-level entries with nested entries (e.g. props under "Required props") become labels
-  // so the sidebar doesn't nest three levels deep
-  const labelIds = useMemo(
-    () =>
-      new Set(
-        entries
-          .filter(
-            ({ level }, index) => level === 1 && entries[index + 1]?.level === 2
-          )
-          .map(({ id }) => id)
-      ),
-    [entries]
-  );
-  const linkEntries = useMemo(
-    () => entries.filter(({ id }) => !labelIds.has(id)),
-    [entries, labelIds]
-  );
-
-  const scrolledId = useActiveId(linkEntries);
-  const activeId = entries.some(({ id }) => id === pinnedId)
-    ? pinnedId
-    : scrolledId;
+export function PageContents({
+  className,
+  contents: { activeId, entries, labelIds, select }
+}: {
+  className?: string | undefined;
+  contents: PageContentsState;
+}) {
   const activeRef = useRef<HTMLAnchorElement>(null);
-
   const navRef = useRef<HTMLElement>(null);
-  const positionedPathnameRef = useRef<string | null>(null);
 
-  // Keep the highlighted entry visible within the (separately scrolling) sidebar
+  // Keep the highlighted entry visible within the list
   useEffect(() => {
-    const nav = navRef.current;
-    const container = nav?.closest<HTMLElement>("[data-sidebar-scroller]");
-    if (!nav || !container) {
+    const container = navRef.current;
+    const element = activeRef.current;
+    if (!container || !element) {
       return;
     }
 
-    // On small screens the sidebar is hidden (display:none) while content is showing;
-    // nothing can be measured or scrolled, so wait until it's opened
+    // Hidden (display:none) at this screen size; nothing can be measured or scrolled
     const containerRect = container.getBoundingClientRect();
     if (containerRect.height === 0) {
-      return;
-    }
-
-    // When a page first opens, show its link near the top of the sidebar (followed by its contents),
-    // unless the link and its contents are already fully visible
-    if (positionedPathnameRef.current !== pathname) {
-      positionedPathnameRef.current = pathname;
-
-      const link =
-        nav.closest("[data-current-page]")?.querySelector("[data-nav-link]") ??
-        nav;
-      const linkRect = link.getBoundingClientRect();
-      const navRect = nav.getBoundingClientRect();
-      if (
-        linkRect.top < containerRect.top ||
-        navRect.bottom > containerRect.bottom
-      ) {
-        container.scrollTop += linkRect.top - containerRect.top - 8;
-      }
-      return;
-    }
-
-    const element = activeRef.current;
-    if (!element) {
       return;
     }
 
@@ -99,7 +37,7 @@ export function PageContents({ entries }: { entries: PageEntry[] }) {
     } else if (elementRect.bottom > containerRect.bottom) {
       container.scrollTop += elementRect.bottom - containerRect.bottom + 8;
     }
-  }, [activeId, entries.length, isNavVisible, pathname]);
+  }, [activeId, entries.length]);
 
   if (entries.length < MIN_PAGE_ENTRIES) {
     return null;
@@ -118,27 +56,17 @@ export function PageContents({ entries }: { entries: PageEntry[] }) {
     }
 
     event.preventDefault();
-
-    setPinnedId(id);
-
-    // On mobile the sidebar replaces the content; close it first and scroll once content is visible
-    setIsNavVisible(false);
-    requestAnimationFrame(() => {
-      scrollToAnchor(id, { smooth: true });
-    });
-
-    // Update the URL (for sharing) without triggering a route change
-    history.replaceState(history.state, "", `#${encodeURIComponent(id)}`);
+    select(id);
   };
 
   return (
     <nav
       aria-label="On this page"
       ref={navRef}
-      className="ml-4 mb-1 border-l border-ink/10"
+      className={cn("overflow-y-auto overscroll-contain", className)}
       data-search-ignore
     >
-      <ul>
+      <ul className="border-l border-ink/10">
         {entries.map(({ id, title }) =>
           labelIds.has(id) ? (
             <li
@@ -169,118 +97,4 @@ export function PageContents({ entries }: { entries: PageEntry[] }) {
       </ul>
     </nav>
   );
-}
-
-function getScroller() {
-  return document.querySelector<HTMLElement>("[data-app-scroller]");
-}
-
-/**
- * After jumping to an entry (via click or URL hash), highlight it until the user scrolls themselves;
- * otherwise an entry near the bottom of the page would lose its highlight to the last entry.
- */
-function usePinnedId(initialId: string | undefined, locationKey: string) {
-  const [pinnedId, setPinnedId] = useState(initialId);
-
-  // Re-pin on every navigation, including to the current URL
-  useEffect(() => {
-    setPinnedId(initialId);
-  }, [initialId, locationKey]);
-
-  useEffect(() => {
-    if (pinnedId === undefined) {
-      return;
-    }
-
-    // Only input that scrolls the page releases the pin;
-    // e.g. pressing a link (including another contents entry) should not
-    const unpin = () => setPinnedId(undefined);
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (SCROLL_KEYS.has(event.key)) {
-        unpin();
-      }
-    };
-    const onMouseDown = (event: globalThis.MouseEvent) => {
-      // Pressing on the scroll container itself (rather than its content) means grabbing its scrollbar
-      if (event.target === getScroller()) {
-        unpin();
-      }
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    window.addEventListener("mousedown", onMouseDown);
-    window.addEventListener("touchmove", unpin, { passive: true });
-    window.addEventListener("wheel", unpin, { passive: true });
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener("mousedown", onMouseDown);
-      window.removeEventListener("touchmove", unpin);
-      window.removeEventListener("wheel", unpin);
-    };
-  }, [pinnedId]);
-
-  return [pinnedId, setPinnedId] as const;
-}
-
-function useActiveId(entries: PageEntry[]) {
-  const [activeId, setActiveId] = useState<string | undefined>(undefined);
-
-  useEffect(() => {
-    const scroller = getScroller();
-    if (!scroller || entries.length === 0) {
-      setActiveId(undefined);
-      return;
-    }
-
-    const update = () => {
-      const scrollerRect = scroller.getBoundingClientRect();
-
-      // Headings near the end of the page may never scroll up to the top, so over the last
-      // screenful of scrolling the threshold slides down to the bottom of the viewport;
-      // that way the remaining entries activate one at a time rather than all at once
-      const maxScrollTop = scroller.scrollHeight - scrollerRect.height;
-      const rampDistance = Math.min(scrollerRect.height, maxScrollTop);
-      const remaining = maxScrollTop - scroller.scrollTop;
-      const progress =
-        rampDistance > 0
-          ? Math.min(1, Math.max(0, 1 - remaining / rampDistance))
-          : 0;
-
-      const threshold =
-        scrollerRect.top +
-        ACTIVE_OFFSET +
-        progress * (scrollerRect.height - ACTIVE_OFFSET - 1);
-
-      let current = entries[0].id;
-      for (const { id } of entries) {
-        const element = document.getElementById(id);
-        if (element && element.getBoundingClientRect().top <= threshold) {
-          current = id;
-        } else if (element) {
-          break;
-        }
-      }
-      setActiveId(current);
-    };
-
-    let frame = 0;
-    const onScroll = () => {
-      cancelAnimationFrame(frame);
-      frame = requestAnimationFrame(update);
-    };
-
-    update();
-
-    scroller.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-
-    return () => {
-      cancelAnimationFrame(frame);
-      scroller.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [entries]);
-
-  return activeId;
 }

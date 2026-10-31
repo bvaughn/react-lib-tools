@@ -43,11 +43,16 @@ const nav: NavConfig<Path | DefaultPath> = [
     title: "Counter",
     links: [
       { path: "/counter", title: "Basic usage" },
-      { path: "/counter/props", title: "Counter props" },
       {
-        path: "/counter/imperative-handle",
-        navTitle: "Imperative handle",
-        title: "Imperative handle methods and refs"
+        title: "API",
+        links: [
+          { path: "/counter/props", title: "Counter props" },
+          {
+            path: "/counter/imperative-handle",
+            navTitle: "Imperative handle",
+            title: "Imperative handle methods and refs"
+          }
+        ]
       }
     ]
   },

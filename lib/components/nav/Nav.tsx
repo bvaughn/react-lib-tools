@@ -1,8 +1,4 @@
-import { Transition } from "@headlessui/react";
-import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useId, useState } from "react";
-import { matchPath, useLocation, useMatch } from "react-router-dom";
-import { cn } from "../../utils/cn";
+import { matchPath, useLocation } from "react-router-dom";
 import type {
   NavConfig,
   NavGroupConfig,
@@ -11,9 +7,6 @@ import type {
 } from "../../types";
 import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
-import { PageContents } from "./PageContents";
-import { REVEAL_CLASS_NAME } from "./reveal";
-import { MIN_PAGE_ENTRIES, usePageEntries } from "./usePageEntries";
 
 export function Nav({ nav }: { nav: NavConfig }) {
   const { pathname } = useLocation();
@@ -86,82 +79,14 @@ function NavLinks({ links }: { links: NavLinkConfig[] }) {
 }
 
 function NavItem({ link }: { link: NavLinkConfig }) {
-  const isActive = !!useMatch(link.path);
-
   return (
     <div>
-      {isActive ? (
-        <CurrentPageNavItem link={link} />
-      ) : (
-        <NavLink<string> path={link.path}>
-          {link.navTitle ?? link.title}
-        </NavLink>
-      )}
+      <NavLink<string> path={link.path}>{link.navTitle ?? link.title}</NavLink>
       {link.children && (
         <div className="ml-4 border-l border-ink/10">
           <NavLinks links={link.children} />
         </div>
       )}
-    </div>
-  );
-}
-
-/**
- * The current page's link, followed by its contents list (if it has one).
- * The list is expanded when the page opens; like a section header, clicking the link collapses (or expands) it,
- * e.g. to see the links below a long list.
- */
-function CurrentPageNavItem({ link }: { link: NavLinkConfig }) {
-  const entries = usePageEntries();
-  const [isExpanded, setIsExpanded] = useState(true);
-  const contentsId = useId();
-  const label = link.navTitle ?? link.title;
-
-  if (entries.length < MIN_PAGE_ENTRIES) {
-    return <NavLink<string> path={link.path}>{label}</NavLink>;
-  }
-
-  return (
-    <div data-current-page>
-      <div className="group relative">
-        <NavLink<string>
-          aria-controls={contentsId}
-          aria-expanded={isExpanded}
-          className="pr-10"
-          onClick={(event) => {
-            // Modified clicks (e.g. open in new tab) still navigate
-            if (
-              event.button === 0 &&
-              !event.altKey &&
-              !event.ctrlKey &&
-              !event.metaKey &&
-              !event.shiftKey
-            ) {
-              event.preventDefault();
-              setIsExpanded(!isExpanded);
-            }
-          }}
-          path={link.path}
-        >
-          {label}
-        </NavLink>
-        <ChevronRightIcon
-          aria-hidden
-          className={cn(
-            "absolute top-1/2 right-4 -translate-y-1/2 size-4 pointer-events-none fill-ink/60 group-hover:fill-ink transition-transform! duration-250! motion-reduce:transition-none!",
-            { "rotate-90": isExpanded }
-          )}
-        />
-      </div>
-      <div id={contentsId}>
-        <Transition show={isExpanded}>
-          <div className={REVEAL_CLASS_NAME}>
-            <div className="min-h-0 overflow-hidden">
-              <PageContents entries={entries} />
-            </div>
-          </div>
-        </Transition>
-      </div>
     </div>
   );
 }

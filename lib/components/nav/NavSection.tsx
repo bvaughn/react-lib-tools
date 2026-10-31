@@ -1,10 +1,6 @@
-import {
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel
-} from "@headlessui/react";
+import { Button, Transition } from "@headlessui/react";
 import { ChevronRightIcon } from "@heroicons/react/20/solid";
-import { useState, type PropsWithChildren, type ReactNode } from "react";
+import { useId, useState, type PropsWithChildren, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { NavButton } from "./NavButton";
 import { REVEAL_CLASS_NAME } from "./reveal";
@@ -21,24 +17,29 @@ export function NavSection({
   /** Groups (within a section) have smaller headings and less indented links */
   variant?: "group" | "section";
 }>) {
-  // Disclosure is uncontrolled; remount it with a new key to expand the section when it becomes active.
+  // Expand the section when it becomes active (it animates open only if it was collapsed).
   // Sections aren't collapsed when they become inactive, so the links don't shift under the cursor.
+  const [isOpen, setIsOpen] = useState(isActive);
   const [prevIsActive, setPrevIsActive] = useState(isActive);
-  const [key, setKey] = useState(0);
   if (isActive !== prevIsActive) {
     setPrevIsActive(isActive);
     if (isActive) {
-      setKey(key + 1);
+      setIsOpen(true);
     }
   }
 
+  const panelId = useId();
+  const Container = variant === "group" ? "div" : "section";
+
   return (
-    <Disclosure
-      as={variant === "group" ? "div" : "section"}
-      defaultOpen={isActive}
-      key={key}
-    >
-      <DisclosureButton className="w-full group border-none! data-focus:bg-ink/10">
+    <Container>
+      <Button
+        aria-controls={isOpen ? panelId : undefined}
+        aria-expanded={isOpen}
+        className="w-full group border-none! data-focus:bg-ink/10"
+        data-open={isOpen || undefined}
+        onClick={() => setIsOpen(!isOpen)}
+      >
         <NavButton className={cn(variant === "group" && "min-h-7 py-1")}>
           <div
             className={cn(
@@ -58,17 +59,19 @@ export function NavSection({
             )}
           />
         </NavButton>
-      </DisclosureButton>
-      <DisclosurePanel className={REVEAL_CLASS_NAME} transition>
-        <div
-          className={cn(
-            "min-h-0 overflow-hidden",
-            variant === "group" ? "pl-2" : "pl-4"
-          )}
-        >
-          {children}
+      </Button>
+      <Transition show={isOpen}>
+        <div className={REVEAL_CLASS_NAME} id={panelId}>
+          <div
+            className={cn(
+              "min-h-0 overflow-hidden",
+              variant === "group" ? "pl-2" : "pl-4"
+            )}
+          >
+            {children}
+          </div>
         </div>
-      </DisclosurePanel>
-    </Disclosure>
+      </Transition>
+    </Container>
   );
 }

@@ -122,7 +122,8 @@
   transition: none !important;
 }
 
-main {
+/* Links within page content (not e.g. the "On this page" contents beside it) */
+[data-main-scrollable] {
   [data-link],
   a {
     cursor: pointer;

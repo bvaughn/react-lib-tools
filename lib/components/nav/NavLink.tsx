@@ -1,4 +1,4 @@
-import { type AnchorHTMLAttributes, type PropsWithChildren } from "react";
+import { type PropsWithChildren } from "react";
 import { cn } from "../../utils/cn";
 import type { Path as DefaultPath } from "../app/routes";
 import { Box } from "../Box";
@@ -8,19 +8,13 @@ import { NavButton } from "./NavButton";
 export function NavLink<Path extends string = DefaultPath>({
   children,
   className,
-  path,
-  ...rest
-}: PropsWithChildren<
-  {
-    className?: string | undefined;
-    path: Path;
-  } & Pick<
-    AnchorHTMLAttributes<HTMLAnchorElement>,
-    "aria-controls" | "aria-expanded" | "onClick"
-  >
->) {
+  path
+}: PropsWithChildren<{
+  className?: string | undefined;
+  path: Path;
+}>) {
   return (
-    <Link className="block" data-nav-link to={path} {...rest}>
+    <Link className="block" data-nav-link to={path}>
       {({ isActive, isPending }) => (
         <NavButton
           className={cn(
