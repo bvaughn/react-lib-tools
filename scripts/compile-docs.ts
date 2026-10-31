@@ -18,6 +18,7 @@ import {
 export async function compileDocs({
   analyserOptions: analyserOptionsParam,
   componentNames = [],
+  componentsPath = ["lib", "components"],
   imperativeHandleNames = [],
   outputPath = ["public", "generated", "docs"],
   readmePath = ["README.md"],
@@ -30,9 +31,15 @@ export async function compileDocs({
 
   /**
    * Which components should be compiled?
-   * Each name is matched against files in the `lib/components` directory, e.g. "Button" or "grid/Grid".
+   * Each name is matched against files in the `componentsPath` directory (and its subdirectories), e.g. "Button" or "grid/Grid".
    */
   componentNames?: string[] | undefined;
+
+  /**
+   * Directory containing the components named by `componentNames`.
+   * By default components are found within the `lib/components` directory.
+   */
+  componentsPath?: string[] | undefined;
 
   /**
    * Which imperative handles should be compiled?
@@ -73,6 +80,7 @@ export async function compileDocs({
   await compileComponents({
     compilerOptions,
     componentNames,
+    componentsPath,
     outputPath,
     readmePath,
     rootDir

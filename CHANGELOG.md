@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.73
+
+- `compileDocs` accepts a `componentsPath` option: the directory containing the components named by `componentNames` (default `["lib", "components"]`), for libraries that organize components elsewhere (e.g. `lib/flex/components` and `lib/grid/components`; pass `["lib"]` to search all of `lib`).
+
 ## 0.0.72
 
 - **Behavior change:** "On this page" (the current page's contents) moved out of the sidebar into a column to the right of the page, so opening a page with many headings no longer pushes the rest of the sidebar down. The column stays in view while the page scrolls, and scrolls on its own when the list is long.
@@ -313,7 +317,7 @@ These versions were published in quick succession without individual commits. 0.
 - **Breaking:** Removed the `AppRoot` `hideVersions` prop. The header versions link shows only when the new `versions` prop is passed.
 - New `AppRoot` `versions` prop (`{ [major]: { [fullVersion]: docsUrl } }`) and a default `/versions` route listing previous releases.
 
-0.0.15 and 0.0.17 were never published.
+  0.0.15 and 0.0.17 were never published.
 
 ## 0.0.14
 

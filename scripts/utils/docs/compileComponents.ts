@@ -9,12 +9,14 @@ import { insertPropsMarkdown } from "./insertPropsMarkdown.ts";
 export async function compileComponents({
   compilerOptions,
   componentNames,
+  componentsPath,
   outputPath,
   readmePath,
   rootDir
 }: {
   compilerOptions: Partial<CompilerOptions>;
   componentNames: string[];
+  componentsPath: string[];
   outputPath: string[];
   readmePath: string[] | false;
   rootDir: string;
@@ -36,7 +38,7 @@ export async function compileComponents({
           fileName === `${componentName}.tsx`
       );
     },
-    inputPath: ["lib", "components"],
+    inputPath: componentsPath,
     outputPath,
     rootDir
   });

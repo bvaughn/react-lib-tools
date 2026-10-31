@@ -261,7 +261,7 @@ await compileDocs({
 });
 ```
 
-- Each component name must match a file at `lib/components/**/<name>.tsx`; include a directory (e.g. `"grid/Grid"`) to disambiguate.
+- Each component name must match a file at `lib/components/**/<name>.tsx`; include a directory (e.g. `"grid/Grid"`) to disambiguate. Pass a `componentsPath` option (e.g. `["lib"]`) if your components are organized elsewhere.
 - Each imperative handle name must match an interface declared under `lib/`, and every method needs a comment.
 - Output is written to `public/generated/docs/<name>.json`.
 
