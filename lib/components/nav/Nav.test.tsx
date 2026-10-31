@@ -1,4 +1,4 @@
-import { fireEvent, screen } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { describe, expect, test } from "vitest";
 import { renderWithProviders } from "../../test-utils";
 import type { NavConfig } from "../../types";
@@ -43,7 +43,7 @@ describe("Nav", () => {
     expect(screen.queryByRole("link", { name: "Grid basics" })).toBeNull();
   });
 
-  test("groups can be expanded and collapsed by clicking their headings", () => {
+  test("groups can be expanded and collapsed by clicking their headings", async () => {
     renderWithProviders(<Nav nav={nav} />, { path: "/lists" });
 
     const heading = screen.getByRole("button", { name: "Components" });
@@ -57,7 +57,10 @@ describe("Nav", () => {
 
     fireEvent.click(heading);
     expect(heading).toHaveAttribute("aria-expanded", "false");
-    expect(screen.queryByRole("link", { name: "List" })).toBeNull();
+    // Links are removed once the collapse animation finishes
+    await waitFor(() => {
+      expect(screen.queryByRole("link", { name: "List" })).toBeNull();
+    });
   });
 
   test("expands the section and group containing the current page", () => {

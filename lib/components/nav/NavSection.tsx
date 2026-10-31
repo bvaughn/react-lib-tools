@@ -3,10 +3,11 @@ import {
   DisclosureButton,
   DisclosurePanel
 } from "@headlessui/react";
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useState, type PropsWithChildren, type ReactNode } from "react";
 import { cn } from "../../utils/cn";
 import { NavButton } from "./NavButton";
+import { REVEAL_CLASS_NAME } from "./reveal";
 
 export function NavSection({
   children,
@@ -50,16 +51,23 @@ export function NavSection({
             {label}
           </div>
           <div className="grow" />
-          <ChevronLeftIcon
+          <ChevronRightIcon
             className={cn(
-              "fill-ink/60 group-data-hover:fill-ink/50 group-data-open:-rotate-90",
+              "fill-ink/60 group-data-hover:fill-ink/50 transition-transform! duration-250! motion-reduce:transition-none! group-data-open:rotate-90",
               variant === "group" ? "size-3.5" : "size-4"
             )}
           />
         </NavButton>
       </DisclosureButton>
-      <DisclosurePanel className={variant === "group" ? "pl-2" : "pl-4"}>
-        {children}
+      <DisclosurePanel className={REVEAL_CLASS_NAME} transition>
+        <div
+          className={cn(
+            "min-h-0 overflow-hidden",
+            variant === "group" ? "pl-2" : "pl-4"
+          )}
+        >
+          {children}
+        </div>
       </DisclosurePanel>
     </Disclosure>
   );

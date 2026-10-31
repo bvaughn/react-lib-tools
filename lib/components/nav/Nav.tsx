@@ -1,4 +1,5 @@
-import { ChevronLeftIcon } from "@heroicons/react/20/solid";
+import { Transition } from "@headlessui/react";
+import { ChevronRightIcon } from "@heroicons/react/20/solid";
 import { useId, useState } from "react";
 import { matchPath, useLocation, useMatch } from "react-router-dom";
 import { cn } from "../../utils/cn";
@@ -11,6 +12,7 @@ import type {
 import { NavLink } from "./NavLink";
 import { NavSection } from "./NavSection";
 import { PageContents } from "./PageContents";
+import { REVEAL_CLASS_NAME } from "./reveal";
 import { MIN_PAGE_ENTRIES, usePageEntries } from "./usePageEntries";
 
 export function Nav({ nav }: { nav: NavConfig }) {
@@ -143,16 +145,22 @@ function CurrentPageNavItem({ link }: { link: NavLinkConfig }) {
         >
           {label}
         </NavLink>
-        <ChevronLeftIcon
+        <ChevronRightIcon
           aria-hidden
           className={cn(
-            "absolute top-1/2 right-4 -translate-y-1/2 size-4 pointer-events-none fill-ink/60 group-hover:fill-ink",
-            { "-rotate-90": isExpanded }
+            "absolute top-1/2 right-4 -translate-y-1/2 size-4 pointer-events-none fill-ink/60 group-hover:fill-ink transition-transform! duration-250! motion-reduce:transition-none!",
+            { "rotate-90": isExpanded }
           )}
         />
       </div>
       <div id={contentsId}>
-        {isExpanded && <PageContents entries={entries} />}
+        <Transition show={isExpanded}>
+          <div className={REVEAL_CLASS_NAME}>
+            <div className="min-h-0 overflow-hidden">
+              <PageContents entries={entries} />
+            </div>
+          </div>
+        </Transition>
       </div>
     </div>
   );

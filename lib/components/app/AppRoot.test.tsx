@@ -351,9 +351,12 @@ describe("AppRoot", () => {
 
       fireEvent.click(toggle);
       expect(toggle).toHaveAttribute("aria-expanded", "false");
-      expect(
-        within(getSidebar()).queryByRole("link", { name: "First heading" })
-      ).toBeNull();
+      // Contents are removed once the collapse animation finishes
+      await waitFor(() => {
+        expect(
+          within(getSidebar()).queryByRole("link", { name: "First heading" })
+        ).toBeNull();
+      });
 
       // It's still a link to the page (e.g. for opening in a new tab)
       expect(toggle).toHaveAttribute("href", "/advanced");
