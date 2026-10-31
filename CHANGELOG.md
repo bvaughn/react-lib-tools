@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.0.71
+## 0.0.72
+
+- **Behavior change:** "On this page" (the current page's contents) moved out of the sidebar into a column to the right of the page, so opening a page with many headings no longer pushes the rest of the sidebar down. The column stays in view while the page scrolls, and scrolls on its own when the list is long.
+  - It's shown only on wide screens (1280px and up); smaller screens no longer show the page's contents.
+  - The current page's sidebar link is a plain link again; clicking it no longer collapses or expands the contents.
+- The collapsed caret on nav sections and groups points right again (rather than left), and turns to point down when expanded.
+- Expanding or collapsing a nav section or group animates its caret and contents, unless reduced motion is preferred.
 
 - Nav sections can be divided into titled groups (e.g. "Guides" or "Components"): include `{ title, links }` in a section's `links` (new `NavGroupConfig` type). Groups are rendered beneath small headings, their links are slightly indented, and they're included (in order) in the previous/next links and in site search (e.g. "Grids › Components").
 - **Behavior change:** nav sections and groups are now collapsed by default, unless they contain the current page. Like sections, groups can be expanded or collapsed by clicking their headings, and are expanded when navigating to a page in them.

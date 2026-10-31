@@ -85,6 +85,7 @@ export function PageContents({
                     ? "border-nav-active text-ink"
                     : "border-transparent text-ink/60 hover:text-ink"
                 )}
+                data-contents-link
                 href={`#${encodeURIComponent(id)}`}
                 onClick={(event) => onClick(event, id)}
                 ref={id === activeId ? activeRef : undefined}

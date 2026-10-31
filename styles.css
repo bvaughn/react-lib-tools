@@ -139,7 +139,8 @@ a[href]:focus-visible {
   outline-offset: 2px;
   border-radius: 0.25rem;
 
-  /* Inset so the sidebar's scroll container doesn't clip it */
+  /* Inset so the sidebar's (and the "On this page" list's) scroll container doesn't clip it */
+  &[data-contents-link],
   &[data-nav-link] {
     outline-offset: -2px;
     border-radius: 0;
