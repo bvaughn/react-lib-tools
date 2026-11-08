@@ -20,7 +20,7 @@ export { ComponentPropsSection } from "./components/props/ComponentPropsSection"
 export { Radio } from "./components/Radio";
 export { SectionHeader } from "./components/SectionHeader";
 export { Select } from "./components/Select";
-export { Tooltip } from "./components/Tooltip";
+export { TitleTooltip } from "./components/app/components/TitleTooltip";
 
 export { assert } from "./utils/assert";
 export { cn } from "./utils/cn";

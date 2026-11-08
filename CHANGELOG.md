@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.0.75
+
+- **Breaking change:** the `Tooltip` component has been removed. Use a `title` attribute instead.
+  - **Action needed** if your site uses `Tooltip`: replace `<Tooltip content="…">{children}</Tooltip>` with a `title="…"` on the element (or a wrapper element). Tooltip content is now plain text; lines can be separated with newlines.
+- `title` attributes are now shown in a styled tooltip as soon as they're hovered, instead of the browser's (slow and small) native tooltip. This applies to any element within `AppRoot` with a `title`, including the header's icons.
+  - Tooltips have a small tail pointing at the hovered element.
+  - Tooltips are shown above everything else on the page (including dialogs), like native tooltips, and are hidden on click or Escape. They aren't shown for touch.
+- New exported `TitleTooltip` component, for pages rendered outside of `AppRoot`: render it once to show `title`s the same way.
+
 ## 0.0.74
 
 - Larger nav text on small screens (below 768px, where the nav opens as a full-screen menu): links, section headings, and group headings are each a size larger, with taller rows that are easier to tap.

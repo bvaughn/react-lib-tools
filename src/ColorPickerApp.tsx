@@ -1,3 +1,4 @@
+import { TitleTooltip } from "react-lib-tools";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import ColorPickerRoute from "./routes/ColorPickerRoute.tsx";
 
@@ -10,6 +11,7 @@ export default function ColorPickerApp() {
       <Routes>
         <Route path="/color-picker" element={<ColorPickerRoute />} />
       </Routes>
+      <TitleTooltip />
     </BrowserRouter>
   );
 }

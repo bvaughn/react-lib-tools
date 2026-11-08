@@ -2,10 +2,10 @@ import {
   Textarea as HeadlessTextarea,
   type TextareaProps
 } from "@headlessui/react";
-import { cn, Tooltip } from "react-lib-tools";
+import { cn } from "react-lib-tools";
 
-export function Textarea({ className, title, ...rest }: TextareaProps) {
-  let children = (
+export function Textarea({ className, ...rest }: TextareaProps) {
+  return (
     <HeadlessTextarea
       {...rest}
       className={cn(
@@ -15,10 +15,4 @@ export function Textarea({ className, title, ...rest }: TextareaProps) {
       )}
     />
   );
-
-  if (title) {
-    children = <Tooltip content={title}>{children}</Tooltip>;
-  }
-
-  return children;
 }

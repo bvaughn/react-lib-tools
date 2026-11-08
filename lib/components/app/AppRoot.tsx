@@ -36,6 +36,7 @@ import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { ProjectSwitcher } from "./projects/ProjectSwitcher";
 import { routes as defaultRoutes } from "./routes";
 import { SiteSearchModal } from "./search/SiteSearchModal";
+import { TitleTooltip } from "./components/TitleTooltip";
 
 /** Shared by every docs site, so adding a project doesn't require updating each of them */
 const defaultProjectsUrl = "https://react-lib-tools.vercel.app/projects.json";
@@ -291,6 +292,7 @@ function App({
       </div>
 
       {enableSiteSearch && <SiteSearchModal flatNav={flatNav} />}
+      <TitleTooltip />
     </BrowserRouter>
   );
 }

@@ -1,16 +1,15 @@
 import { Input as HeadlessInput, type InputProps } from "@headlessui/react";
 import type { RefObject } from "react";
-import { cn, Tooltip } from "react-lib-tools";
+import { cn } from "react-lib-tools";
 
 export function Input({
   className,
   inputRef,
-  title,
   ...rest
 }: InputProps & {
   inputRef?: RefObject<HTMLInputElement | null> | undefined;
 }) {
-  let children = (
+  return (
     <HeadlessInput
       {...rest}
       className={cn(
@@ -21,12 +20,6 @@ export function Input({
       ref={inputRef ?? noopRef}
     />
   );
-
-  if (title) {
-    children = <Tooltip content={title}>{children}</Tooltip>;
-  }
-
-  return children;
 }
 
 const noopRef = { current: null };

@@ -1,45 +1,43 @@
 import { type PropsWithChildren } from "react";
-import { Tooltip } from "react-lib-tools";
 import { height, width } from "./constants";
 
 export function DownloadableSvg({ children }: PropsWithChildren) {
   return (
-    <Tooltip content="Left-click to download og.png; right-click to download og.svg">
-      <div
-        className="cursor-pointer"
-        onClick={async (event) => {
-          event.preventDefault();
+    <div
+      className="cursor-pointer"
+      title="Left-click to download og.png; right-click to download og.svg"
+      onClick={async (event) => {
+        event.preventDefault();
 
-          const dataUrl = getSvgDataUrl(event.target);
+        const dataUrl = getSvgDataUrl(event.target);
 
-          const image = new Image();
+        const image = new Image();
 
-          await new Promise((resolve, reject) => {
-            image.onload = resolve;
-            image.onerror = reject;
-            image.src = dataUrl;
-          });
+        await new Promise((resolve, reject) => {
+          image.onload = resolve;
+          image.onerror = reject;
+          image.src = dataUrl;
+        });
 
-          const canvas = document.createElement("canvas");
-          canvas.width = width;
-          canvas.height = height;
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
 
-          const context = canvas.getContext("2d") as CanvasRenderingContext2D;
-          context.drawImage(image, 0, 0, width, height);
+        const context = canvas.getContext("2d") as CanvasRenderingContext2D;
+        context.drawImage(image, 0, 0, width, height);
 
-          downloadAsFile("og.png", canvas.toDataURL("image/png"));
-        }}
-        onContextMenu={async (event) => {
-          event.preventDefault();
+        downloadAsFile("og.png", canvas.toDataURL("image/png"));
+      }}
+      onContextMenu={async (event) => {
+        event.preventDefault();
 
-          const dataUrl = getSvgDataUrl(event.target);
+        const dataUrl = getSvgDataUrl(event.target);
 
-          downloadAsFile("og.svg", dataUrl);
-        }}
-      >
-        {children}
-      </div>
-    </Tooltip>
+        downloadAsFile("og.svg", dataUrl);
+      }}
+    >
+      {children}
+    </div>
   );
 }
 

@@ -135,6 +135,8 @@ Pages are ordinary React components. This package exports components for the com
 | `Box`, `Block`                                   | Layout helpers (a flex container, and a bordered block for live demos).                                   |
 | `Button`, `Checkbox`, `Input`, `Radio`, `Select` | Form controls for interactive demos.                                                                      |
 
+For a tooltip, add a `title` attribute to any element: within `AppRoot`, titles are shown in a styled tooltip as soon as they're hovered, rather than in the browser's (slow and small) native one. Pages rendered outside of `AppRoot` can render `TitleTooltip` (once) to get the same tooltips.
+
 Use `Link` rather than `react-router-dom` for links between pages. React Router is bundled into this package, so your own copy of `react-router-dom` won't be connected to `AppRoot`'s router.
 
 A props page can be as small as this:

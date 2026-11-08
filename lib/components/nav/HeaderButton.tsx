@@ -1,5 +1,4 @@
 import type { MouseEvent, PropsWithChildren } from "react";
-import { Tooltip } from "../Tooltip";
 import { cn } from "../../utils/cn";
 
 export function HeaderButton({
@@ -16,14 +15,13 @@ export function HeaderButton({
   title: string;
 }>) {
   return (
-    <Tooltip className={className} content={title}>
-      <button
-        aria-label={ariaLabel || title}
-        className={cn("cursor-pointer text-header-icons", className)}
-        onClick={onClick}
-      >
-        {children}
-      </button>
-    </Tooltip>
+    <button
+      aria-label={ariaLabel || title}
+      className={cn("cursor-pointer text-header-icons", className)}
+      onClick={onClick}
+      title={title}
+    >
+      {children}
+    </button>
   );
 }

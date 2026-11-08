@@ -1,8 +1,8 @@
 import { Button as HeadlessButton, type ButtonProps } from "@headlessui/react";
-import { cn, Tooltip } from "react-lib-tools";
+import { cn } from "react-lib-tools";
 
-export function Button({ className, title, ...rest }: ButtonProps) {
-  let children = (
+export function Button({ className, ...rest }: ButtonProps) {
+  return (
     <HeadlessButton
       {...rest}
       className={cn(
@@ -13,10 +13,4 @@ export function Button({ className, title, ...rest }: ButtonProps) {
       )}
     />
   );
-
-  if (title) {
-    children = <Tooltip content={title}>{children}</Tooltip>;
-  }
-
-  return children;
 }

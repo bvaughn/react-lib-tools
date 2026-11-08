@@ -1,9 +1,9 @@
 import { Switch as HeadlessSwitch, type SwitchProps } from "@headlessui/react";
-import { cn, Tooltip } from "react-lib-tools";
+import { cn } from "react-lib-tools";
 
 export function Switch({ className, title, ...rest }: SwitchProps) {
-  let children = (
-    <div className={cn("h-fit", className)}>
+  return (
+    <div className={cn("h-fit", className)} title={title}>
       <HeadlessSwitch
         {...rest}
         className={cn(
@@ -22,10 +22,4 @@ export function Switch({ className, title, ...rest }: SwitchProps) {
       </HeadlessSwitch>
     </div>
   );
-
-  if (title) {
-    children = <Tooltip content={title}>{children}</Tooltip>;
-  }
-
-  return children;
 }
