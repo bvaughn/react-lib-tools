@@ -1,5 +1,5 @@
-import puppeteer from "puppeteer";
 import type { SiteMapPage } from "../../../types";
+import type { TabPool } from "./createTabPool";
 import { scheduleWork } from "./scheduleWork";
 
 /**
@@ -13,44 +13,54 @@ import { scheduleWork } from "./scheduleWork";
  * - the text of each `[data-toc]` heading's section, separately, so sections can be returned as their own results
  */
 export async function crawlPage({
-  chromeExecutablePath,
   filterSelector,
   host,
   path,
-  siteMap
+  siteMap,
+  tabPool
 }: {
-  chromeExecutablePath?: string | undefined;
   filterSelector?: string | undefined;
   host: string;
   path: string;
   siteMap: Record<string, SiteMapPage>;
+  tabPool: TabPool;
 }) {
   console.log(`Crawling ${host}${path} ...`);
 
-  const browser = await puppeteer.launch(
-    chromeExecutablePath
-      ? {
-          args: ["--no-sandbox", "--disable-setuid-sandbox"],
-          executablePath: chromeExecutablePath,
-          headless: true
-        }
-      : {
-          headless: true
-        }
+  const { canNavigateClientSide, page } = await tabPool.acquire();
+
+  // Poll on DOM mutations while waiting; the default (requestAnimationFrame) doesn't run in background tabs
+  if (canNavigateClientSide) {
+    // Navigate client-side (the router listens for "popstate") rather than reloading the app
+    await page.evaluate((path) => {
+      history.pushState(null, "", path);
+      dispatchEvent(new PopStateEvent("popstate"));
+    }, path);
+
+    // The previous page's content remains visible until the next page has rendered (navigation happens in a transition)
+    await page.waitForFunction(
+      (path) =>
+        document.documentElement.getAttribute("data-rendered-path") === path &&
+        document.querySelector("[data-route-loading]") === null,
+      { polling: "mutation" },
+      path
+    );
+  } else {
+    await page.goto(`${host}${path}`);
+
+    // Wait for the page's (lazy loaded) content, not just the app shell
+    await page.waitForFunction(
+      () =>
+        document.querySelector("main") !== null &&
+        document.querySelector("[data-route-loading]") === null,
+      { polling: "mutation" }
+    );
+  }
+
+  // Sites built with older versions of AppRoot don't report rendered routes, so can't be navigated client-side
+  const reportsRenderedRoutes = await page.evaluate(() =>
+    document.documentElement.hasAttribute("data-rendered-path")
   );
-
-  const page = await browser.newPage();
-
-  // Navigate the page to a URL.
-  await page.goto(`${host}${path}`);
-  // Wait for the page's (lazy loaded) content, not just the app shell
-  await page.waitForFunction(
-    () =>
-      document.querySelector("main") !== null &&
-      document.querySelector("[data-route-loading]") === null
-  );
-
-  page.on("console", (event) => console.log(event.text()));
 
   const result = await page.evaluate(
     async ([HTML_ENTITIES, HEADING_MARKER, filterSelector]) => {
@@ -62,15 +72,16 @@ export async function crawlPage({
         }
       }
 
-      const sectionElement = document.body.querySelector(
-        "header [data-section]"
-      );
+      // Work on a copy of the page so that React's DOM is left intact for the next (client-side) navigation
+      const body = document.body.cloneNode(true) as HTMLElement;
+
+      const sectionElement = body.querySelector("header [data-section]");
       if (sectionElement) {
         sectionElement.parentElement?.removeChild(sectionElement);
       }
       const section = sectionElement?.textContent || undefined;
 
-      const titleElement = document.body.querySelector("header [data-title]");
+      const titleElement = body.querySelector("header [data-title]");
       if (titleElement) {
         titleElement.parentElement?.removeChild(titleElement);
       }
@@ -79,7 +90,7 @@ export async function crawlPage({
       let text = "";
       const headings: { id: string; title: string }[] = [];
 
-      const main = document.body.querySelector("[data-main-scrollable]");
+      const main = body.querySelector("[data-main-scrollable]");
       if (main) {
         // Remove site chrome that shouldn't be indexed (e.g. previous/next page links)
         for (const element of main.querySelectorAll("[data-search-ignore]")) {
@@ -116,7 +127,7 @@ export async function crawlPage({
 
         // Filter out special content (e.g. lorem ipsum type text)
         if (filterSelector) {
-          const matches = document.querySelectorAll(filterSelector);
+          const matches = body.querySelectorAll(filterSelector);
           for (const match of matches) {
             text = text.replace(match.outerHTML, "");
           }
@@ -176,17 +187,17 @@ export async function crawlPage({
     }
   });
 
-  await browser.close();
+  tabPool.release(page, reportsRenderedRoutes);
 
   scheduleWork(
     ...filteredPaths.map(
       (current) => () =>
         crawlPage({
-          chromeExecutablePath,
           filterSelector,
           host,
           path: current,
-          siteMap
+          siteMap,
+          tabPool
         })
     )
   );

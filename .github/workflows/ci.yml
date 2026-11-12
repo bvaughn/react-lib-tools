@@ -37,5 +37,14 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      # The search index tests crawl the dev site with Puppeteer
+      - name: Setup Google Chrome
+        if: matrix.name == 'Vitest'
+        uses: browser-actions/setup-chrome@v2
+        id: setup-chrome
+        with:
+          install-dependencies: true
       - name: ${{ matrix.name }}
         run: ${{ matrix.run }}
+        env:
+          CHROME_PATH: ${{ steps.setup-chrome.outputs.chrome-path }}

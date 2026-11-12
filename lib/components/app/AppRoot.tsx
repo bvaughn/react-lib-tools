@@ -32,6 +32,7 @@ import { Nav } from "../nav/Nav";
 import { OnThisPage } from "../nav/OnThisPage";
 import { PageNavigation } from "../nav/PageNavigation";
 import { LibraryContextProvider } from "./components/LibraryContextProvider";
+import { RenderedRouteMarker } from "./components/RenderedRouteMarker";
 import { RouteChangeHandler } from "./components/RouteChangeHandler";
 import { ProjectSwitcher } from "./projects/ProjectSwitcher";
 import { routes as defaultRoutes } from "./routes";
@@ -272,9 +273,12 @@ function App({
                         }).map(([path, Component]) => (
                           <Route
                             element={
-                              <ErrorBoundary key={path}>
-                                <Component />
-                              </ErrorBoundary>
+                              <>
+                                <ErrorBoundary key={path}>
+                                  <Component />
+                                </ErrorBoundary>
+                                <RenderedRouteMarker />
+                              </>
                             }
                             key={path}
                             path={path}

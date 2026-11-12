@@ -1,9 +1,11 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { join, resolve } from "node:path";
 import { cwd } from "node:process";
+import puppeteer from "puppeteer";
 import type { SiteMapPage } from "../types";
 import { getDevServerPort } from "./dev-server.js";
 import { crawlPage } from "./utils/search/crawlPage";
+import { createTabPool } from "./utils/search/createTabPool";
 import { scheduleWork } from "./utils/search/scheduleWork";
 import { waitForConnection } from "./utils/search/waitForConnection";
 
@@ -57,15 +59,33 @@ export async function compileSearchIndex({
     port: url.port ? parseInt(url.port) : url.protocol === "https:" ? 443 : 80
   });
 
-  await scheduleWork(async () =>
-    crawlPage({
-      chromeExecutablePath,
-      filterSelector,
-      host,
-      path: "/",
-      siteMap
-    })
+  const browser = await puppeteer.launch(
+    chromeExecutablePath
+      ? {
+          args: ["--no-sandbox", "--disable-setuid-sandbox"],
+          executablePath: chromeExecutablePath,
+          headless: true
+        }
+      : {
+          headless: true
+        }
   );
+
+  try {
+    const tabPool = createTabPool(browser);
+
+    await scheduleWork(async () =>
+      crawlPage({
+        filterSelector,
+        host,
+        path: "/",
+        siteMap,
+        tabPool
+      })
+    );
+  } finally {
+    await browser.close();
+  }
 
   const outputDir = resolve(rootDir, ...outputPath);
   await mkdir(outputDir, { recursive: true });

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.0.76
+
+- `compileSearchIndex` is much faster (e.g. ~31s to ~6s for an 80+ page site crawled from a dev server). It now uses a single browser, reuses tabs, and navigates between pages client-side instead of reloading the app for each one.
+  - Client-side navigation relies on `AppRoot` reporting when a page has rendered, so it requires a site built with this version of react-lib-tools. Sites built with older versions are still supported, but each page is loaded in full (slower).
+  - When crawling a dev server that uses a linked copy of react-lib-tools, restart it with `vite --force` after updating so it doesn't keep serving a stale pre-bundled copy.
+
 ## 0.0.75
 
 - **Breaking change:** the `Tooltip` component has been removed. Use a `title` attribute instead.
