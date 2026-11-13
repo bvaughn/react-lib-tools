@@ -81,7 +81,7 @@ Untouched
       })
     ).toBe(markdown);
     expect(warn).toHaveBeenCalledWith(
-      "README tokens not found for component Foo"
+      "README tokens not found for component Foo (expected <!-- Foo:description:begin --> and <!-- Foo:description:end -->)"
     );
   });
 });

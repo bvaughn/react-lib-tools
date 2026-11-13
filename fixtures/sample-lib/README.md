@@ -89,7 +89,7 @@ Displays a numeric value with buttons to increment and decrement it.
     </tr>
     <tr>
       <td>title</td>
-      <td><p>@deprecated Use the <code>label</code> prop instead.</p>
+      <td><p>❌ This prop has been deprecated. Use the <code>label</code> prop instead.</p>
 </td>
     </tr>
   </tbody>

@@ -49,6 +49,46 @@ describe("propsToTable", () => {
 `);
   });
 
+  test("should render @deprecated tags as a separate paragraph", async () => {
+    expect(
+      await propsToTable([
+        createProp(
+          "onTearOff",
+          "Called when a tab is dropped outside of the window.\n\n⚠️ Deprecated: browsers don't reliably report where these drags end.\n@deprecated Open popout windows from a button instead."
+        )
+      ])
+    ).toContain(
+      "<p>⚠️ Deprecated: browsers don&#39;t reliably report where these drags end.</p>\n<p>❌ This prop has been deprecated. Open popout windows from a button instead.</p>"
+    );
+  });
+
+  test("should render @param tags as list items", async () => {
+    const html = await propsToTable([
+      createProp("onChange", "Called on change.\n@param value The new value.")
+    ]);
+    expect(html).toContain("<li><code>value</code> The new value.</li>");
+    expect(html).not.toContain("@param");
+  });
+
+  test("should render @returns tags as a labeled paragraph", async () => {
+    const html = await propsToTable([
+      createProp("onChange", "Called.\n@returns The value")
+    ]);
+    expect(html).toContain("<p><strong>Returns:</strong> The value</p>");
+    expect(html).not.toContain("@returns");
+  });
+
+  test("should not rewrite tags or flags inside code", async () => {
+    const html = await propsToTable([
+      createProp(
+        "code",
+        "Use `@deprecated` carefully.\n\n```tsx\nconst a = 1;\n⚠️ x\n```"
+      )
+    ]);
+    expect(html).toContain("<code>@deprecated</code>");
+    expect(html).toContain("const a = 1;\n⚠️ x\n");
+  });
+
   test("should not interpret replacement patterns in descriptions", async () => {
     expect(
       await propsToTable([createProp("regex", "Matches `(a+)+$`, $' and $1.")])

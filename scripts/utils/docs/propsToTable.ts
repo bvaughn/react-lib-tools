@@ -1,5 +1,5 @@
 import { marked } from "marked";
-import type { PropItem } from "react-docgen-typescript";
+import { normalizeDescription } from "./normalizeDescription.ts";
 
 const TABLE_TAG_START = `
 <table>
@@ -22,14 +22,19 @@ const TABLE_TAG_STOP = `
 </table>
 `;
 
-export async function propsToTable(props: PropItem[]) {
+export async function propsToTable(
+  props: { description: string; name: string }[],
+  { kind }: { kind?: string | undefined } = {}
+) {
   const htmlStrings = [];
 
   if (props.length > 0) {
     htmlStrings.push(TABLE_TAG_START);
 
     for (const prop of props) {
-      const description = await marked(prop.description);
+      const description = await marked(
+        normalizeDescription(prop.description, { kind })
+      );
 
       htmlStrings.push(
         PROP_ROW.replace("[[name]]", () => prop.name).replace(

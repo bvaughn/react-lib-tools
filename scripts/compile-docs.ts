@@ -1,8 +1,11 @@
 import type { AnalyserOptions } from "@ts-ast-parser/core";
+import { readFile, writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { cwd } from "node:process";
 import { compileComponents } from "./utils/docs/compileComponents.ts";
+import { compileHooks } from "./utils/docs/compileHooks.ts";
 import { compileImperativeHandles } from "./utils/docs/compileImperativeHandles.ts";
+import { updateReadmeMarkdown } from "./utils/docs/updateReadmeMarkdown.ts";
 import type { CompilerOptions } from "typescript";
 import {
   JsxEmit,
@@ -19,6 +22,7 @@ export async function compileDocs({
   analyserOptions: analyserOptionsParam,
   componentNames = [],
   componentsPath = ["lib", "components"],
+  hookNames = [],
   imperativeHandleNames = [],
   outputPath = ["public", "generated", "docs"],
   readmePath = ["README.md"],
@@ -42,6 +46,14 @@ export async function compileDocs({
   componentsPath?: string[] | undefined;
 
   /**
+   * Which hooks should be documented in the README?
+   * Each name is matched against functions (or `const` hooks) exported from files within the `lib` directory;
+   * default exports aren't supported. If a name is declared more than once, the one exported from `lib/index.ts` wins.
+   * Hooks are only written to the README, and only between `react-lib-tools:api` markers.
+   */
+  hookNames?: string[] | undefined;
+
+  /**
    * Which imperative handles should be compiled?
    * Each name is matched against interfaces declared within the `lib` directory.
    */
@@ -54,8 +66,11 @@ export async function compileDocs({
   outputPath?: string[] | undefined;
 
   /**
-   * README file to update with component props tables, or `false` to skip updating a README.
-   * Tables are inserted between `<!-- Name:section:begin -->` and `<!-- Name:section:end -->` markers.
+   * README file to update with generated API docs, or `false` to skip updating a README.
+   * Docs for every component, hook and imperative handle (grouped by kind, sorted by name) are inserted between
+   * `<!-- react-lib-tools:api:begin -->` and `<!-- react-lib-tools:api:end -->` markers.
+   * If those aren't found, component docs are inserted between legacy per-component markers
+   * (`<!-- Name:section:begin -->` and `<!-- Name:section:end -->`) instead.
    * By default this is the `README.md` file.
    */
   readmePath?: string[] | false | undefined;
@@ -77,21 +92,41 @@ export async function compileDocs({
     include: [resolve(rootDir, "lib")]
   };
 
-  await compileComponents({
+  const components = await compileComponents({
     compilerOptions,
     componentNames,
     componentsPath,
     outputPath,
-    readmePath,
     rootDir
   });
 
-  await compileImperativeHandles({
+  const imperativeHandles = await compileImperativeHandles({
     analyserOptions,
     names: imperativeHandleNames,
     outputPath,
     rootDir
   });
+
+  if (readmePath) {
+    const hooks = await compileHooks({
+      compilerOptions,
+      names: hookNames,
+      rootDir
+    });
+
+    const markdownPath = resolve(rootDir, ...readmePath);
+    const markdown = await readFile(markdownPath, { encoding: "utf-8" });
+
+    await writeFile(
+      markdownPath,
+      await updateReadmeMarkdown({
+        components,
+        hooks,
+        imperativeHandles,
+        markdown
+      })
+    );
+  }
 }
 
 const defaultCompilerOptions: CompilerOptions = {

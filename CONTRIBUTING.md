@@ -36,7 +36,7 @@ It serves two apps:
 | `lib/`                | Components and an imperative handle, with TSDoc comments covering the features `compileDocs` supports |
 | `src/`                | The documentation site: `App.tsx` (the `AppRoot` config), routes, and example snippets                |
 | `public/generated/`   | Output of the compile scripts: docs and examples JSON, plus the search index                          |
-| `README.md`           | Props tables inserted by `compileDocs`                                                                |
+| `README.md`           | API docs inserted by `compileDocs`                                                                    |
 | `scripts/generate.ts` | Runs every compile script against the sample library                                                  |
 
 Pages import from `react-lib-tools` and `sample-lib`; both are aliases for local source (`lib/` and `fixtures/sample-lib/lib/`).

@@ -68,6 +68,28 @@ describe("parseDescription", () => {
     ]);
   });
 
+  test("should convert @returns tags to a labeled paragraph", async () => {
+    expect(await parseDescription("Called.\n@returns The value")).toEqual([
+      { content: "<p>Called.</p>\n" },
+      { content: "<p><strong>Returns:</strong> The value</p>\n" }
+    ]);
+  });
+
+  test("should not rewrite tags or flags inside code", async () => {
+    const sections = await parseDescription(
+      "Use `@deprecated` carefully.\n\n```tsx\nconst a = 1;\n⚠️ x\n@returns y\n```"
+    );
+
+    expect(sections).toHaveLength(2);
+    expect(sections[0].content).toBe(
+      "<p>Use <code>@deprecated</code> carefully.</p>\n"
+    );
+    expect(sections[1].code).toBe(true);
+    expect(sections[1].content).not.toContain("Returns:");
+    expect(sections[1].content).toContain("returns</span>");
+    expect(sections[1].content.match(/<div>/g)).toHaveLength(3);
+  });
+
   test("should syntax highlight fenced code blocks", async () => {
     const sections = await parseDescription(
       "Example:\n\n```tsx\n<Foo bar={1} />\n```"

@@ -83,20 +83,20 @@ export function App() {
 }
 ```
 
-| Prop                  | Required | Description                                                                                                                                                                                                                                                                                                                                                                                    |
-| :-------------------- | :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Prop                  | Required | Description                                                                                                                                                                                                                                                                                                                                                                     |
+| :-------------------- | :------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `nav`                 | Yes      | Site navigation, in reading order. Links can be grouped into titled sections, divided into titled groups within a section (e.g. `{ title: "Guides", links: [...] }`), and nested with `children`. Sections and groups are collapsed unless they contain the current page, and can be expanded or collapsed by clicking their headings. Also determines the previous/next links. |
-| `packageDescription`  | Yes      | Short description shown in the header when the [project menu](#project-menu) is disabled.                                                                                                                                                                                                                                                                                                      |
-| `packageName`         | Yes      | Shown in the header and used for the npm link and installation instructions.                                                                                                                                                                                                                                                                                                                   |
-| `repositoryUrl`       | Yes      | Used for "view source" links on props pages.                                                                                                                                                                                                                                                                                                                                                   |
-| `routes`              | Yes      | Map of paths to lazy-loaded page components.                                                                                                                                                                                                                                                                                                                                                   |
-| `commonQuestions`     | No       | Questions and answers shown on the `/common-questions` page.                                                                                                                                                                                                                                                                                                                                   |
-| `enableSiteSearch`    | No       | Shows the search button and enables the Cmd/Ctrl+K shortcut. Requires a [search index](#search-index).                                                                                                                                                                                                                                                                                         |
-| `overview`            | No       | Introduction shown on the getting started (`/`) page.                                                                                                                                                                                                                                                                                                                                          |
-| `packageLogo`         | No       | Replaces the default React logo in the header.                                                                                                                                                                                                                                                                                                                                                 |
-| `projectsUrl`         | No       | URL of the [project list](#project-menu) shown in a menu under the package name. Defaults to the shared list; pass `false` to disable the menu.                                                                                                                                                                                                                                                |
-| `showOpenCollectLink` | No       | Adds an Open Collective link to the getting started page.                                                                                                                                                                                                                                                                                                                                      |
-| `versions`            | No       | Map of version numbers to documentation URLs for older releases; adds a `/versions` page and a link to it in the header.                                                                                                                                                                                                                                                                       |
+| `packageDescription`  | Yes      | Short description shown in the header when the [project menu](#project-menu) is disabled.                                                                                                                                                                                                                                                                                       |
+| `packageName`         | Yes      | Shown in the header and used for the npm link and installation instructions.                                                                                                                                                                                                                                                                                                    |
+| `repositoryUrl`       | Yes      | Used for "view source" links on props pages.                                                                                                                                                                                                                                                                                                                                    |
+| `routes`              | Yes      | Map of paths to lazy-loaded page components.                                                                                                                                                                                                                                                                                                                                    |
+| `commonQuestions`     | No       | Questions and answers shown on the `/common-questions` page.                                                                                                                                                                                                                                                                                                                    |
+| `enableSiteSearch`    | No       | Shows the search button and enables the Cmd/Ctrl+K shortcut. Requires a [search index](#search-index).                                                                                                                                                                                                                                                                          |
+| `overview`            | No       | Introduction shown on the getting started (`/`) page.                                                                                                                                                                                                                                                                                                                           |
+| `packageLogo`         | No       | Replaces the default React logo in the header.                                                                                                                                                                                                                                                                                                                                  |
+| `projectsUrl`         | No       | URL of the [project list](#project-menu) shown in a menu under the package name. Defaults to the shared list; pass `false` to disable the menu.                                                                                                                                                                                                                                 |
+| `showOpenCollectLink` | No       | Adds an Open Collective link to the getting started page.                                                                                                                                                                                                                                                                                                                       |
+| `versions`            | No       | Map of version numbers to documentation URLs for older releases; adds a `/versions` page and a link to it in the header.                                                                                                                                                                                                                                                        |
 
 `AppRoot` provides these pages by default; your `routes` can override any of them:
 
@@ -259,12 +259,14 @@ import { compileDocs } from "react-lib-tools/scripts/compile-docs.ts";
 
 await compileDocs({
   componentNames: ["List", "grid/Grid"],
+  hookNames: ["useListRef"],
   imperativeHandleNames: ["ListImperativeAPI"]
 });
 ```
 
 - Each component name must match a file at `lib/components/**/<name>.tsx`; include a directory (e.g. `"grid/Grid"`) to disambiguate. Pass a `componentsPath` option (e.g. `["lib"]`) if your components are organized elsewhere.
 - Each imperative handle name must match an interface declared under `lib/`, and every method needs a comment.
+- Each hook name must match a function (or a `const`, e.g. `useRef as typeof useRef<ListImperativeAPI>`) exported from a file under `lib/` (not a default export). If a name is declared more than once, the declaration exported from `lib/index.ts` is used. Hooks are only documented in the README (see below); their parameters come from `@param` tags and from the comments on an inline options object's properties.
 - Output is written to `public/generated/docs/<name>.json`.
 
 Within comments, Markdown is supported, along with a few conventions:
@@ -278,9 +280,29 @@ Within comments, Markdown is supported, along with a few conventions:
 | A paragraph starting with `NOTE:`     | A neutral callout            |
 | `@deprecated <reason>`                | A deprecation notice         |
 | `@param <name> <description>`         | A list of parameters         |
+| `@returns <description>`              | A "Returns:" paragraph       |
 | A fenced code block (e.g. ` ```tsx `) | A syntax-highlighted example |
 
-By default `compileDocs` also inserts props tables into your `README.md`, between markers like these (for each of the `description`, `required-props` and `optional-props` sections):
+The same tag handling applies to the props tables generated into your `README.md` (see below), except that callouts are not styled: a `NOTE:`, `ℹ️`, `⚠️`, `❌` or `✅` line simply becomes its own paragraph.
+
+By default `compileDocs` also writes API docs into your `README.md`. Add a single pair of markers where they should go:
+
+```md
+## Documentation
+
+<!-- react-lib-tools:api:begin -->
+<!-- react-lib-tools:api:end -->
+```
+
+Everything between the markers is replaced on each run with `## Components`, `## Hooks` and `## Imperative APIs` sections (empty ones are left out). Each contains a `###` section per item, sorted by name:
+
+- Components: the description plus required and optional props tables
+- Hooks: the description plus a parameters table (optional parameters are marked with `?`)
+- Imperative APIs: the description plus a methods table
+
+Anything you add to `compileDocs` shows up automatically.
+
+READMEs without these markers fall back to the older per-component markers, which insert the description and props tables for one component at a time (for each of the `description`, `required-props` and `optional-props` sections):
 
 ```md
 <!-- List:optional-props:begin -->
@@ -347,4 +369,3 @@ await compressOgImage();
 ## Contributing
 
 See [CONTRIBUTING.md](./CONTRIBUTING.md) for development setup and guidelines, and [ARCHITECTURE.md](./ARCHITECTURE.md) for an overview of how the project is organized.
-

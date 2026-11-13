@@ -16,7 +16,9 @@ export function insertPropsMarkdown({
   const startTokenIndex = markdown.indexOf(startToken);
   const stopIndex = markdown.indexOf(stopToken);
   if (startTokenIndex < 0 || stopIndex < startTokenIndex) {
-    console.warn(`README tokens not found for component ${componentName}`);
+    console.warn(
+      `README tokens not found for component ${componentName} (expected ${startToken} and ${stopToken})`
+    );
 
     return markdown;
   }

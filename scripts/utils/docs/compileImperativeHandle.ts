@@ -3,6 +3,7 @@ import assert from "node:assert";
 import { writeFile } from "node:fs/promises";
 import { join } from "path";
 import type { ImperativeHandleMetadata } from "../../../lib/types.ts";
+import type { ReadmeImperativeHandle } from "./updateReadmeMarkdown.ts";
 import { syntaxHighlight } from "../syntax-highlight.ts";
 import { parseDescription } from "./parseDescription.ts";
 
@@ -19,11 +20,16 @@ export async function compileImperativeHandle({
   outputDir: string;
 }) {
   const name = interfaceNode.getName();
+  const descriptionText = getCommentText(interfaceNode.getJSDoc());
+
+  const readme: ReadmeImperativeHandle = {
+    description: descriptionText,
+    methods: [],
+    name
+  };
 
   const json: ImperativeHandleMetadata = {
-    description: await parseDescription(
-      getCommentText(interfaceNode.getJSDoc())
-    ),
+    description: await parseDescription(descriptionText),
     filePath,
     methods: [],
     name
@@ -36,8 +42,12 @@ export async function compileImperativeHandle({
     const jsDoc = method.getJSDoc() ?? method.getSignatures()[0]?.getJSDoc();
     assert(jsDoc, `Missing JSDoc comment for ${name}.${method.getName()}`);
 
+    const methodText = getCommentText(jsDoc);
+
+    readme.methods.push({ description: methodText, name: method.getName() });
+
     json.methods.push({
-      description: await parseDescription(getCommentText(jsDoc)),
+      description: await parseDescription(methodText),
       html: await syntaxHighlight(method.getTSNode().getText(), "TS"),
       name: method.getName()
     });
@@ -48,6 +58,8 @@ export async function compileImperativeHandle({
   console.debug("Writing to", outputFile);
 
   await writeFile(outputFile, JSON.stringify(json, null, 2));
+
+  return readme;
 }
 
 function getCommentText(comment: CommentNode) {

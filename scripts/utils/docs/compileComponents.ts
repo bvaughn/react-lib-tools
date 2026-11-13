@@ -1,26 +1,33 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { basename, resolve } from "node:path";
 import { withCompilerOptions } from "react-docgen-typescript";
 import type { CompilerOptions } from "typescript";
+import { rmFilesWithExtensions } from "../rmFilesWithExtensions.ts";
 import { initialize } from "../initialize.ts";
 import { compileComponent } from "./compileComponent.ts";
-import { insertPropsMarkdown } from "./insertPropsMarkdown.ts";
 
 export async function compileComponents({
   compilerOptions,
   componentNames,
   componentsPath,
   outputPath,
-  readmePath,
   rootDir
 }: {
   compilerOptions: Partial<CompilerOptions>;
   componentNames: string[];
   componentsPath: string[];
   outputPath: string[];
-  readmePath: string[] | false;
   rootDir: string;
 }) {
+  // Hooks-only libraries have no components directory to scan,
+  // but the output directory is still prepared (e.g. for imperative handle JSON)
+  if (componentNames.length === 0) {
+    const outputDir = resolve(rootDir, ...outputPath);
+    await mkdir(outputDir, { recursive: true });
+    await rmFilesWithExtensions(outputDir, [".json"]);
+    return [];
+  }
+
   const parser = withCompilerOptions(compilerOptions, {
     savePropValueAsString: true,
     shouldExtractLiteralValuesFromEnum: true,
@@ -43,55 +50,13 @@ export async function compileComponents({
     rootDir
   });
 
-  const markdownPath = readmePath ? resolve(rootDir, ...readmePath) : undefined;
-
-  let markdown = markdownPath
-    ? await readFile(markdownPath, { encoding: "utf-8" })
-    : "";
-
-  await Promise.all(
+  return Promise.all(
     files.map((filePath) =>
       compileComponent({
         filePath,
         outputDir,
         parser
-      }).then(
-        ({
-          componentName,
-          description,
-          optionalPropsTable,
-          requiredPropsTable
-        }) => {
-          if (!markdownPath) {
-            return;
-          }
-
-          markdown = insertPropsMarkdown({
-            componentMarkdown: description,
-            componentName,
-            markdown,
-            section: "description"
-          });
-
-          markdown = insertPropsMarkdown({
-            componentMarkdown: requiredPropsTable,
-            componentName,
-            markdown,
-            section: "required-props"
-          });
-
-          markdown = insertPropsMarkdown({
-            componentMarkdown: optionalPropsTable,
-            componentName,
-            markdown,
-            section: "optional-props"
-          });
-        }
-      )
+      })
     )
   );
-
-  if (markdownPath) {
-    await writeFile(markdownPath, markdown);
-  }
 }

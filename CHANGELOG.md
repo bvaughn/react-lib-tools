@@ -1,126 +1,118 @@
 # Changelog
 
+## 0.0.77
+
+- New single README marker pair, `<!-- react-lib-tools:api:begin -->` and `<!-- react-lib-tools:api:end -->`. `compileDocs` fills it with `## Components`, `## Hooks`, and `## Imperative APIs` sections, each sorted by name. READMEs without it still use the per-component markers.
+- New `compileDocs` `hookNames` option. Hooks exported from `lib/` are documented in the README (description and parameters); there's no JSON output for them.
+- Fixed README props tables showing JSDoc tags (e.g. `@deprecated`) as literal text. Tags and intent flags (e.g. `⚠️`) are now handled the same as in the docs JSON.
+- `@returns` (and `@return`) render as a "Returns:" paragraph; `@returns` was previously mangled. Tags inside code are no longer rewritten.
+- Missing README marker warnings name the expected markers.
+- `compileDocs` no longer fails when `componentNames` is empty and `lib/components` doesn't exist.
+
 ## 0.0.76
 
-- `compileSearchIndex` is much faster (e.g. ~31s to ~6s for an 80+ page site crawled from a dev server). It now uses a single browser, reuses tabs, and navigates between pages client-side instead of reloading the app for each one.
-  - Client-side navigation relies on `AppRoot` reporting when a page has rendered, so it requires a site built with this version of react-lib-tools. Sites built with older versions are still supported, but each page is loaded in full (slower).
-  - When crawling a dev server that uses a linked copy of react-lib-tools, restart it with `vite --force` after updating so it doesn't keep serving a stale pre-bundled copy.
+- `compileSearchIndex` is much faster (e.g. ~31s to ~6s for an 80+ page site): it reuses one browser and its tabs, and navigates client-side between pages.
+  - Client-side navigation requires a site built with this version; older sites still work, with a full load per page.
+  - When crawling a dev server that links react-lib-tools, restart it with `vite --force` after updating.
 
 ## 0.0.75
 
-- **Breaking change:** the `Tooltip` component has been removed. Use a `title` attribute instead.
-  - **Action needed** if your site uses `Tooltip`: replace `<Tooltip content="…">{children}</Tooltip>` with a `title="…"` on the element (or a wrapper element). Tooltip content is now plain text; lines can be separated with newlines.
-- `title` attributes are now shown in a styled tooltip as soon as they're hovered, instead of the browser's (slow and small) native tooltip. This applies to any element within `AppRoot` with a `title`, including the header's icons.
-  - Tooltips have a small tail pointing at the hovered element.
-  - Tooltips are shown above everything else on the page (including dialogs), like native tooltips, and are hidden on click or Escape. They aren't shown for touch.
-- New exported `TitleTooltip` component, for pages rendered outside of `AppRoot`: render it once to show `title`s the same way.
+- **Breaking:** Removed the `Tooltip` component. Replace `<Tooltip content="…">` with a `title="…"` attribute.
+- `title` attributes within `AppRoot` show a styled tooltip immediately on hover, instead of the native tooltip. Tooltips appear above dialogs, hide on click or Escape, and aren't shown for touch.
+- New `TitleTooltip` component, for showing `title` tooltips on pages rendered outside `AppRoot`.
 
 ## 0.0.74
 
-- Larger nav text on small screens (below 768px, where the nav opens as a full-screen menu): links, section headings, and group headings are each a size larger, with taller rows that are easier to tap.
+- Larger, easier-to-tap nav text and rows on small screens (below 768px).
 
 ## 0.0.73
 
-- `compileDocs` accepts a `componentsPath` option: the directory containing the components named by `componentNames` (default `["lib", "components"]`), for libraries that organize components elsewhere (e.g. `lib/flex/components` and `lib/grid/components`; pass `["lib"]` to search all of `lib`).
+- New `compileDocs` `componentsPath` option (default `["lib", "components"]`), e.g. `["lib"]` to search all of `lib`.
 
 ## 0.0.72
 
-- **Behavior change:** "On this page" (the current page's contents) moved out of the sidebar into a column to the right of the page, so opening a page with many headings no longer pushes the rest of the sidebar down. The column stays in view while the page scrolls, and scrolls on its own when the list is long.
-  - It's shown only on wide screens (1280px and up); smaller screens no longer show the page's contents.
-  - The current page's sidebar link is a plain link again; clicking it no longer collapses or expands the contents.
-- The collapsed caret on nav sections and groups points right again (rather than left), and turns to point down when expanded.
-- Expanding or collapsing a nav section or group animates its caret and contents, unless reduced motion is preferred.
+- **Behavior change:** "On this page" moved from the sidebar to a column right of the page, shown only on wide screens (1280px and up). The current page's sidebar link no longer toggles it.
+- Collapsed nav carets point right again, and expanding or collapsing a section or group is animated (unless reduced motion is preferred).
 
-- Nav sections can be divided into titled groups (e.g. "Guides" or "Components"): include `{ title, links }` in a section's `links` (new `NavGroupConfig` type). Groups are rendered beneath small headings, their links are slightly indented, and they're included (in order) in the previous/next links and in site search (e.g. "Grids › Components").
-- **Behavior change:** nav sections and groups are now collapsed by default, unless they contain the current page. Like sections, groups can be expanded or collapsed by clicking their headings, and are expanded when navigating to a page in them.
-  - **Action needed** if your site passes the `AppRoot` `collapseNavSections` prop: remove it; it has been removed, since collapsing is now the default.
-- The collapsed caret on nav sections, groups, and the current page's contents now points left (instead of right), and points down when expanded.
+## 0.0.71
+
+- Nav sections can be divided into titled groups: include `{ title, links }` in a section's `links` (new `NavGroupConfig` type). Groups are included in previous/next links and site search.
+- **Breaking:** Nav sections and groups are collapsed by default unless they contain the current page. Removed the `AppRoot` `collapseNavSections` prop.
+- Collapsed nav carets point left, and down when expanded.
 
 ## 0.0.70
 
-- **Light theme:** docs sites now follow the system's light or dark preference (previously they were always dark). The dark theme is unchanged.
-  - The header stays on the background gradient in both themes; the content card, sidebar, search, project menu, code blocks, callouts, and form controls all have light variants.
-  - **Action needed** if your site customizes theme colors (e.g. `--color-nav-active`): those values are chosen for a dark background, so also set light theme values in a `@media (prefers-color-scheme: light)` block. Until you do, the light theme uses the defaults from `styles.css` for those colors. See "Light theme" in the README.
-  - **Action needed** if your pages or demos use light-on-dark colors like `text-white/60`: use the new `ink` and `paper` theme colors (e.g. `text-ink/60`, `bg-paper/80`), which follow the color scheme, or Tailwind's `dark:` variant.
-- The current page's contents (its headings, listed beneath its link in the sidebar) can be collapsed, e.g. to see the links below a long list: like a section header, clicking the current page's link toggles them (modified clicks, e.g. to open a new tab, still work). Contents are expanded each time a page opens.
-- Fixed project menu icons sometimes being drawn in the wrong color scheme's colors (e.g. dark icons on the menu's dark background in Safari on iOS). Icons are now always white in the dark theme and black in the light theme.
+- Docs sites follow the system light or dark preference (previously always dark).
+  - **Action needed** if your site customizes theme colors: also set light values in a `@media (prefers-color-scheme: light)` block.
+  - **Action needed** if your pages use light-on-dark colors like `text-white/60`: use the new `ink` and `paper` theme colors (e.g. `text-ink/60`) or Tailwind's `dark:` variant.
+- The current page's contents in the sidebar can be collapsed by clicking its link.
+- Fixed project menu icons sometimes using the wrong color scheme (e.g. in Safari on iOS).
 
 ## 0.0.69
 
-- The header's logo and package name now open a menu linking to the docs sites of related projects. The list is shared by every site: it's loaded at runtime from `https://react-lib-tools.vercel.app/projects.json` (when the menu is first hovered, focused, or opened), so adding a project doesn't require updating each site. The current project is marked and can't be selected; projects without a `/favicon.svg` (or an `icon` in the list) are shown without an icon.
-- New `AppRoot` `projectsUrl` prop, to load the project list from a different URL; pass `false` to disable the menu.
-- **Behavior change:** `packageDescription` is no longer shown in the header while the project menu is enabled; it's still shown when `projectsUrl` is `false`.
-- The site search dialog now has a muted border instead of a shadow tinted with the theme's background gradient color.
+- The header logo and package name open a menu of related projects, loaded at runtime from `https://react-lib-tools.vercel.app/projects.json`.
+- New `AppRoot` `projectsUrl` prop, to load the list from another URL or `false` to disable the menu.
+- **Behavior change:** `packageDescription` is only shown in the header when the project menu is disabled.
+- The search dialog has a muted border instead of a tinted shadow.
 
 ## 0.0.68
 
-- New `HookSignature` and `HookSignatureItem` components, for documenting a hook's parameters or return values. Each `HookSignatureItem` shows a `name`, `type`, and optional `defaultValue` (pass `optional` to mark it with `?:`), followed by its description (`children`). Render items within a `HookSignature`, which lays them out as a list.
+- New `HookSignature` and `HookSignatureItem` components for documenting a hook's parameters or return values (`name`, `type`, optional `defaultValue` and `optional`, and a description as `children`).
 
 ## 0.0.67
 
-- `compileSearchIndex` output is now the same each time it runs (when the site hasn't changed):
-  - Pages in `site-map.json` are sorted by path. Before, they were written in the order they were found, which varied because pages are crawled concurrently.
-  - `Block` content is no longer indexed (`Block` now sets `data-search-ignore`). Live demos inside a `Block` (e.g. one that waits to be measured before rendering) sometimes rendered before the crawler read the page and sometimes after. Pass `data-search-ignore={undefined}` to a `Block` to index its content.
+- `compileSearchIndex` output is stable across runs: pages are sorted by path, and `Block` content is no longer indexed (pass `data-search-ignore={undefined}` to index it).
 
 ## 0.0.66
 
-- The docs dev server port can now be configured with a `"react-lib-tools": { "devServerPort": number }` field in package.json (the default is still 3000). Pass `getDevServerConfig()` (from `react-lib-tools/scripts/dev-server.js`) to your Vite config's `server` options; it also sets `strictPort`, so the dev server fails to start if the port is in use instead of switching to another port.
-- `compileSearchIndex` now connects to the configured dev server port by default, instead of always using `http://localhost:3000`.
+- The docs dev server port can be set with `"react-lib-tools": { "devServerPort": number }` in package.json (default 3000). Pass `getDevServerConfig()` from `react-lib-tools/scripts/dev-server.js` to Vite's `server` options.
+- `compileSearchIndex` connects to the configured port by default.
 
 ## 0.0.65
 
-- New `AppRoot` `collapseNavSections` prop. When enabled, sidebar nav sections are collapsed by default, except for the section containing the current page. Navigating to a page in a collapsed section expands it.
+- New `AppRoot` `collapseNavSections` prop: collapses nav sections except the one containing the current page.
 
 ## 0.0.64
 
-- Nav links accept an optional `navTitle`, a shorter label shown in the sidebar. `title` is still used for previous/next page links and site search.
-- The active sidebar link no longer re-wraps when selected. It is emphasized with a text stroke instead of bold, which made the text wider.
-- Long sidebar link titles now wrap onto multiple lines instead of overflowing into the next link.
+- Nav links accept an optional `navTitle`, a shorter sidebar label.
+- The active sidebar link no longer re-wraps when selected, and long titles wrap instead of overflowing.
 - The sidebar is wider (`w-72`, up from `w-64`).
 
 ## 0.0.63
 
-- **Breaking:** The `react` and `react-dom` peer dependency ranges are now `^19.0.0`. Site search (`use()`) and `Header` page titles (`<title>` hoisting) already required React 19; React 18 is no longer listed as supported.
-- Fixed `compileDocs` and `compileExamples` on Windows:
-  - `compileDocs` now finds component files on Windows. Before, its file filter only matched `/`-separated paths, so no component docs were generated.
-  - `compileExamples` now finds files inside `examples` directories on Windows. Before, its directory check only matched `/`-separated paths, so no examples were compiled.
-  - Generated component `filePath` values now use `/` for every separator. Before, only the first `\` was replaced (0.0.54 fixed only part of this).
-- The deprecated `SiteSearchRecord` type now includes the `text` field that search records contained in 0.0.39–0.0.48.
+- **Breaking:** The `react` and `react-dom` peer dependency ranges are now `^19.0.0`.
+- Fixed `compileDocs` and `compileExamples` finding no files on Windows, and generated `filePath` values now use `/` for every separator.
+- The deprecated `SiteSearchRecord` type includes the `text` field.
 
 ## 0.0.62
 
-- Fix generated docs mangling text that contains `$` characters. Prop descriptions in README props tables (e.g. a description containing `$'`, `$&`, or `$1`) and prop names in compiled component metadata (e.g. `$$value`) are now inserted verbatim instead of being interpreted as `String.prototype.replace` patterns.
+- Fixed generated docs interpreting `$` in prop descriptions and names (e.g. `$'`, `$&`, `$$value`) as replacement patterns.
 
 ## 0.0.61
 
-- The header search button now uses the `--color-header-icons` CSS variable, matching the other header icons.
+- The header search button uses the `--color-header-icons` CSS variable.
 
 ## 0.0.60
 
-- `AppRoot` wraps routes in a `Suspense` boundary with a `LoadingSpinner` fallback, so the header and nav render while a lazy route loads.
-- `compileSearchIndex` waits for the route loading fallback to disappear before reading a page, so lazy pages are indexed with their content.
-- New `rootDir` option for `compileDocs`, `compileExamples`, `compileSearchIndex`, and `compressOgImage`; other paths resolve against it (defaults to `cwd()`).
-- New `compileDocs` `readmePath` option: a custom README location, or `false` to skip updating README props tables.
-- `compileSearchIndex` creates the output directory if missing and supports host URLs without an explicit port.
-- Imperative handle docs accept JSDoc on method signatures (`reset(): void`) as well as function-typed properties; `@param` tags render as a list, and missing JSDoc fails with an error naming the method.
-- README props-table insertion warns and leaves the README unchanged when the begin marker is missing or after the end marker.
-- Added JSDoc to exported components, `AppRoot` props, and types. `SiteSearchRecord` is marked `@deprecated` (the search index uses `SiteMapPage`).
-- Test files are no longer included in generated type declarations.
+- `AppRoot` wraps routes in `Suspense` with a `LoadingSpinner` fallback, and `compileSearchIndex` waits for lazy pages to load.
+- New `rootDir` option for `compileDocs`, `compileExamples`, `compileSearchIndex`, and `compressOgImage` (defaults to `cwd()`).
+- New `compileDocs` `readmePath` option: a custom README path, or `false` to skip README updates.
+- `compileSearchIndex` creates its output directory and supports host URLs without a port.
+- Imperative handle docs accept JSDoc on method signatures; `@param` tags render as a list, and missing JSDoc is an error.
+- README props-table insertion warns and leaves the README unchanged when markers are missing or out of order.
+- Added JSDoc to exported components, props, and types; `SiteSearchRecord` is `@deprecated`.
+- Test files are excluded from generated type declarations.
 
 ## 0.0.59
 
-- Search results can link to individual headings within a page. Re-run `compileSearchIndex` to populate the new optional `headings` field on `SiteMapPage` (new `SiteMapHeading` type). Headings come from elements with `data-toc` and an `id`.
-- New search ranking: field-weighted BM25-style scoring (title > path > section > text), typo correction, prefix matching, camelCase-aware tokenizing, stop-word handling, phrase and exact-title bonuses, and at most 2 heading results per page.
-- Stemming support (e.g. "collapse" matches "collapsible").
-- Search terms containing regex characters (e.g. `c++`, `(`) no longer crash the search input.
-- Highlighting matches at word starts (including camelCase parts), and snippets trim at word boundaries around the best-matching section.
-- The search modal is now an accessible dialog/combobox: `aria-activedescendant` arrow-key navigation, focus trap and restore, background scroll lock, Escape to close, Cmd/Ctrl+K toggle that no longer triggers the browser shortcut, and IME composition support.
-- With an empty query, the modal lists every page in nav order. Results show 10 matches initially with a "Show N more results" button.
-- Pressing Enter before debounced results arrive opens the first result once they arrive (within 1 second).
-- Search debounce reduced to 100ms; the index starts downloading when the modal opens.
-- A failed `site-map.json` load is no longer cached forever; the modal shows a "Try again" button, and "Loading…" while the index loads.
-- Selecting a result for the heading already in the URL hash scrolls to it again; malformed `%` escapes in the hash no longer throw.
-- "On this page" fixes: mixed nested and flat entries render correctly, modified clicks go to the browser, and it no longer measures or scrolls while the mobile sidebar is hidden.
+- Search results can link to headings within a page (from elements with `data-toc` and an `id`). Re-run `compileSearchIndex` to populate the new `SiteMapPage` `headings` field (new `SiteMapHeading` type).
+- Better search ranking: field weighting, typo correction, prefix and camelCase matching, stemming, and at most 2 heading results per page.
+- Search terms with regex characters (e.g. `c++`) no longer crash.
+- The search modal is an accessible dialog/combobox, with keyboard navigation, focus trapping, Escape to close, and IME support.
+- An empty query lists every page; results show 10 at a time with a "Show more" button.
+- Enter before results arrive opens the first result once they load.
+- Search debounce is 100ms, and the index loads when the modal opens. A failed load shows a "Try again" button.
+- Fixed "On this page" with mixed nested and flat entries, modified clicks, and the hidden mobile sidebar.
 
 ## 0.0.58
 

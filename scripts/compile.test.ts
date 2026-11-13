@@ -1,6 +1,13 @@
 // @vitest-environment node
 
-import { copyFile, mkdtemp, readdir, readFile, rm } from "node:fs/promises";
+import {
+  copyFile,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
@@ -67,6 +74,62 @@ describe("compileDocs", () => {
     expect(await readFile(readmePath, "utf-8")).toBe(
       await readFile(join(rootDir, "README.md"), "utf-8")
     );
+  }, 60_000);
+
+  test("should fill a single API marker with every component, hook and imperative handle", async () => {
+    const warn = vi.spyOn(console, "warn").mockImplementation(() => {});
+
+    const readmePath = join(outputDir, "README.md");
+    await writeFile(
+      readmePath,
+      "# sample-lib\n\n<!-- react-lib-tools:api:begin -->\n<!-- react-lib-tools:api:end -->\n"
+    );
+
+    await compileDocs({
+      componentNames: ["Counter", "Badge"],
+      hookNames: ["useCounterRef", "useCounter"],
+      imperativeHandleNames: ["CounterImperativeHandle"],
+      outputPath: [outputDir, "docs"],
+      readmePath: [readmePath],
+      rootDir
+    });
+
+    const markdown = await readFile(readmePath, "utf-8");
+    const headings = markdown.match(/^#+ .+$/gm);
+
+    expect(headings).toEqual([
+      "# sample-lib",
+      "## Components",
+      "### Badge",
+      "#### Required props",
+      "#### Optional props",
+      "### Counter",
+      "#### Required props",
+      "#### Optional props",
+      "## Hooks",
+      "### useCounter",
+      "#### Parameters",
+      "### useCounterRef",
+      "## Imperative APIs",
+      "### CounterImperativeHandle",
+      "#### Methods"
+    ]);
+    expect(markdown).toContain("<td>getValue</td>");
+
+    // Hook parameters, including the properties of an inline options object
+    expect(markdown).toContain(
+      "<td>initialValue</td>\n      <td><p>Value to start counting from.</p>"
+    );
+    expect(markdown).toContain(
+      "<td>step?</td>\n      <td><p>Amount to increment by; defaults to 1.</p>"
+    );
+    expect(markdown).toContain(
+      "**Returns:** The current value and a function to increment it."
+    );
+    // The same-named hook that isn't exported from lib/index.ts is ignored
+    expect(markdown).not.toContain("internalOnly");
+    expect(markdown).not.toContain("Internal variant");
+    expect(warn).not.toHaveBeenCalled();
   }, 60_000);
 });
 

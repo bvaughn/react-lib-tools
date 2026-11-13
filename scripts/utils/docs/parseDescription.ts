@@ -1,23 +1,12 @@
 import type { Intent, Section } from "../../../lib/types.ts";
 import { syntaxHighlight, type Language } from "../syntax-highlight.ts";
 import { formatDescriptionText } from "./formatDescriptionText.ts";
+import { INTENT_FLAGS, normalizeDescription } from "./normalizeDescription.ts";
 
 export async function parseDescription(rawText: string) {
   const sections: Section[] = [];
 
-  // Paper over differences between "@ts-ast-parser/core" and "react-docgen-typescript"
-  let text = rawText;
-
-  text = text.replaceAll("@deprecated", "❌ This prop has been deprecated.");
-  text = text.replace(/@param ([\w]+)/g, "- `$1`");
-  text = text.replaceAll("@return", "\n");
-
-  Object.keys(INTENT_FLAGS).forEach((flag) => {
-    text = text
-      .split(`\n${flag}`)
-      .join(`\n\n${flag}`)
-      .replaceAll("\n\n\n", "\n\n");
-  });
+  const text = normalizeDescription(rawText);
 
   for (const chunk of text.split("\n\n")) {
     let code = false;
@@ -45,10 +34,6 @@ export async function parseDescription(rawText: string) {
       }
     }
 
-    // Strip TSDoc comments
-    content = content.replace(/\n@param.+/, "");
-    content = content.replace(/\n@return.+/, "");
-
     sections.push({
       code: code || undefined,
       content,
@@ -58,11 +43,3 @@ export async function parseDescription(rawText: string) {
 
   return sections;
 }
-
-const INTENT_FLAGS = {
-  "❌": "danger",
-  "NOTE:": "none",
-  ℹ️: "primary",
-  "✅": "success",
-  "⚠️": "warning"
-};

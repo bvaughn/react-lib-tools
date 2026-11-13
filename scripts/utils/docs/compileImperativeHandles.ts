@@ -45,7 +45,7 @@ export async function compileImperativeHandles({
     });
   });
 
-  await Promise.all(
+  return Promise.all(
     nodes.map(({ filePath, node }) =>
       compileImperativeHandle({
         filePath,

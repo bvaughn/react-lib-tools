@@ -42,11 +42,12 @@ running dev server ──compileSearchIndex──▶  public/generated/site-map.
 
 - **Components** are parsed with `react-docgen-typescript`. Each name in `componentNames` must match a file named `lib/components/**/<Name>.tsx` under `rootDir` (by default the current working directory). Props inherited from `node_modules` types (like HTML attributes) are dropped.
 - **Imperative handles** are parsed with `@ts-ast-parser/core`. Each name in `imperativeHandleNames` is looked up as an interface declared under `lib/`. Every method needs a JSDoc comment; both method syntax (`reset(): void`) and function-typed properties (`reset: () => void`) are supported.
+- **Hooks** (`hookNames`) are collected by [`compileHooks`](./scripts/utils/docs/compileHooks.ts) with the TypeScript compiler API. Each name is matched against a function or `const` exported from `lib/` (declarations reachable from `lib/index.ts` win over same-named internal ones; default exports aren't supported). Parameters come from the signature, expanding an options object one property at a time. Hooks are only written to the README, not to JSON.
 - TSDoc descriptions are split into `Section`s by [`parseDescription`](./scripts/utils/docs/parseDescription.ts):
   - Paragraphs that start with `ℹ️`, `⚠️`, `❌`, `✅` or `NOTE:` become callouts with the matching intent.
   - Fenced code blocks are syntax highlighted.
-  - `@deprecated`, `@param` and `@return` are rewritten into plain text.
-- **Side effect:** unless `readmePath` is `false`, props tables are also written into the consumer's `README.md`, between `<!-- Name:description:begin -->` / `<!-- Name:description:end -->` style markers (sections `description`, `required-props` and `optional-props`).
+  - JSON and README text share [`normalizeDescription`](./scripts/utils/docs/normalizeDescription.ts), which rewrites `@deprecated`, `@param` and `@return(s)` (the latter as a **Returns:** paragraph) into plain text, leaving fenced code untouched.
+- **Side effect:** unless `readmePath` is `false`, the README is updated by [`updateReadmeMarkdown`](./scripts/utils/docs/updateReadmeMarkdown.ts). A single `<!-- react-lib-tools:api:begin -->` / `<!-- react-lib-tools:api:end -->` pair (outside fenced code) is filled with `## Components`, `## Hooks` and `## Imperative APIs` groups. Otherwise it falls back to legacy per-component markers like `<!-- Name:description:begin -->` / `<!-- Name:description:end -->` (sections `description`, `required-props` and `optional-props`); hooks and imperative handles are not written in that mode.
 
 ### `compileExamples` ([`scripts/compile-examples.ts`](./scripts/compile-examples.ts))
 
