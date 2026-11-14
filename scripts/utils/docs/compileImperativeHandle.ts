@@ -69,7 +69,13 @@ function getCommentText(comment: CommentNode) {
   const params = comment.getAllTags("param");
   if (params.length > 0) {
     text += `\n\n${params
-      .map((param) => `@param ${param.name} ${toText(param.text)}`.trim())
+      .map((param) => {
+        // The parser splits dotted names (e.g. "options.size") at the first dot,
+        // leaving the rest of the name at the start of the text (e.g. ".size Size")
+        const paramText = toText(param.text);
+        const separator = /^[.[]/.test(paramText) ? "" : " ";
+        return `@param ${param.name}${separator}${paramText}`.trim();
+      })
       .join("\n")}`;
   }
 

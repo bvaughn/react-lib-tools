@@ -28,7 +28,8 @@ function normalizeText(rawText: string, kind: string) {
     /^[ \t]*@deprecated\b/gm,
     `❌ This ${kind} has been deprecated.`
   );
-  text = text.replace(/^[ \t]*@param (\w+)/gm, "- `$1`");
+  // Names may be dotted or indexed, e.g. "options.size" or "items[].id"
+  text = text.replace(/^[ \t]*@param ([\w$.[\]]+)/gm, "- `$1`");
   text = text.replace(/^[ \t]*@returns?\b[ \t]*/gm, "\n**Returns:** ");
 
   Object.keys(INTENT_FLAGS).forEach((flag) => {

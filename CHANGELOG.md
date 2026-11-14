@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.0.78
+
+- Fixed dotted and indexed `@param` names (e.g. `@param options.size`) rendering as `options` followed by `.size`. The full name is now formatted as code, in both the README and the docs JSON.
+
 ## 0.0.77
 
 - New single README marker pair, `<!-- react-lib-tools:api:begin -->` and `<!-- react-lib-tools:api:end -->`. `compileDocs` fills it with `## Components`, `## Hooks`, and `## Imperative APIs` sections, each sorted by name. READMEs without it still use the per-component markers.

@@ -68,6 +68,20 @@ describe("parseDescription", () => {
     ]);
   });
 
+  test("should format dotted @param names as code", async () => {
+    expect(
+      await parseDescription(
+        "Description.\n\n@param tab Tab to add\n@param options.size Size of the tabset"
+      )
+    ).toEqual([
+      { content: "<p>Description.</p>\n" },
+      {
+        content:
+          "<ul>\n<li><code>tab</code> Tab to add</li>\n<li><code>options.size</code> Size of the tabset</li>\n</ul>\n"
+      }
+    ]);
+  });
+
   test("should convert @returns tags to a labeled paragraph", async () => {
     expect(await parseDescription("Called.\n@returns The value")).toEqual([
       { content: "<p>Called.</p>\n" },
